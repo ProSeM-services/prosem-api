@@ -46,6 +46,7 @@ export class CompanyController {
 		try {
 			return await this.companyService.create(data)
 		} catch (error) {
+				console.log(error)
 			return error
 		}
 	}
@@ -59,6 +60,7 @@ export class CompanyController {
 			}
 			return 'company has been deleted, succesfully!'
 		} catch (error) {
+			console.log(error)
 			return error
 		}
 	}
