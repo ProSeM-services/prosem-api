@@ -46,7 +46,7 @@ export class CompanyController {
 		try {
 			return await this.companyService.create(data)
 		} catch (error) {
-				console.log(error)
+			console.log(error)
 			return error
 		}
 	}
