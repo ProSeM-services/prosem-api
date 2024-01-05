@@ -82,7 +82,7 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## Stay in touch
 
 Founder => Francisco Villanueva 
-  - [Linkedin](https://kamilmysliwiec.com](https://www.linkedin.com/in/francisco-villanueva-50708a226/)https://www.linkedin.com/in/francisco-villanueva-50708a226/)
+  - [Linkedin](https://www.linkedin.com/in/francisco-villanueva-50708a226/)
   - email: fvillanueva.dev@gmail.com
 
 
