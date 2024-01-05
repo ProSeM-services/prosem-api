@@ -32,17 +32,34 @@
 $ npm install
 ```
 
+## Enviroment
+
+```bash
+DB_HOST=somevalue
+DB_PORT=somevalue 
+DB_USER=somevalue
+DB_PASS=somevalue
+DB_DIALECT=somevalue 
+DB_NAME_TEST=somevalue
+DB_NAME_DEVELOPMENT=somevalue
+DB_NAME_PRODUCTION=somevalue
+JWTKEY= somevalue  
+TOKEN_EXPIRATION=somevalue
+BEARER=somevalue 
+PORT=somevalue 
+```
+
 ## Running the app
 
 ```bash
-# development
+# production
 $ npm run start
 
-# watch mode
+# development
 $ npm run start:dev
 
-# production mode
-$ npm run start:prod
+# test
+$ npm run start:test
 ```
 
 ## Test
@@ -64,10 +81,8 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 ## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Founder => Francisco Villanueva 
+  - [Linkedin](https://kamilmysliwiec.com](https://www.linkedin.com/in/francisco-villanueva-50708a226/)https://www.linkedin.com/in/francisco-villanueva-50708a226/)
+  - email: fvillanueva.dev@gmail.com
 
-## License
 
-Nest is [MIT licensed](LICENSE).
