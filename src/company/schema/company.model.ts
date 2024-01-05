@@ -1,5 +1,12 @@
-import { Table, Column, Model, BeforeCreate } from 'sequelize-typescript'
+import {
+	Table,
+	Column,
+	Model,
+	BeforeCreate,
+	HasMany,
+} from 'sequelize-typescript'
 import * as crypto from 'crypto'
+import { User } from 'src/user/schema/user.model'
 @Table
 export class Company extends Model<Company> {
 	@Column
@@ -23,4 +30,7 @@ export class Company extends Model<Company> {
 			instance.tenantId = `${instance.name}-${randomString}`
 		}
 	}
+
+	@HasMany(() => User)
+	users: User[]
 }
