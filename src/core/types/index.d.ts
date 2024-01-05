@@ -6,7 +6,7 @@ declare namespace NodeJS {
 		DB_PORT: string
 		DB_USER: string
 		DB_PASS: string
-		DB_DIALECT: string 
+		DB_DIALECT: string
 		DB_NAME_TEST: string
 		DB_NAME_DEVELOPMENT: string
 		DB_NAME_PRODUCTION: string

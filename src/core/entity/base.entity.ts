@@ -1,16 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, Column } from 'typeorm';
+import {
+	Entity,
+	PrimaryGeneratedColumn,
+	CreateDateColumn,
+	UpdateDateColumn,
+	Column,
+} from 'typeorm'
 
 @Entity()
 export class BaseEntityProsem {
-  @PrimaryGeneratedColumn()
-  id: number
+	@PrimaryGeneratedColumn()
+	id: number
 
-  @Column()
-  tenantId: number
+	@Column()
+	tenantId: number
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date
+	@CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+	createdAt: Date
 
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  updatedAt: Date
+	@UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+	updatedAt: Date
 }

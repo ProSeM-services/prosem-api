@@ -1,7 +1,7 @@
-import {  IsNotEmpty, IsOptional, IsString , IsEmail} from 'class-validator'
+import { IsNotEmpty, IsOptional, IsString, IsEmail } from 'class-validator'
 
-export class CompanyDTO{
-    @IsNotEmpty()
+export class CompanyDTO {
+	@IsNotEmpty()
 	@IsString()
 	name: string
 
@@ -17,5 +17,4 @@ export class CompanyDTO{
 	@IsOptional()
 	@IsString()
 	image: string
-
 }

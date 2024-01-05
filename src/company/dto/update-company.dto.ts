@@ -1,7 +1,7 @@
-import {   IsOptional, IsString } from 'class-validator'
+import { IsOptional, IsString } from 'class-validator'
 
-export class UpdateCompanyDTO{
-    @IsOptional()
+export class UpdateCompanyDTO {
+	@IsOptional()
 	@IsString()
 	name: string
 
@@ -16,5 +16,4 @@ export class UpdateCompanyDTO{
 	@IsOptional()
 	@IsString()
 	image: string
-	
 }
