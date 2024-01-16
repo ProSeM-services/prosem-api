@@ -7,8 +7,7 @@ export const databaseProviders = [
 	{
 		provide: 'SEQUELIZE',
 		useFactory: async () => {
-			let config
-
+			let config: string
 			switch (process.env.NODE_ENV as enviromentType) {
 				case 'development':
 					config = databaseConfig.development
@@ -22,7 +21,10 @@ export const databaseProviders = [
 				default:
 					config = databaseConfig.development
 			}
-			const sequelize = new Sequelize({ ...config, logging: false })
+			const sequelize = new Sequelize(config, {
+				dialect: 'postgres',
+				logging: false,
+			})
 			sequelize.addModels([Company, User])
 			await sequelize.sync({ alter: true })
 			return sequelize
