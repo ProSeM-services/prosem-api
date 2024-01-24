@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class AppService {
+	db = process.env.NODE_ENV === 'development' ? 'LOCAL-DB' : 'WEB-DB'
 	getHello(): string {
-		return `Hello World! WORKING ON ${process.env.NODE_ENV} ENVIROMENT`
+		return `ProSeM API | Working on:  enviroment ==> ${process.env.NODE_ENV} |   database ==>  ${this.db} `
 	}
 }

@@ -9,7 +9,7 @@ import { Company } from 'src/company/schema/company.model'
 @Table
 export class User extends Model<User> {
 	@ForeignKey(() => Company)
-	@Column
+	@Column({ field: 'companyId' })
 	companyId: number
 	@BelongsTo(() => Company)
 	company: Company
@@ -17,6 +17,8 @@ export class User extends Model<User> {
 	tenantId: string
 	@Column
 	name: string
+	@Column({ defaultValue: undefined })
+	role: string | undefined
 	@Column
 	lastName: string
 	@Column({ unique: true })
