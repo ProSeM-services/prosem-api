@@ -3,6 +3,7 @@ import { Company } from 'src/company/schema/company.model'
 import { enviromentType } from '../constants'
 import { databaseConfig } from './database.config'
 import { User } from 'src/user/schema/user.model'
+import { Appointment } from 'src/appointments/schema/appointment.model'
 export const databaseProviders = [
 	{
 		provide: 'SEQUELIZE',
@@ -25,7 +26,7 @@ export const databaseProviders = [
 				dialect: 'postgres',
 				logging: false,
 			})
-			sequelize.addModels([Company, User])
+			sequelize.addModels([Company, User, Appointment])
 			await sequelize.sync({ alter: true })
 			return sequelize
 		},
