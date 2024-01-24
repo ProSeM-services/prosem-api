@@ -4,7 +4,9 @@ import {
 	Model,
 	ForeignKey,
 	BelongsTo,
+	HasMany,
 } from 'sequelize-typescript'
+import { Appointment } from 'src/appointments/schema/appointment.model'
 import { Company } from 'src/company/schema/company.model'
 @Table
 export class User extends Model<User> {
@@ -29,4 +31,11 @@ export class User extends Model<User> {
 	password: string
 	@Column
 	image: string
+
+	@HasMany(() => Appointment, {
+		scope: {
+			role: 'employee', // Condición para la relación
+		},
+	})
+	appointments: Appointment[]
 }
