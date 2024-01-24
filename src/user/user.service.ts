@@ -11,7 +11,10 @@ export class UserService {
 		return this.UserModel.findAll()
 	}
 	async getById(id: number): Promise<User> {
-		return this.UserModel.findByPk(id)
+		return this.UserModel.findOne({ where: { id } })
+	}
+	async getByTenant(tenantId: string): Promise<User[]> {
+		return this.UserModel.findAll({ where: { tenantId } })
 	}
 	public async findBy({
 		key,
@@ -25,5 +28,11 @@ export class UserService {
 
 	async create(data: Partial<User>): Promise<User> {
 		return this.UserModel.create(data)
+	}
+	async update(id: number, data: Partial<User>) {
+		return this.UserModel.update(data, { where: { id: id } })
+	}
+	async delete(id: number) {
+		return this.UserModel.destroy({ where: { id: id } })
 	}
 }
