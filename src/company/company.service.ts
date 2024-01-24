@@ -18,6 +18,9 @@ export class CompanyService {
 	async getById(id: number): Promise<Company> {
 		return this.comapnyModel.findByPk(id)
 	}
+	async getByTenant(tenantId: string): Promise<Company> {
+		return this.comapnyModel.findOne({ where: { tenantId } })
+	}
 	async create(data: Partial<Company>): Promise<Company> {
 		return this.comapnyModel.create(data)
 	}
