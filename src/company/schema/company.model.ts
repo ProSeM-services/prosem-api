@@ -1,14 +1,16 @@
-import {
-	Table,
-	Column,
-	Model,
-	BeforeCreate,
-	HasMany,
-} from 'sequelize-typescript'
-import * as crypto from 'crypto'
-import { User } from 'src/user/schema/user.model'
+import { DataTypes } from 'sequelize'
+import { Table, Column } from 'sequelize-typescript'
+import { BaseModel } from 'src/core/database/schema/base.model'
 @Table
-export class Company extends Model<Company> {
+export class Company extends BaseModel<Company> {
+	@Column({
+		type: DataTypes.UUID,
+		defaultValue: DataTypes.UUIDV4,
+		allowNull: false,
+		primaryKey: true,
+	})
+	id: string
+
 	@Column
 	name: string
 
@@ -20,17 +22,4 @@ export class Company extends Model<Company> {
 
 	@Column
 	image: string
-	@Column
-	tenantId: string
-
-	@BeforeCreate
-	static generateTenantId(instance: Company) {
-		if (instance.name) {
-			const randomString = crypto.randomBytes(10).toString('hex')
-			instance.tenantId = `${instance.name}-${randomString}`
-		}
-	}
-
-	@HasMany(() => User)
-	users: User[]
 }

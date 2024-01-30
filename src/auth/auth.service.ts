@@ -52,7 +52,7 @@ export class AuthService {
 			role: getUser.role,
 			image: getUser.image,
 			userName: getUser.userName,
-			tenantId: getUser.tenantId,
+			companyId: getUser.CompanyId,
 		}
 
 		return {

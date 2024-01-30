@@ -2,7 +2,7 @@ import { IsNotEmpty, IsOptional, IsString, IsEmail } from 'class-validator'
 export class UserDTO {
 	@IsString()
 	@IsNotEmpty()
-	tenantId: string
+	CompanyId: string
 	@IsString()
 	@IsNotEmpty()
 	name: string

@@ -9,10 +9,10 @@ import {
 @Entity()
 export class BaseEntityProsem {
 	@PrimaryGeneratedColumn()
-	id: number
+	id: string
 
 	@Column()
-	tenantId: number
+	companyId: string
 
 	@CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
 	createdAt: Date

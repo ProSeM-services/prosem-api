@@ -1,20 +1,11 @@
-import {
-	Table,
-	Column,
-	Model,
-	ForeignKey,
-	BelongsTo,
-} from 'sequelize-typescript'
-import { User } from 'src/user/schema/user.model'
+import { Table, Column } from 'sequelize-typescript'
+import { BaseModel } from 'src/core/database/schema/base.model'
 @Table
-export class Appointment extends Model<Appointment> {
-	@ForeignKey(() => User)
-	@Column({ field: 'userId' })
-	userId: number
-	@BelongsTo(() => User)
-	company: User
+export class Appointment extends BaseModel<Appointment> {
 	@Column
-	tenantId: string
+	userId: string
+	@Column
+	companyId: string
 	@Column
 	name: string
 	@Column

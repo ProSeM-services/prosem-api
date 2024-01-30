@@ -19,16 +19,19 @@ export class UserController {
 		private readonly comapanyService: CompanyService
 	) {}
 
-	async checkUserExist(id: number) {
-		const userToCheck = await this.userService.getById(id)
-		if (!userToCheck) {
+	async checkUserExist(id: string) {
+		try {
+			await this.userService.getById(id)
+		} catch (error) {
 			throw new NotFoundException('User not found!')
 		}
 	}
-	async isTenantIdOk(tenantId: string) {
-		const coompany = await this.comapanyService.getByTenant(tenantId)
-		if (!coompany) {
-			throw new NotFoundException('coompany not found!')
+	async isCompanyOk(companyId: string) {
+		try {
+			const company = await this.comapanyService.getById(companyId)
+			if (!company) throw new NotFoundException('Company not found!')
+		} catch (error) {
+			throw error
 		}
 	}
 	@Get()
@@ -40,8 +43,7 @@ export class UserController {
 		}
 	}
 	@Get('/:id')
-	async getOne(@Param() { id }: { id: number }) {
-		console.log({ id })
+	async getOne(@Param() { id }: { id: string }) {
 		try {
 			await this.checkUserExist(id)
 			return this.userService.getById(id)
@@ -50,17 +52,17 @@ export class UserController {
 		}
 	}
 
-	@Get('/tenant/:tenant')
-	async getByTenant(@Param() { tenant }: { tenant: string }) {
+	@Get('/company/:companyId')
+	async getByTenant(@Param() { companyId }: { companyId: string }) {
 		try {
-			return this.userService.getByTenant(tenant)
+			return this.userService.getByCompany(companyId)
 		} catch (error) {
 			return error
 		}
 	}
 
 	@Delete('/:id')
-	async delete(@Param() { id }: { id: number }) {
+	async delete(@Param() { id }: { id: string }) {
 		try {
 			await this.checkUserExist(id)
 			const deleteStatus = await this.userService.delete(id)
@@ -73,7 +75,7 @@ export class UserController {
 	@Post()
 	async createUser(@Body() user: UserDTO) {
 		try {
-			await this.isTenantIdOk(user.tenantId)
+			await this.isCompanyOk(user.CompanyId)
 
 			const hashPassword = await bcrypt.hash(user.password, +process.env.HASH_SALT)
 			return await this.userService.create({ ...user, password: hashPassword })
@@ -84,7 +86,7 @@ export class UserController {
 	@Patch('/:id')
 	async updateUser(
 		@Body() user: UpdateUserDTO,
-		@Param() { id }: { id: number }
+		@Param() { id }: { id: string }
 	) {
 		try {
 			await this.checkUserExist(id)
