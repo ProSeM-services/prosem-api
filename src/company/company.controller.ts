@@ -16,7 +16,7 @@ import { UpdateCompanyDTO } from './dto/update-company.dto'
 export class CompanyController {
 	constructor(private readonly companyService: CompanyService) {}
 
-	async checkCompanyExist(id: number) {
+	async checkCompanyExist(id: string) {
 		const companyToUpdate = await this.companyService.getById(id)
 		if (!companyToUpdate) {
 			throw new UnauthorizedException('Company not found!')
@@ -28,12 +28,11 @@ export class CompanyController {
 		try {
 			return await this.companyService.getAll()
 		} catch (error) {
-			//TODO: Add error handler
-			console.log(error)
+			return error
 		}
 	}
 	@Get(':id')
-	async getOne(@Param() { id }: { id: number }) {
+	async getOne(@Param() { id }: { id: string }) {
 		try {
 			await this.checkCompanyExist(id)
 			return await this.companyService.getById(id)
@@ -46,12 +45,11 @@ export class CompanyController {
 		try {
 			return await this.companyService.create(data)
 		} catch (error) {
-			console.log(error)
 			return error
 		}
 	}
 	@Delete(':id')
-	async delete(@Param() { id }: { id: number }) {
+	async delete(@Param() { id }: { id: string }) {
 		try {
 			this.checkCompanyExist(id)
 			const deleteStatus = await this.companyService.delete(id)
@@ -65,7 +63,7 @@ export class CompanyController {
 		}
 	}
 	@Patch(':id')
-	async update(@Param() { id }: { id: number }, @Body() data: UpdateCompanyDTO) {
+	async update(@Param() { id }: { id: string }, @Body() data: UpdateCompanyDTO) {
 		try {
 			await this.checkCompanyExist(id)
 			await this.companyService.update(id, data)

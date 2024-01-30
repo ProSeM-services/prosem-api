@@ -13,21 +13,22 @@ export class CompanyService {
 		return 'Hello company!'
 	}
 	async getAll(): Promise<Company[]> {
-		return this.comapnyModel.findAll({ include: { model: User } })
+		return this.comapnyModel.findAll({ include: User })
 	}
-	async getById(id: number): Promise<Company> {
-		return this.comapnyModel.findByPk(id)
+	async getById(id: string): Promise<Company> {
+		return await this.comapnyModel.findOne({
+			where: { id },
+			include: { model: User },
+		})
 	}
-	async getByTenant(tenantId: string): Promise<Company> {
-		return this.comapnyModel.findOne({ where: { tenantId } })
-	}
+
 	async create(data: Partial<Company>): Promise<Company> {
 		return this.comapnyModel.create(data)
 	}
-	async delete(id: number): Promise<number> {
+	async delete(id: string): Promise<number> {
 		return this.comapnyModel.destroy({ where: { id } })
 	}
-	async update(id: number, data: Partial<Company>) {
+	async update(id: string, data: Partial<Company>) {
 		return this.comapnyModel.update(data, { where: { id } })
 	}
 }
