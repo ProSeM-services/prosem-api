@@ -20,21 +20,26 @@ export class WorkhoursController {
 	) {}
 
 	async checkOwner(data: WorkhourDto) {
-		if ((data.userId && data.companyId) || (!data.userId && !data.companyId)) {
+		if ((data.UserId && data.CompanyId) || (!data.UserId && !data.CompanyId)) {
 			throw new BadRequestException(
-				'Debe especificar userId o companyId, pero no ambos.'
+				'Debe especificar userId o CompanyId, pero no ambos.'
 			)
 		}
-		if (data.userId) {
-			const user = await this.userService.getById(data.userId)
+		if (data.UserId) {
+			const user = await this.userService.getById(data.UserId)
 			if (!user) {
 				throw new NotFoundException('user not found')
 			}
-		} else if (data.companyId) {
-			const company = await this.companyService.getById(data.companyId)
+		} else if (data.CompanyId) {
+			const company = await this.companyService.getById(data.CompanyId)
 			if (!company) {
 				throw new NotFoundException('company not found')
 			}
+		}
+
+		const isDayExists = await this.workhourService.getByDay(data)
+		if (isDayExists) {
+			throw new NotFoundException('these day is already created')
 		}
 	}
 	@Get()
@@ -52,7 +57,7 @@ export class WorkhoursController {
 	async create(@Body() data: WorkhourDto) {
 		try {
 			await this.checkOwner(data)
-			await this.workhourService.create(data)
+			return await this.workhourService.create(data)
 		} catch (error) {
 			return error
 		}

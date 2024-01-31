@@ -1,19 +1,26 @@
-import { IsNotEmpty, IsNumber, IsString, ValidateIf } from 'class-validator'
+import {
+	IsNotEmpty,
+	IsNumber,
+	IsString,
+	ValidateIf,
+	ArrayNotEmpty,
+} from 'class-validator'
 export class WorkhourDto {
 	@IsNumber()
 	@IsNotEmpty()
 	day: number
 
 	@IsNotEmpty()
+	@ArrayNotEmpty()
 	hours: string[]
 
 	@IsString()
-	@ValidateIf((obj) => obj.userId === undefined)
+	@ValidateIf((obj) => obj.UserId === undefined)
 	@IsNotEmpty()
-	companyId: string
+	CompanyId: string | null
 
 	@IsString()
-	@ValidateIf((obj) => obj.companyId === undefined)
+	@ValidateIf((obj) => obj.CompanyId === undefined)
 	@IsNotEmpty()
-	userId: string
+	UserId: string | null
 }

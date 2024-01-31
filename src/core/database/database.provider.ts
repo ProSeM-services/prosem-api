@@ -28,11 +28,17 @@ export const databaseProviders = [
 				logging: false,
 			})
 			sequelize.addModels([Company, User, Appointment, Workhour])
+
 			Company.hasMany(User)
+			User.belongsTo(Company, { targetKey: 'id', foreignKey: 'CompanyId' })
 
 			Company.hasMany(Workhour)
+			Workhour.belongsTo(Company, { targetKey: 'id', foreignKey: 'CompanyId' })
+
+			User.hasMany(Workhour)
+			Workhour.belongsTo(User, { targetKey: 'id', foreignKey: 'UserId' })
+
 			User.hasMany(Appointment)
-			User.belongsTo(Company, { targetKey: 'id', foreignKey: 'CompanyId' })
 
 			await sequelize.sync({ alter: true })
 			return sequelize
