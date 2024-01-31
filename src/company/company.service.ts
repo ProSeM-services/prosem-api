@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common'
 import { Company } from './schema/company.model'
 import { COMPANY_REPOSITORY } from 'src/core/constants'
 import { User } from 'src/user/schema/user.model'
+import { Workhour } from 'src/workhours/schema/workhour.model'
 
 @Injectable()
 export class CompanyService {
@@ -13,7 +14,7 @@ export class CompanyService {
 		return 'Hello company!'
 	}
 	async getAll(): Promise<Company[]> {
-		return this.comapnyModel.findAll({ include: User })
+		return this.comapnyModel.findAll({ include: [User, Workhour] })
 	}
 	async getById(id: string): Promise<Company> {
 		return await this.comapnyModel.findOne({
