@@ -5,11 +5,15 @@ import {
 	Get,
 	NotFoundException,
 	Post,
+	Patch,
+	Param,
+	Delete,
 } from '@nestjs/common'
 import { WorkhoursService } from './workhours.service'
 import { WorkhourDto } from './dto/workhour.dto'
 import { UserService } from 'src/user/user.service'
 import { CompanyService } from 'src/company/company.service'
+import { UpdateWorkHourDto } from './dto/update-workhour.dto'
 
 @Controller('workhours')
 export class WorkhoursController {
@@ -19,6 +23,18 @@ export class WorkhoursController {
 		private readonly companyService: CompanyService
 	) {}
 
+	async checkWorkHour(id: string) {
+		try {
+			const workHour = await this.workhourService.getById(id)
+			if (!workHour) {
+				throw new NotFoundException('workHour not found')
+			}
+
+			return workHour
+		} catch (error) {
+			return error
+		}
+	}
 	async checkOwner(data: WorkhourDto) {
 		if ((data.UserId && data.CompanyId) || (!data.UserId && !data.CompanyId)) {
 			throw new BadRequestException(
@@ -58,6 +74,42 @@ export class WorkhoursController {
 		try {
 			await this.checkOwner(data)
 			return await this.workhourService.create(data)
+		} catch (error) {
+			return error
+		}
+	}
+
+	@Get('/:id')
+	async getOne(@Param() { id }: { id: string }) {
+		try {
+			return await this.checkWorkHour(id)
+		} catch (error) {
+			return error
+		}
+	}
+	@Patch('/:id')
+	async update(
+		@Body() data: UpdateWorkHourDto,
+		@Param() { id }: { id: string }
+	) {
+		try {
+			await this.checkWorkHour(id)
+
+			await this.workhourService.update(data, id)
+
+			return { message: 'WorkHour has benn updated succesfully!' }
+		} catch (error) {
+			return error
+		}
+	}
+	@Delete('/:id')
+	async delete(@Param() { id }: { id: string }) {
+		try {
+			await this.checkWorkHour(id)
+
+			await this.workhourService.delete(id)
+
+			return { message: 'WorkHour has benn deleted succesfully!' }
 		} catch (error) {
 			return error
 		}

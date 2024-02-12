@@ -32,4 +32,13 @@ export class WorkhoursService {
 	async create(data: Partial<Workhour>) {
 		return await this.WorkhourModel.create(data)
 	}
+	async getById(id: string) {
+		return await this.WorkhourModel.findOne({ where: { id } })
+	}
+	async update(data: Partial<Workhour>, id: string) {
+		return await this.WorkhourModel.update(data, { where: { id } })
+	}
+	async delete(id: string) {
+		return await this.WorkhourModel.destroy({ where: { id } })
+	}
 }
