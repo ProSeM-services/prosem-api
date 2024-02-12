@@ -12,11 +12,13 @@ import { UserService } from './user.service'
 import { CompanyService } from 'src/company/company.service'
 import { UpdateUserDTO, UserDTO } from './dto/user.dto'
 import * as bcrypt from 'bcrypt'
+import { WorkhoursService } from 'src/workhours/workhours.service'
 @Controller('user')
 export class UserController {
 	constructor(
 		private readonly userService: UserService,
-		private readonly comapanyService: CompanyService
+		private readonly comapanyService: CompanyService,
+		private readonly workhoursService: WorkhoursService
 	) {}
 
 	async checkUserExist(id: string) {
