@@ -19,7 +19,7 @@ export class CompanyService {
 	async getById(id: string): Promise<Company> {
 		return await this.comapnyModel.findOne({
 			where: { id },
-			include: { model: User },
+			include: [User, Workhour],
 		})
 	}
 

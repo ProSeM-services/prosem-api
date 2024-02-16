@@ -13,6 +13,8 @@ export class Company extends BaseModel<Company> {
 
 	@Column
 	name: string
+	@Column({ unique: true, allowNull: true })
+	dbUrl: string
 
 	@Column({ unique: true })
 	email: string

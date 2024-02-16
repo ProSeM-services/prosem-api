@@ -7,6 +7,7 @@ import {
 	Post,
 	Delete,
 	Patch,
+	Headers,
 } from '@nestjs/common'
 import { UserService } from './user.service'
 import { CompanyService } from 'src/company/company.service'
@@ -37,9 +38,18 @@ export class UserController {
 		}
 	}
 	@Get()
-	async getAll() {
+	async getAll(@Headers('CompanyId') companyId: string) {
 		try {
-			return this.userService.getAll()
+			return this.userService.getAll(companyId)
+		} catch (error) {
+			return error
+		}
+	}
+
+	@Get('/employees')
+	async getAllEmployees(@Headers('CompanyId') companyId: string) {
+		try {
+			return this.userService.getEmployees(companyId)
 		} catch (error) {
 			return error
 		}

@@ -8,8 +8,11 @@ export class UserService {
 		@Inject(USER_REPOSITORY) private readonly UserModel: typeof User
 	) {}
 
-	async getAll(): Promise<User[]> {
-		return this.UserModel.findAll()
+	async getAll(CompanyId: string): Promise<User[]> {
+		return this.UserModel.findAll({ where: { CompanyId } })
+	}
+	async getEmployees(CompanyId: string): Promise<User[]> {
+		return this.UserModel.findAll({ where: { CompanyId, role: 'employee' } })
 	}
 	async getById(id: string): Promise<User> {
 		return this.UserModel.findOne({ where: { id }, include: [Workhour] })

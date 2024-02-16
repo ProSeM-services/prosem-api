@@ -13,6 +13,8 @@ export class User extends BaseModel<User> {
 	@Column({ unique: true })
 	userName: string
 	@Column({ unique: true })
+	phone: string
+	@Column({ unique: true })
 	password: string
 	@Column
 	image: string
