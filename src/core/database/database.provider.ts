@@ -5,6 +5,7 @@ import { databaseConfig } from './database.config'
 import { User } from 'src/user/schema/user.model'
 import { Appointment } from 'src/appointments/schema/appointment.model'
 import { Workhour } from 'src/workhours/schema/workhour.model'
+import { AppoinmentSlots } from 'src/appointments/schema/appointmentSlots.model'
 export const databaseProviders = [
 	{
 		provide: 'SEQUELIZE',
@@ -27,7 +28,7 @@ export const databaseProviders = [
 				dialect: 'postgres',
 				logging: false,
 			})
-			sequelize.addModels([Company, User, Appointment, Workhour])
+			sequelize.addModels([Company, User, Appointment, Workhour, AppoinmentSlots])
 
 			Company.hasMany(User)
 			User.belongsTo(Company, { targetKey: 'id', foreignKey: 'CompanyId' })
@@ -37,6 +38,9 @@ export const databaseProviders = [
 
 			User.hasMany(Workhour)
 			Workhour.belongsTo(User, { targetKey: 'id', foreignKey: 'UserId' })
+
+			User.hasMany(Appointment)
+			Appointment.belongsTo(User, { targetKey: 'id', foreignKey: 'UserId' })
 
 			User.hasMany(Appointment)
 

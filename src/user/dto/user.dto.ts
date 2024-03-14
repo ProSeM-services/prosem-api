@@ -22,6 +22,12 @@ export class UserDTO {
 	@IsString()
 	@IsOptional()
 	image: string
+	@IsString()
+	@IsOptional()
+	phone: string
+	@IsString()
+	@IsNotEmpty()
+	role: string
 }
 export class UpdateUserDTO {
 	@IsString()
@@ -43,4 +49,10 @@ export class UpdateUserDTO {
 	@IsString()
 	@IsOptional()
 	image: string
+	@IsString()
+	@IsOptional()
+	phone: string
+	@IsString()
+	@IsOptional()
+	role: string
 }

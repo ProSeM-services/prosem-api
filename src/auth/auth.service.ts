@@ -68,7 +68,7 @@ export class AuthService {
 		const payload = jwt.verify(token, process.env.JWTKEY)
 
 		if (!payload) {
-			throw new UnauthorizedException('Token invalido')
+			throw new UnauthorizedException('Invalid token')
 		}
 
 		return payload

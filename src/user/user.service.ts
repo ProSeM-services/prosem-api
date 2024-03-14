@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common'
 import { USER_REPOSITORY } from 'src/core/constants'
 import { User } from './schema/user.model'
 import { Workhour } from 'src/workhours/schema/workhour.model'
+import { Appointment } from 'src/appointments/schema/appointment.model'
 @Injectable()
 export class UserService {
 	constructor(
@@ -12,10 +13,16 @@ export class UserService {
 		return this.UserModel.findAll({ where: { CompanyId } })
 	}
 	async getEmployees(CompanyId: string): Promise<User[]> {
-		return this.UserModel.findAll({ where: { CompanyId, role: 'employee' } })
+		return this.UserModel.findAll({
+			where: { CompanyId, role: 'employee' },
+			include: [Workhour, Appointment],
+		})
 	}
 	async getById(id: string): Promise<User> {
-		return this.UserModel.findOne({ where: { id }, include: [Workhour] })
+		return this.UserModel.findOne({
+			where: { id },
+			include: [Workhour, Appointment],
+		})
 	}
 	async getByCompany(CompanyId: string): Promise<User[]> {
 		return this.UserModel.findAll({ where: { CompanyId } })
