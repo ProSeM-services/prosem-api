@@ -7,10 +7,12 @@ import {
 	Param,
 	Patch,
 	Post,
+	NotFoundException,
 } from '@nestjs/common'
 import { CompanyService } from './company.service'
 import { CompanyDTO } from './dto/company.dto'
 import { UpdateCompanyDTO } from './dto/update-company.dto'
+import { Company } from './schema/company.model'
 
 @Controller('company')
 export class CompanyController {
@@ -32,10 +34,21 @@ export class CompanyController {
 		}
 	}
 	@Get(':id')
-	async getOne(@Param() { id }: { id: string }) {
+	async getOne(@Param() { id }: { id: Company['id'] }) {
 		try {
 			await this.checkCompanyExist(id)
 			return await this.companyService.getById(id)
+		} catch (error) {
+			return error
+		}
+	}
+	@Get('/name/:name')
+	async getByName(@Param() { name }: { name: Company['name'] }) {
+		try {
+			const company = await this.companyService.getByName(name)
+			if (!company.length) throw new NotFoundException('Company not found!')
+
+			return company
 		} catch (error) {
 			return error
 		}
