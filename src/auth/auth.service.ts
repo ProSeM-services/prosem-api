@@ -52,7 +52,7 @@ export class AuthService {
 			role: getUser.role,
 			image: getUser.image,
 			userName: getUser.userName,
-			tenantId: getUser.tenantId,
+			companyId: getUser.CompanyId,
 		}
 
 		return {
@@ -68,7 +68,7 @@ export class AuthService {
 		const payload = jwt.verify(token, process.env.JWTKEY)
 
 		if (!payload) {
-			throw new UnauthorizedException('Token invalido')
+			throw new UnauthorizedException('Invalid token')
 		}
 
 		return payload

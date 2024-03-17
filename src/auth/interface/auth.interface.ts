@@ -6,7 +6,7 @@ export interface IPayloadToken {
 	role: string
 	userName: string
 	image: string
-	tenantId: string
+	companyId: string
 }
 
 export interface IAuthBody {

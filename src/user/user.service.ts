@@ -1,20 +1,31 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { USER_REPOSITORY } from 'src/core/constants'
 import { User } from './schema/user.model'
+import { Workhour } from 'src/workhours/schema/workhour.model'
+import { Appointment } from 'src/appointments/schema/appointment.model'
 @Injectable()
 export class UserService {
 	constructor(
 		@Inject(USER_REPOSITORY) private readonly UserModel: typeof User
 	) {}
 
-	async getAll(): Promise<User[]> {
-		return this.UserModel.findAll()
+	async getAll(CompanyId: string): Promise<User[]> {
+		return this.UserModel.findAll({ where: { CompanyId } })
 	}
-	async getById(id: number): Promise<User> {
-		return this.UserModel.findOne({ where: { id } })
+	async getEmployees(CompanyId: string): Promise<User[]> {
+		return this.UserModel.findAll({
+			where: { CompanyId, role: 'employee' },
+			include: [Workhour, Appointment],
+		})
 	}
-	async getByTenant(tenantId: string): Promise<User[]> {
-		return this.UserModel.findAll({ where: { tenantId } })
+	async getById(id: string): Promise<User> {
+		return this.UserModel.findOne({
+			where: { id },
+			include: [Workhour, Appointment],
+		})
+	}
+	async getByCompany(CompanyId: string): Promise<User[]> {
+		return this.UserModel.findAll({ where: { CompanyId } })
 	}
 	public async findBy({
 		key,
@@ -23,16 +34,19 @@ export class UserService {
 		key: keyof User
 		value: string | number
 	}): Promise<User> {
-		return this.UserModel.findOne({ where: { [key]: value } })
+		return this.UserModel.findOne({
+			where: { [key]: value },
+			include: [Workhour],
+		})
 	}
 
 	async create(data: Partial<User>): Promise<User> {
 		return this.UserModel.create(data)
 	}
-	async update(id: number, data: Partial<User>) {
+	async update(id: string, data: Partial<User>) {
 		return this.UserModel.update(data, { where: { id: id } })
 	}
-	async delete(id: number) {
+	async delete(id: string) {
 		return this.UserModel.destroy({ where: { id: id } })
 	}
 }

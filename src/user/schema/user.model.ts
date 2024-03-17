@@ -1,22 +1,7 @@
-import {
-	Table,
-	Column,
-	Model,
-	ForeignKey,
-	BelongsTo,
-	HasMany,
-} from 'sequelize-typescript'
-import { Appointment } from 'src/appointments/schema/appointment.model'
-import { Company } from 'src/company/schema/company.model'
+import { Table, Column, DataType } from 'sequelize-typescript'
+import { BaseModel } from 'src/core/database/schema/base.model'
 @Table
-export class User extends Model<User> {
-	@ForeignKey(() => Company)
-	@Column({ field: 'companyId' })
-	companyId: number
-	@BelongsTo(() => Company)
-	company: Company
-	@Column
-	tenantId: string
+export class User extends BaseModel<User> {
 	@Column
 	name: string
 	@Column({ defaultValue: undefined })
@@ -28,14 +13,13 @@ export class User extends Model<User> {
 	@Column({ unique: true })
 	userName: string
 	@Column({ unique: true })
+	phone: string
+	@Column({ unique: true })
 	password: string
 	@Column
 	image: string
-
-	@HasMany(() => Appointment, {
-		scope: {
-			role: 'employee', // Condición para la relación
-		},
+	@Column({
+		type: DataType.UUID,
 	})
-	appointments: Appointment[]
+	CompanyId: string
 }
