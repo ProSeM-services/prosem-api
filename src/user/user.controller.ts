@@ -8,6 +8,7 @@ import {
 	Delete,
 	Patch,
 	Headers,
+	UnauthorizedException,
 } from '@nestjs/common'
 import { UserService } from './user.service'
 import { CompanyService } from 'src/company/company.service'
@@ -40,6 +41,7 @@ export class UserController {
 	@Get()
 	async getAll(@Headers('CompanyId') companyId: string) {
 		try {
+			if (!companyId) throw new UnauthorizedException('Missing headers')
 			return this.userService.getAll(companyId)
 		} catch (error) {
 			return error
@@ -49,6 +51,7 @@ export class UserController {
 	@Get('/employees')
 	async getAllEmployees(@Headers('CompanyId') companyId: string) {
 		try {
+			if (!companyId) throw new UnauthorizedException('Missing headers')
 			return this.userService.getEmployees(companyId)
 		} catch (error) {
 			return error
