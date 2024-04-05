@@ -35,6 +35,12 @@ export class WorkhoursService {
 	async getById(id: string) {
 		return await this.WorkhourModel.findOne({ where: { id } })
 	}
+	async getByUserId(UserId: string) {
+		return await this.WorkhourModel.findAll({ where: { UserId } })
+	}
+	async getByUserIdAndDay({ UserId, day }: { UserId: string; day: number }) {
+		return await this.WorkhourModel.findOne({ where: { UserId, day } })
+	}
 	async update(data: Partial<Workhour>, id: string) {
 		return await this.WorkhourModel.update(data, { where: { id } })
 	}

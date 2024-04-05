@@ -10,7 +10,10 @@ export class UserService {
 	) {}
 
 	async getAll(CompanyId: string): Promise<User[]> {
-		return this.UserModel.findAll({ where: { CompanyId } })
+		return this.UserModel.findAll({
+			where: { CompanyId },
+			include: [Workhour, Appointment],
+		})
 	}
 	async getEmployees(CompanyId: string): Promise<User[]> {
 		return this.UserModel.findAll({

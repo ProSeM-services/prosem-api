@@ -12,12 +12,14 @@ import {
 import { AppointmentsService } from './appointments.service'
 import { AppointmentDTO } from './dto/appointment.dto'
 import { UserService } from 'src/user/user.service'
+import { WorkhoursService } from 'src/workhours/workhours.service'
 
 @Controller('appointments')
 export class AppointmentsController {
 	constructor(
 		private readonly appointmentService: AppointmentsService,
-		private readonly userService: UserService
+		private readonly userService: UserService,
+		private readonly workhoursService: WorkhoursService
 	) {}
 
 	async checkOwner(data: AppointmentDTO) {
@@ -47,13 +49,69 @@ export class AppointmentsController {
 			return error
 		}
 	}
+	@Get('/slots/date&Barber')
+	async getSlotsByDateAndBarber(
+		@Body() { UserId, date }: { UserId: string; date: string }
+	) {
+		try {
+			return await this.appointmentService.getSlotsByDateAndBarber({
+				date,
+				UserId,
+			})
+		} catch (error) {
+			return error
+		}
+	}
+	@Get('/slots/:UserId/:date')
+	async getSlotsByDay(
+		@Param() { UserId, date }: { UserId: string; date: string }
+	) {
+		try {
+			const slots = await this.appointmentService.getSlotsByDateAndBarber({
+				date,
+				UserId,
+			})
 
+			const formatDate = new Date(date).getDay()
+			const workDayInfo = await this.workhoursService.getByUserIdAndDay({
+				UserId,
+				day: formatDate,
+			})
+
+			const bussySlots = slots
+				.filter((slot) => !slot.avaliable)
+				.map((slot) => slot.time)
+
+			return workDayInfo?.hours.map((hs) => ({
+				hs: hs,
+				avaliable: !bussySlots.includes(hs),
+			}))
+		} catch (error) {
+			return error
+		}
+	}
 	@Post()
 	async create(@Body() data: AppointmentDTO) {
 		try {
 			await this.checkOwner(data)
+			function isValidISOString(date: string): boolean {
+				return new Date(date).toISOString() === date
+			}
+			if (!isValidISOString(data.date)) {
+				return new UnauthorizedException(
+					'The date must be in ISO8601 (toISOString) format'
+				)
+			}
 			const checkSlot = await this.appointmentService.checkSlot(data)
 			if (!checkSlot) {
+				const day = new Date(data.date).getDay()
+				const checkHour = await this.workhoursService.getByUserIdAndDay({
+					day,
+					UserId: data.UserId,
+				})
+				if (!checkHour.hours.includes(data.time)) {
+					return new UnauthorizedException('This is not an avaliable time hour!')
+				}
 				await this.appointmentService.createSlot(data)
 				return await this.appointmentService.create(data)
 			} else if (checkSlot) {
