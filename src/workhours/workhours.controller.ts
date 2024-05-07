@@ -38,7 +38,7 @@ export class WorkhoursController {
 	async checkOwner(data: WorkhourDto) {
 		if ((data.UserId && data.CompanyId) || (!data.UserId && !data.CompanyId)) {
 			throw new BadRequestException(
-				'Debe especificar userId o CompanyId, pero no ambos.'
+				'You must specify userId or CompanyId, but not both.'
 			)
 		}
 		if (data.UserId) {
@@ -87,6 +87,20 @@ export class WorkhoursController {
 			return error
 		}
 	}
+	@Get('/user/:id')
+	async getByUser(@Param() { id }: { id: string }) {
+		try {
+			const user = await this.userService.getById(id)
+			if (!user) {
+				throw new NotFoundException('user not found')
+			}
+
+			return this.workhourService.getByUserId(user.id)
+		} catch (error) {
+			return error
+		}
+	}
+
 	@Patch('/:id')
 	async update(
 		@Body() data: UpdateWorkHourDto,

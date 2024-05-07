@@ -42,6 +42,20 @@ export class AppointmentsService {
 			},
 		})
 	}
+	async getSlotsByDateAndBarber({
+		UserId,
+		date,
+	}: {
+		UserId: string
+		date: string
+	}) {
+		return await this.SlotModel.findAll({
+			where: {
+				date,
+				UserId,
+			},
+		})
+	}
 	async editSlot(slotId: string, data: UpdateSlotDTO) {
 		return await this.SlotModel.update(data, { where: { id: slotId } })
 	}
