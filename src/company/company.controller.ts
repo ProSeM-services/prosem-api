@@ -10,8 +10,8 @@ import {
 	NotFoundException,
 } from '@nestjs/common'
 import { CompanyService } from './company.service'
-import { CompanyDTO } from './dto/company.dto'
-import { UpdateCompanyDTO } from './dto/update-company.dto'
+import { CompanyDTO, UpdateCompanyDTO } from './dto/company.dto'
+
 import { Company } from './schema/company.model'
 
 @Controller('company')
