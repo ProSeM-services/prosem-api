@@ -1,10 +1,15 @@
 import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { LoginAuthDto } from './dto/login-auth.dto'
+import { UserDTO } from 'src/user/dto/user.dto'
+import { CompanyService } from 'src/company/company.service'
 
 @Controller('auth')
 export class AuthController {
-	constructor(private readonly authService: AuthService) {}
+	constructor(
+		private readonly authService: AuthService,
+		private readonly companyService: CompanyService
+	) {}
 
 	@Post('login')
 	async login(@Body() { user, password }: LoginAuthDto) {
@@ -17,6 +22,20 @@ export class AuthController {
 		const jwt = await this.authService.generateJWT(userValidate)
 
 		return jwt
+	}
+	@Post('register')
+	async register(@Body() user: UserDTO) {
+		try {
+			const verifyCompany = await this.companyService.getById(user.CompanyId)
+			if (!verifyCompany) {
+				throw new UnauthorizedException('Company not found')
+			}
+			const newUser = this.authService.register(user)
+
+			return newUser
+		} catch (error) {
+			return error
+		}
 	}
 	@Post('me')
 	me(@Body() { token }: { token: string }) {

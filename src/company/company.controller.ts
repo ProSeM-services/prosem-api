@@ -13,10 +13,18 @@ import { CompanyService } from './company.service'
 import { CompanyDTO, UpdateCompanyDTO } from './dto/company.dto'
 
 import { Company } from './schema/company.model'
+import { UserService } from 'src/user/user.service'
+import { User } from 'src/user/schema/user.model'
+import { UserDTO } from 'src/user/dto/user.dto'
+import { AuthService } from 'src/auth/auth.service'
 
 @Controller('company')
 export class CompanyController {
-	constructor(private readonly companyService: CompanyService) {}
+	constructor(
+		private readonly companyService: CompanyService,
+		private readonly userServices: UserService,
+		private readonly authService: AuthService
+	) {}
 
 	async checkCompanyExist(id: string) {
 		const companyToUpdate = await this.companyService.getById(id)
@@ -56,7 +64,30 @@ export class CompanyController {
 	@Post()
 	async create(@Body() data: CompanyDTO) {
 		try {
-			return await this.companyService.create(data)
+			const newCompany = await this.companyService.create(data)
+
+			const userName = `${newCompany.name
+				.split('')
+				.filter((e) => e !== ' ')
+				.join('')
+				.toLowerCase()}.admin`
+			const adminUser: UserDTO = {
+				CompanyId: newCompany.id,
+				email: newCompany.email,
+				image: '',
+				lastName: 'Admin',
+				name: newCompany.name,
+				password: `${userName}123`,
+				phone: '',
+				role: 'admin',
+				userName,
+			}
+
+			const admin = await this.authService.register(adminUser)
+			return {
+				newCompany,
+				admin,
+			}
 		} catch (error) {
 			return error
 		}
