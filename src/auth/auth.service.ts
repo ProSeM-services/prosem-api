@@ -4,10 +4,15 @@ import * as bcrypt from 'bcrypt'
 import * as jwt from 'jsonwebtoken'
 import { IAuthResponse, IPayloadToken } from './interface/auth.interface'
 import { User } from 'src/user/schema/user.model'
+import { UserDTO } from 'src/user/dto/user.dto'
 @Injectable()
 export class AuthService {
 	constructor(private readonly userService: UserService) {}
 
+	public async register(user: UserDTO) {
+		const hashPassword = await bcrypt.hash(user.password, +process.env.HASH_SALT)
+		return await this.userService.create({ ...user, password: hashPassword })
+	}
 	public async validateUser(userName: string, password: string) {
 		const userByUsername = await this.userService.findBy({
 			key: 'userName',
