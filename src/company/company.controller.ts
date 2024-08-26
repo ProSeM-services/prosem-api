@@ -8,21 +8,26 @@ import {
 	Patch,
 	Post,
 	NotFoundException,
+	Request,
 } from '@nestjs/common'
 import { CompanyService } from './company.service'
-import { CompanyDTO, UpdateCompanyDTO } from './dto/company.dto'
-
+import {
+	CompanyDTO,
+	CreateCompanyDTO,
+	UpdateCompanyDTO,
+} from './dto/company.dto'
 import { Company } from './schema/company.model'
 import { UserService } from 'src/user/user.service'
-import { User } from 'src/user/schema/user.model'
-import { UserDTO } from 'src/user/dto/user.dto'
 import { AuthService } from 'src/auth/auth.service'
-
+import { Request as ExpressRequest } from 'express'
+import { GeocodeService } from 'src/geocode/geocode.services'
+import { Location } from './interfaces/location.interface'
 @Controller('company')
 export class CompanyController {
 	constructor(
 		private readonly companyService: CompanyService,
 		private readonly userServices: UserService,
+		private readonly geocodeService: GeocodeService,
 		private readonly authService: AuthService
 	) {}
 
@@ -34,9 +39,10 @@ export class CompanyController {
 	}
 
 	@Get()
-	async getAll() {
+	async getAll(@Request() req: ExpressRequest) {
 		try {
-			return await this.companyService.getAll()
+			const tenantName = await this.authService.getTenantFromHeaders(req)
+			return await this.companyService.getAll(tenantName)
 		} catch (error) {
 			return error
 		}
@@ -62,32 +68,22 @@ export class CompanyController {
 		}
 	}
 	@Post()
-	async create(@Body() data: CompanyDTO) {
+	async create(@Request() req: ExpressRequest, @Body() data: CreateCompanyDTO) {
 		try {
-			const newCompany = await this.companyService.create(data)
-
-			const userName = `${newCompany.name
-				.split('')
-				.filter((e) => e !== ' ')
-				.join('')
-				.toLowerCase()}.admin`
-			const adminUser: UserDTO = {
-				CompanyId: newCompany.id,
-				email: newCompany.email,
-				image: '',
-				lastName: 'Admin',
-				name: newCompany.name,
-				password: `${userName}123`,
-				phone: '',
-				role: 'admin',
-				userName,
+			const tenantName = await this.authService.getTenantFromHeaders(req)
+			const { address } = data
+			const locationData = await this.geocodeService.geocodeAddress(address)
+			const formatedAddress: Location = {
+				lat: locationData.lat,
+				lng: locationData.lng,
+				value: address,
+				city: locationData.city,
 			}
-
-			const admin = await this.authService.register(adminUser)
-			return {
-				newCompany,
-				admin,
-			}
+			return await this.companyService.create({
+				...data,
+				address: formatedAddress,
+				tenantName,
+			})
 		} catch (error) {
 			return error
 		}
@@ -95,7 +91,7 @@ export class CompanyController {
 	@Delete(':id')
 	async delete(@Param() { id }: { id: string }) {
 		try {
-			this.checkCompanyExist(id)
+			await this.checkCompanyExist(id)
 			const deleteStatus = await this.companyService.delete(id)
 			if (deleteStatus !== 1) {
 				return 'error at deleting company'

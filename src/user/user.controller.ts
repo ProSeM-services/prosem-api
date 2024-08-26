@@ -9,18 +9,20 @@ import {
 	Patch,
 	Headers,
 	UnauthorizedException,
+	Request,
 } from '@nestjs/common'
 import { UserService } from './user.service'
 import { CompanyService } from 'src/company/company.service'
 import { UpdateUserDTO, UserDTO } from './dto/user.dto'
 import * as bcrypt from 'bcrypt'
-import { WorkhoursService } from 'src/workhours/workhours.service'
+import { AuthService } from 'src/auth/auth.service'
+import { Request as ExpressRequest } from 'express'
 @Controller('user')
 export class UserController {
 	constructor(
 		private readonly userService: UserService,
 		private readonly comapanyService: CompanyService,
-		private readonly workhoursService: WorkhoursService
+		private authService: AuthService
 	) {}
 
 	async checkUserExist(id: string) {
@@ -30,47 +32,26 @@ export class UserController {
 			throw new NotFoundException('User not found!')
 		}
 	}
-	async isCompanyOk(companyId: string) {
+
+	@Get()
+	async getAll(@Request() req: ExpressRequest) {
 		try {
-			const company = await this.comapanyService.getById(companyId)
-			if (!company) throw new NotFoundException('Company not found!')
+			const token = await this.authService.getTenantFromHeaders(req)
+			if (!token) {
+				throw new UnauthorizedException('Missing or invalid token')
+			}
+
+			return this.userService.getAll(token)
 		} catch (error) {
 			throw error
 		}
 	}
-	@Get()
-	async getAll(@Headers('CompanyId') companyId: string) {
-		try {
-			if (!companyId) throw new UnauthorizedException('Missing headers')
-			return this.userService.getAll(companyId)
-		} catch (error) {
-			return error
-		}
-	}
 
-	@Get('/employees')
-	async getAllEmployees(@Headers('CompanyId') companyId: string) {
-		try {
-			if (!companyId) throw new UnauthorizedException('Missing headers')
-			return this.userService.getEmployees(companyId)
-		} catch (error) {
-			return error
-		}
-	}
 	@Get('/:id')
 	async getOne(@Param() { id }: { id: string }) {
 		try {
 			await this.checkUserExist(id)
 			return this.userService.getById(id)
-		} catch (error) {
-			return error
-		}
-	}
-
-	@Get('/company/:companyId')
-	async getByTenant(@Param() { companyId }: { companyId: string }) {
-		try {
-			return this.userService.getByCompany(companyId)
 		} catch (error) {
 			return error
 		}
@@ -88,12 +69,39 @@ export class UserController {
 		}
 	}
 	@Post()
-	async createUser(@Body() user: UserDTO) {
+	async createUser(@Body() user: UpdateUserDTO) {
 		try {
-			await this.isCompanyOk(user.CompanyId)
-
 			const hashPassword = await bcrypt.hash(user.password, +process.env.HASH_SALT)
-			return await this.userService.create({ ...user, password: hashPassword })
+			const data: UserDTO = {
+				...user,
+				password: hashPassword,
+				tenantName: user.companyName
+					.split(' ')
+					.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+					.join(''),
+			}
+
+			return await this.userService.create(data)
+		} catch (error) {
+			return error
+		}
+	}
+	@Post('/add-to-company')
+	async addToCompany(
+		@Body() { companyId, userId }: { companyId: string; userId: string }
+	) {
+		try {
+			const user = await this.userService.getById(userId)
+			if (!user) {
+				throw new UnauthorizedException('Company not found')
+			}
+
+			const company = await this.comapanyService.getById(companyId)
+			if (!company) {
+				throw new UnauthorizedException('Company not found')
+			}
+
+			return await this.userService.addToCompany(userId, companyId)
 		} catch (error) {
 			return error
 		}

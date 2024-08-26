@@ -1,16 +1,30 @@
 import { z } from 'zod'
-
-// Validation for Company Model
+import { LocationZodSchema } from '../interfaces/location.interface'
+import { CATEGORY_VALUES } from '../interfaces/categeory.interface'
+import { WorkhourZodSchema } from 'src/core/types/workhours'
 export const CompanyZodSchema = z.object({
-	id: z.string().optional(),
+	_id: z.string(),
 	name: z.string(),
-	email: z.string().email(),
+	address: LocationZodSchema,
+	status: z.boolean().optional(),
+	category: z
+		.array(z.enum(CATEGORY_VALUES))
+		.max(3, 'Puedes elegir como máximo 3 categorías.')
+		.min(1, 'Debes elegir por lo menos 1 categoría.'),
+	image: z.string().optional(),
+	tenantName: z.string().optional(),
+	email: z.string().email('Correo electrónico no válido').optional(),
+	workhours: z.array(WorkhourZodSchema).optional(),
+})
+export const CreateCompanyZodSchema = CompanyZodSchema.omit({
+	_id: true,
+	workhours: true,
+	address: true,
+}).extend({
 	address: z.string(),
-	image: z.string().optional(),
 })
-export const UpdateCompanyZodSchema = z.object({
-	name: z.string().optional(),
-	email: z.string().email().optional(),
-	address: z.string().optional(),
-	image: z.string().optional(),
-})
+
+export const UpdateCompanyZodSchema = CompanyZodSchema.partial()
+
+export type ICompany = z.infer<typeof CompanyZodSchema>
+export type ICreateCompany = z.infer<typeof CreateCompanyZodSchema>

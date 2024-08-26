@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { USER_REPOSITORY } from 'src/core/constants'
 import { User } from './schema/user.model'
-import { Workhour } from 'src/workhours/schema/workhour.model'
 import { Appointment } from 'src/appointments/schema/appointment.model'
 @Injectable()
 export class UserService {
@@ -9,22 +8,24 @@ export class UserService {
 		@Inject(USER_REPOSITORY) private readonly UserModel: typeof User
 	) {}
 
-	async getAll(CompanyId: string): Promise<User[]> {
+	async getAll(tenantName: string): Promise<User[]> {
 		return this.UserModel.findAll({
-			where: { CompanyId },
-			include: [Workhour, Appointment],
+			where: { tenantName },
+			include: [Appointment],
 		})
 	}
-	async getEmployees(CompanyId: string): Promise<User[]> {
-		return this.UserModel.findAll({
-			where: { CompanyId, role: 'employee' },
-			include: [Workhour, Appointment],
-		})
+
+	async getByTenantName(tenantName: string) {
+		return this.UserModel.findOne({ where: { tenantName } })
 	}
+	async addToCompany(userId: string, CompanyId: string) {
+		return this.UserModel.update({ CompanyId }, { where: { id: userId } })
+	}
+
 	async getById(id: string): Promise<User> {
 		return this.UserModel.findOne({
 			where: { id },
-			include: [Workhour, Appointment],
+			include: [Appointment],
 		})
 	}
 	async getByCompany(CompanyId: string): Promise<User[]> {
@@ -39,7 +40,6 @@ export class UserService {
 	}): Promise<User> {
 		return this.UserModel.findOne({
 			where: { [key]: value },
-			include: [Workhour],
 		})
 	}
 

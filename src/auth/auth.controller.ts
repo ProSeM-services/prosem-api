@@ -21,15 +21,16 @@ export class AuthController {
 
 		const jwt = await this.authService.generateJWT(userValidate)
 
-		return jwt
+		return {
+			user: jwt.user,
+			backendTokens: {
+				accessToken: jwt.accessToken,
+			},
+		}
 	}
 	@Post('register')
 	async register(@Body() user: UserDTO) {
 		try {
-			const verifyCompany = await this.companyService.getById(user.CompanyId)
-			if (!verifyCompany) {
-				throw new UnauthorizedException('Company not found')
-			}
 			const newUser = this.authService.register(user)
 
 			return newUser
