@@ -4,8 +4,7 @@ import { enviromentType } from '../constants'
 import { databaseConfig } from './database.config'
 import { User } from 'src/user/schema/user.model'
 import { Appointment } from 'src/appointments/schema/appointment.model'
-import { Workhour } from 'src/workhours/schema/workhour.model'
-import { AppoinmentSlots } from 'src/appointments/schema/appointmentSlots.model'
+import { Service } from 'src/services/schema/service.model'
 export const databaseProviders = [
 	{
 		provide: 'SEQUELIZE',
@@ -28,21 +27,16 @@ export const databaseProviders = [
 				dialect: 'postgres',
 				logging: false,
 			})
-			sequelize.addModels([Company, User, Appointment, Workhour, AppoinmentSlots])
+			sequelize.addModels([Company, User, Appointment, Service])
 
 			Company.hasMany(User)
 			User.belongsTo(Company, { targetKey: 'id', foreignKey: 'CompanyId' })
 
-			Company.hasMany(Workhour)
-			Workhour.belongsTo(Company, { targetKey: 'id', foreignKey: 'CompanyId' })
-
-			User.hasMany(Workhour)
-			Workhour.belongsTo(User, { targetKey: 'id', foreignKey: 'UserId' })
+			Company.hasMany(Service)
+			Service.belongsTo(Company, { targetKey: 'id', foreignKey: 'CompanyId' })
 
 			User.hasMany(Appointment)
 			Appointment.belongsTo(User, { targetKey: 'id', foreignKey: 'UserId' })
-
-			User.hasMany(Appointment)
 
 			await sequelize.sync({ alter: true })
 			return sequelize

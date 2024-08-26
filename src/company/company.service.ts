@@ -2,32 +2,33 @@ import { Inject, Injectable } from '@nestjs/common'
 import { Company } from './schema/company.model'
 import { COMPANY_REPOSITORY } from 'src/core/constants'
 import { User } from 'src/user/schema/user.model'
-import { Workhour } from 'src/workhours/schema/workhour.model'
 import { literal } from 'sequelize'
 
 @Injectable()
 export class CompanyService {
 	constructor(
-		@Inject(COMPANY_REPOSITORY)
-		private readonly companyModel: typeof Company
+		@Inject(COMPANY_REPOSITORY) private readonly companyModel: typeof Company
 	) {}
+
 	getHelloComapany(): string {
 		return 'Hello company!'
 	}
-	async getAll(): Promise<Company[]> {
-		return this.companyModel.findAll({ include: [User, Workhour] })
+	async getAll(tenantName: string): Promise<Company[]> {
+		return await this.companyModel.findAll({
+			where: { tenantName },
+			include: [User],
+		})
 	}
 	async getById(id: string): Promise<Company> {
 		return await this.companyModel.findOne({
 			where: { id },
-			include: [User, Workhour],
+			include: [User],
 		})
 	}
-
 	async getByName(searchTerm: string): Promise<Company[]> {
 		return this.companyModel.findAll({
 			where: literal(`"Company"."name" ILIKE '${searchTerm}%'`),
-			include: [User, Workhour],
+			include: [User],
 		})
 	}
 	async create(data: Partial<Company>): Promise<Company> {
