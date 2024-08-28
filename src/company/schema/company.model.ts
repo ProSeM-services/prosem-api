@@ -1,9 +1,11 @@
 import { DataTypes } from 'sequelize'
-import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript'
+import { Table, Column } from 'sequelize-typescript'
 import { Location } from '../interfaces/location.interface'
 import { IWorkhour } from 'src/core/types/workhours'
 import { Category } from '../interfaces/categeory.interface'
 import { BaseModel } from 'src/core/database/schema/base.model'
+import { Service } from 'src/services/schema/service.model'
+
 @Table({ timestamps: true })
 export class Company extends BaseModel<Company> {
 	@Column({
@@ -52,12 +54,6 @@ export class Company extends BaseModel<Company> {
 		allowNull: true,
 	})
 	email: string
-
-	@Column({
-		type: DataTypes.STRING,
-		allowNull: false,
-	})
-	tenantName: string
 
 	@Column({
 		type: DataTypes.STRING,

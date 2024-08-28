@@ -69,16 +69,14 @@ export class UserController {
 		}
 	}
 	@Post()
-	async createUser(@Body() user: UpdateUserDTO) {
+	async createUser(@Request() req: ExpressRequest, @Body() user: UserDTO) {
 		try {
+			const tenantName = await this.authService.getTenantFromHeaders(req)
 			const hashPassword = await bcrypt.hash(user.password, +process.env.HASH_SALT)
 			const data: UserDTO = {
 				...user,
 				password: hashPassword,
-				tenantName: user.companyName
-					.split(' ')
-					.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-					.join(''),
+				tenantName,
 			}
 
 			return await this.userService.create(data)
