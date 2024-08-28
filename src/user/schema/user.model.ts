@@ -19,8 +19,7 @@ export class User extends BaseModel<User> {
 	userName: string
 	@Column
 	phone: string
-	@Column
-	tenantName: string
+
 	@Column
 	companyName: string
 	@Column({ unique: true })

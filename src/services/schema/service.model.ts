@@ -1,9 +1,11 @@
 import { DataTypes } from 'sequelize'
-import { Table, Column, Model } from 'sequelize-typescript'
+import { Table, Column, Model, BelongsToMany } from 'sequelize-typescript'
 import { Provision } from '../interfaces/provision.interface'
+import { BaseModel } from 'src/core/database/schema/base.model'
+import { Company } from 'src/company/schema/company.model'
 
 @Table({ timestamps: true })
-export class Service extends Model<Service> {
+export class Service extends BaseModel<Service> {
 	@Column({
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,
@@ -40,8 +42,10 @@ export class Service extends Model<Service> {
 		allowNull: true,
 	})
 	description: string
+
 	@Column({
-		type: DataTypes.UUID,
+		type: DataTypes.ARRAY(DataTypes.JSON),
+		allowNull: true,
 	})
-	CompanyId: string
+	companies: Company[]
 }

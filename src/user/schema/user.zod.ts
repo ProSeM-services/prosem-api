@@ -2,11 +2,11 @@ import { ROLES_VALUES } from 'src/core/types/role'
 import { z } from 'zod'
 
 export const UserZodSchema = z.object({
-	name: z.string(),
-	lastName: z.string(),
-	userName: z.string(),
-	password: z.string(),
-	email: z.string(),
+	name: z.string().min(1),
+	lastName: z.string().min(1),
+	userName: z.string().min(1),
+	password: z.string().min(1),
+	email: z.string().min(1),
 	role: z.enum(ROLES_VALUES),
 	companyName: z.string().optional(),
 	tenantName: z.string().optional(),

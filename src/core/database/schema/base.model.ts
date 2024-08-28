@@ -1,5 +1,4 @@
-// base.model.ts
-
+// Modelo base para todos los modelos de Reserve Pro
 import {
 	Table,
 	Column,
@@ -17,6 +16,9 @@ export class BaseModel<T> extends Model<T> {
 		type: DataType.UUID,
 	})
 	id: string
+
+	@Column
+	tenantName: string
 
 	@BeforeCreate
 	static generateId(instance: BaseModel<any>) {

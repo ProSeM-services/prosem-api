@@ -9,6 +9,7 @@ import {
 	Post,
 	NotFoundException,
 	Request,
+	Query,
 } from '@nestjs/common'
 import { CompanyService } from './company.service'
 import {
@@ -38,8 +39,30 @@ export class CompanyController {
 		}
 	}
 
+	@Get('/clients')
+	async getCompaniesForClients(
+		@Query() query: { name: string; category: string; city: string }
+	) {
+		try {
+			const { name, category, city } = query
+
+			const res = await this.companyService.getCompanies({
+				name: name || '',
+				category: category || '',
+				city: city ? city.split(' , ')[0] : '',
+			})
+
+			return !res || res.length === 0 ? [] : res
+		} catch (error) {
+			console.error('Controller: Error in getCompaniesForClients:', error)
+			throw error
+		}
+	}
 	@Get()
-	async getAll(@Request() req: ExpressRequest) {
+	async getAll(
+		@Request() req: ExpressRequest,
+		@Query() query: { name: string; category: string; city: string }
+	) {
 		try {
 			const tenantName = await this.authService.getTenantFromHeaders(req)
 			return await this.companyService.getAll(tenantName)
@@ -67,6 +90,7 @@ export class CompanyController {
 			return error
 		}
 	}
+
 	@Post()
 	async create(@Request() req: ExpressRequest, @Body() data: CreateCompanyDTO) {
 		try {
