@@ -17,7 +17,6 @@ import { AuthService } from 'src/auth/auth.service'
 import { Request as ExpressRequest } from 'express'
 import { CompanyService } from 'src/company/company.service'
 import {
-	ServicesDto,
 	CreateServicesDto,
 	UpdateServicesDto,
 	AddToCompanyServicesDto,

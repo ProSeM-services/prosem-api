@@ -27,9 +27,14 @@ export class UserController {
 
 	async checkUserExist(id: string) {
 		try {
-			await this.userService.getById(id)
+			const user = await this.userService.getById(id)
+			if (!user) {
+				throw new NotFoundException('User not found!')
+			}
+
+			return user
 		} catch (error) {
-			throw new NotFoundException('User not found!')
+			return error
 		}
 	}
 
@@ -47,11 +52,26 @@ export class UserController {
 		}
 	}
 
-	@Get('/:id')
+	@Get('/details/:id')
 	async getOne(@Param() { id }: { id: string }) {
 		try {
-			await this.checkUserExist(id)
-			return this.userService.getById(id)
+			const user = await this.checkUserExist(id)
+			if (!user) {
+				throw new NotFoundException('User not found!')
+			}
+			return user
+		} catch (error) {
+			return error
+		}
+	}
+	@Get('/free')
+	async getFree(@Request() req: ExpressRequest) {
+		try {
+			const token = await this.authService.getTenantFromHeaders(req)
+			if (!token) {
+				throw new UnauthorizedException('Missing or invalid token')
+			}
+			return this.userService.getFree(token)
 		} catch (error) {
 			return error
 		}
@@ -60,7 +80,10 @@ export class UserController {
 	@Delete('/:id')
 	async delete(@Param() { id }: { id: string }) {
 		try {
-			await this.checkUserExist(id)
+			const user = await this.checkUserExist(id)
+			if (!user) {
+				throw new NotFoundException('User not found!')
+			}
 			const deleteStatus = await this.userService.delete(id)
 			if (deleteStatus === 1)
 				return { message: 'user has been deleted succesfully' }
@@ -91,7 +114,7 @@ export class UserController {
 		try {
 			const user = await this.userService.getById(userId)
 			if (!user) {
-				throw new UnauthorizedException('Company not found')
+				throw new UnauthorizedException('User not found')
 			}
 
 			const company = await this.comapanyService.getById(companyId)
@@ -99,29 +122,48 @@ export class UserController {
 				throw new UnauthorizedException('Company not found')
 			}
 
-			return await this.userService.addToCompany(userId, companyId)
+			await this.userService.addToCompany(userId, companyId)
+
+			return `User added to company ${company.name} successfully!`
+		} catch (error) {
+			return error
+		}
+	}
+	@Post('/remove-from-company')
+	async removeFromCompany(@Body() { userId }: { userId: string }) {
+		try {
+			const user = await this.userService.getById(userId)
+			if (!user) {
+				throw new UnauthorizedException('User not found')
+			}
+
+			await this.userService.removeFromCompany(userId)
+			return `User removed from company successfully!`
 		} catch (error) {
 			return error
 		}
 	}
 	@Patch('/:id')
 	async updateUser(
-		@Body() user: UpdateUserDTO,
+		@Body() data: UpdateUserDTO,
 		@Param() { id }: { id: string }
 	) {
 		try {
-			await this.checkUserExist(id)
-			if (user.password) {
+			const user = await this.checkUserExist(id)
+			if (!user) {
+				throw new NotFoundException('User not found!')
+			}
+			if (data.password) {
 				const hashPassword = await bcrypt.hash(
-					user.password,
+					data.password,
 					+process.env.HASH_SALT
 				)
 				return await this.userService.update(id, {
-					...user,
+					...data,
 					password: hashPassword,
 				})
 			}
-			return await this.userService.update(id, user)
+			return await this.userService.update(id, data)
 		} catch (error) {
 			return error
 		}
