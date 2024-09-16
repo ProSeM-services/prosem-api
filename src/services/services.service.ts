@@ -1,7 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common'
 import { Service } from './schema/service.model'
 import { SERVICES_REPOSITORY } from 'src/core/constants'
-import { Op } from 'sequelize'
 import { Company } from 'src/company/schema/company.model'
 
 @Injectable()
@@ -30,12 +29,10 @@ export class ServicesService {
 		return await this.serviceModel.findOne({ where: { id } })
 	}
 
-	async getByTitle(title: string): Promise<Service[]> {
-		return await this.serviceModel.findAll({
+	async getByTitle(title: string): Promise<Service> {
+		return await this.serviceModel.findOne({
 			where: {
-				title: {
-					[Op.iLike]: `%${title}%`,
-				},
+				title,
 			},
 		})
 	}

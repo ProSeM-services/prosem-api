@@ -46,7 +46,7 @@ export class CompanyService {
 
 		return await this.companyModel.findAll({
 			where: { ...whereClause },
-			include: [User],
+			include: [User, Service],
 		})
 	}
 	async getAll(tenantName: string): Promise<Company[]> {
@@ -58,14 +58,14 @@ export class CompanyService {
 	async getById(id: string): Promise<Company> {
 		return await this.companyModel.findOne({
 			where: { id },
-			include: [User],
+			include: [User, Service],
 		})
 	}
 
 	async getByName(searchTerm: string): Promise<Company[]> {
 		return this.companyModel.findAll({
 			where: literal(`"Company"."name" ILIKE '${searchTerm}%'`),
-			include: [User],
+			include: [User, Service],
 		})
 	}
 	async create(data: Partial<Company>): Promise<Company> {

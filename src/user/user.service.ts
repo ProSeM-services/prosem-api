@@ -18,8 +18,15 @@ export class UserService {
 	async getByTenantName(tenantName: string) {
 		return this.UserModel.findOne({ where: { tenantName } })
 	}
+	async getFree(tenantName: string): Promise<User[]> {
+		return this.UserModel.findAll({ where: { CompanyId: null, tenantName } })
+	}
 	async addToCompany(userId: string, CompanyId: string) {
 		return this.UserModel.update({ CompanyId }, { where: { id: userId } })
+	}
+
+	async removeFromCompany(userId: string) {
+		return this.UserModel.update({ CompanyId: null }, { where: { id: userId } })
 	}
 
 	async getById(id: string): Promise<User> {
@@ -28,6 +35,7 @@ export class UserService {
 			include: [Appointment],
 		})
 	}
+
 	async getByCompany(CompanyId: string): Promise<User[]> {
 		return this.UserModel.findAll({ where: { CompanyId } })
 	}

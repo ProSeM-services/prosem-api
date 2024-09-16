@@ -13,6 +13,17 @@ export const UserZodSchema = z.object({
 	phone: z.string().optional(),
 	image: z.string().optional(),
 })
-export const UpdateUserZodSchema = UserZodSchema.optional()
+export const UpdateUserZodSchema = z.object({
+	name: z.string().optional(),
+	lastName: z.string().optional(),
+	userName: z.string().optional(),
+	password: z.string().optional(),
+	email: z.string().email().optional(),
+	role: z.enum(ROLES_VALUES),
+	companyName: z.string().optional(),
+	tenantName: z.string().optional(),
+	phone: z.string().optional(),
+	image: z.string().optional(),
+})
 export type IUser = z.infer<typeof UserZodSchema>
 export type IUpdateUser = z.infer<typeof UpdateUserZodSchema>
