@@ -21,11 +21,11 @@ export const UpdateServiceZodSchema = ServiceZodSchema.omit({
 export type IService = z.infer<typeof ServiceZodSchema>
 export type ICreateService = z.infer<typeof CreateServiceZodSchema>
 export type IUpdateService = z.infer<typeof UpdateServiceZodSchema>
-export const AddServiceToCompanySchema = z.object({
-	companyId: z.string().min(1),
+export const AddUserToServiceSchema = z.object({
+	userId: z.string().min(1),
 	serviceId: z.string().min(1),
 })
-export const AddMemberSchema = z.object({
-	memberId: z.string().min(1),
+export const AddServiceToCompanySchema = z.object({
+	companyId: z.string().min(1),
 	serviceId: z.string().min(1),
 })

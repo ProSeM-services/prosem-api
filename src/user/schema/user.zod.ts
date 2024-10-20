@@ -1,4 +1,5 @@
 import { ROLES_VALUES } from 'src/core/types/role'
+import { WorkhourZodSchema } from 'src/core/types/workhours'
 import { z } from 'zod'
 
 export const UserZodSchema = z.object({
@@ -12,6 +13,7 @@ export const UserZodSchema = z.object({
 	tenantName: z.string().optional(),
 	phone: z.string().optional(),
 	image: z.string().optional(),
+	workhours: z.array(WorkhourZodSchema).optional(),
 })
 export const UpdateUserZodSchema = z.object({
 	name: z.string().optional(),
@@ -19,11 +21,12 @@ export const UpdateUserZodSchema = z.object({
 	userName: z.string().optional(),
 	password: z.string().optional(),
 	email: z.string().email().optional(),
-	role: z.enum(ROLES_VALUES),
+	role: z.enum(ROLES_VALUES).optional(),
 	companyName: z.string().optional(),
 	tenantName: z.string().optional(),
 	phone: z.string().optional(),
 	image: z.string().optional(),
+	workhours: z.array(WorkhourZodSchema).optional(),
 })
 export type IUser = z.infer<typeof UserZodSchema>
 export type IUpdateUser = z.infer<typeof UpdateUserZodSchema>

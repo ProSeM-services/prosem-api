@@ -52,6 +52,18 @@ export class UserController {
 		}
 	}
 
+	@Get('/clients/:id')
+	async getForClient(@Param() { id }: { id: string }) {
+		try {
+			const user = await this.checkUserExist(id)
+			if (!user) {
+				throw new NotFoundException('User not found!')
+			}
+			return user
+		} catch (error) {
+			return error
+		}
+	}
 	@Get('/details/:id')
 	async getOne(@Param() { id }: { id: string }) {
 		try {

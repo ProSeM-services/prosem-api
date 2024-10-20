@@ -55,7 +55,7 @@ export class UserService {
 		return this.UserModel.create(data)
 	}
 	async update(id: string, data: Partial<User>) {
-		return this.UserModel.update(data, { where: { id: id } })
+		return this.UserModel.update(data, { where: { id } })
 	}
 	async delete(id: string) {
 		return this.UserModel.destroy({ where: { id: id } })

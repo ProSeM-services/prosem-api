@@ -45,17 +45,38 @@ export class CompanyController {
 	) {
 		try {
 			const { name, category, city } = query
-
 			const res = await this.companyService.getCompanies({
 				name: name || '',
 				category: category || '',
-				city: city ? city.split(' , ')[0] : '',
+				city: city ? city.split(',')[0] : '',
 			})
 
 			return !res || res.length === 0 ? [] : res
 		} catch (error) {
 			console.error('Controller: Error in getCompaniesForClients:', error)
 			throw error
+		}
+	}
+	@Get('/clients/company-detail/:id')
+	async getCompanyDetailForClients(@Param() { id }: { id: Company['id'] }) {
+		try {
+			await this.checkCompanyExist(id)
+			return await this.companyService.getById(id)
+		} catch (error) {
+			return error
+		}
+	}
+	@Get('/clients/company-detail/:id/services')
+	async getServicesFromCompanyForClients(
+		@Param() { id }: { id: Company['id'] }
+	) {
+		try {
+			await this.checkCompanyExist(id)
+			const data = await this.companyService.getById(id)
+			//@ts-ignore
+			return data.Services
+		} catch (error) {
+			return error
 		}
 	}
 	@Get()
@@ -107,6 +128,7 @@ export class CompanyController {
 				...data,
 				address: formatedAddress,
 				tenantName,
+				city: locationData.city,
 			})
 		} catch (error) {
 			return error

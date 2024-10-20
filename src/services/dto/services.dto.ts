@@ -1,16 +1,16 @@
-import { createZodDto } from '@anatine/zod-nestjs';
+import { createZodDto } from '@anatine/zod-nestjs'
 import {
-  ServiceZodSchema,
-  CreateServiceZodSchema,
-  UpdateServiceZodSchema,
-  AddServiceToCompanySchema,
-  AddMemberSchema,
-} from '../schema/service.zod';
+	ServiceZodSchema,
+	CreateServiceZodSchema,
+	UpdateServiceZodSchema,
+	AddServiceToCompanySchema,
+	AddUserToServiceSchema,
+} from '../schema/service.zod'
 
 export class ServicesDto extends createZodDto(ServiceZodSchema) {}
 export class CreateServicesDto extends createZodDto(CreateServiceZodSchema) {}
 export class UpdateServicesDto extends createZodDto(UpdateServiceZodSchema) {}
 export class AddToCompanyServicesDto extends createZodDto(
-  AddServiceToCompanySchema,
+	AddServiceToCompanySchema
 ) {}
-export class AddMemberDTO extends createZodDto(AddMemberSchema) {}
+export class AddUserToServiceDTO extends createZodDto(AddUserToServiceSchema) {}

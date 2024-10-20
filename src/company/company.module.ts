@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common'
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common'
 import { CompanyController } from './company.controller'
 import { CompanyService } from './company.service'
 import { companyProviders } from './company.providers'
@@ -22,6 +22,16 @@ import { GeocodeService } from 'src/geocode/geocode.services'
 })
 export class CompanyModule {
 	configure(consumer: MiddlewareConsumer) {
-		consumer.apply(TenantsMiddleware).forRoutes(CompanyController)
+		consumer
+			.apply(TenantsMiddleware)
+			.exclude(
+				{ path: 'company/clients', method: RequestMethod.GET },
+				{ path: 'company/clients/company-detail/:id', method: RequestMethod.GET },
+				{
+					path: 'company/clients/company-detail/:id/services',
+					method: RequestMethod.GET,
+				}
+			)
+			.forRoutes(CompanyController)
 	}
 }

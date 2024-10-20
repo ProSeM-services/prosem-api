@@ -31,7 +31,7 @@ export class AuthController {
 	@Post('register')
 	async register(@Body() user: UserDTO) {
 		try {
-			const newUser = this.authService.register(user)
+			const newUser = this.authService.register({ ...user, role: 'OWNER' })
 
 			return newUser
 		} catch (error) {
