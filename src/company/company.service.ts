@@ -39,7 +39,7 @@ export class CompanyService {
 		}
 
 		if (city && city.length) {
-			whereClause['$address.city$'] = {
+			whereClause.city = {
 				[Op.iLike]: `%${city}%`,
 			}
 		}

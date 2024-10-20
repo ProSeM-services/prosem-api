@@ -12,7 +12,6 @@ import {
 	Patch,
 } from '@nestjs/common'
 import { ServicesService } from './services.service'
-import { Service } from './schema/service.model'
 import { AuthService } from 'src/auth/auth.service'
 import { Request as ExpressRequest } from 'express'
 import { CompanyService } from 'src/company/company.service'
@@ -20,12 +19,15 @@ import {
 	CreateServicesDto,
 	UpdateServicesDto,
 	AddToCompanyServicesDto,
+	AddUserToServiceDTO,
 } from './dto/services.dto'
+import { UserService } from 'src/user/user.service'
 
 @Controller('services')
 export class ServicesController {
 	constructor(
 		private readonly servicesService: ServicesService,
+		private readonly userService: UserService,
 		private readonly companyService: CompanyService,
 		private readonly authService: AuthService
 	) {}
@@ -33,11 +35,21 @@ export class ServicesController {
 	@Get()
 	async getAll(@Request() req: ExpressRequest) {
 		const tenantName = await this.authService.getTenantFromHeaders(req)
+		return this.servicesService.getAll(tenantName)
+	}
+	@Get('/clients')
+	async getAllFromCLients(@Request() req: ExpressRequest) {
 		return this.servicesService.getAll()
+	}
+	@Get('/clients/:id')
+	async getByIdFromCLients(@Param('id') id: string) {
+		if (!id) throw new Error('id require ')
+		return this.servicesService.getById(id)
 	}
 
 	@Get(':id')
 	async getById(@Param('id') id: string) {
+		if (!id) throw new Error('id require ')
 		return this.servicesService.getById(id)
 	}
 
@@ -73,6 +85,63 @@ export class ServicesController {
 			}
 
 			return await this.servicesService.addToCompany(companyId, serviceId)
+		} catch (error) {
+			return error
+		}
+	}
+	@Post('/add-member')
+	async addMember(@Body() addMemberDto: AddUserToServiceDTO) {
+		try {
+			const { serviceId, userId } = addMemberDto
+			const service = await this.servicesService.getById(serviceId)
+			if (!service) {
+				throw new UnauthorizedException('Service not found')
+			}
+
+			const member = await this.userService.getById(userId)
+			if (!member) {
+				throw new UnauthorizedException('Member not found')
+			}
+
+			return await this.servicesService.addMember(serviceId, userId)
+		} catch (error) {
+			return error
+		}
+	}
+	@Post('/remove-member')
+	async removeMember(@Body() addToCompanyDto: AddUserToServiceDTO) {
+		try {
+			const { userId, serviceId } = addToCompanyDto
+			const service = await this.servicesService.getById(serviceId)
+			if (!service) {
+				throw new UnauthorizedException('Service not found')
+			}
+
+			const member = await this.userService.getById(userId)
+			if (!member) {
+				throw new UnauthorizedException('Member not found')
+			}
+
+			return await this.servicesService.removeMember(serviceId, userId)
+		} catch (error) {
+			return error
+		}
+	}
+	@Post('/remove-from-company')
+	async removeFromCompany(@Body() addToCompanyDto: AddToCompanyServicesDto) {
+		try {
+			const { companyId, serviceId } = addToCompanyDto
+			const service = await this.servicesService.getById(serviceId)
+			if (!service) {
+				throw new UnauthorizedException('Service not found')
+			}
+
+			const company = await this.companyService.getById(companyId)
+			if (!company) {
+				throw new UnauthorizedException('Company not found')
+			}
+
+			return await this.servicesService.removeFromCompany(companyId, serviceId)
 		} catch (error) {
 			return error
 		}
