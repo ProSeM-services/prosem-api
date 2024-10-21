@@ -41,6 +41,9 @@ export const databaseProviders = [
 			User.hasMany(Appointment)
 			Appointment.belongsTo(User, { targetKey: 'id', foreignKey: 'UserId' })
 
+			Service.hasMany(Appointment)
+			Appointment.belongsTo(Service, { targetKey: 'id', foreignKey: 'ServiceId' })
+
 			await sequelize.sync({ alter: true })
 			return sequelize
 		},
