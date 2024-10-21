@@ -14,8 +14,16 @@ export class Appointment extends BaseModel<Appointment> {
 	date: string
 	@Column
 	time: string
+	@Column
+	canceled: boolean
+	@Column
+	duration: number
 	@Column({
 		type: DataType.UUID,
 	})
 	UserId: string
+	@Column({
+		type: DataType.UUID,
+	})
+	ServiceId: string
 }

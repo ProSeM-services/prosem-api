@@ -6,6 +6,8 @@ import { UserService } from 'src/user/user.service'
 import { companyProviders } from 'src/company/company.providers'
 import { userProvider } from 'src/user/user.provider'
 import { appointmentProvider } from './appointment.provider'
+import { ServicesService } from 'src/services/services.service'
+import { servicesProviders } from 'src/services/services.providers'
 
 @Module({
 	controllers: [AppointmentsController],
@@ -13,9 +15,11 @@ import { appointmentProvider } from './appointment.provider'
 		AppointmentsService,
 		CompanyService,
 		UserService,
+		ServicesService,
 		...companyProviders,
 		...userProvider,
 		...appointmentProvider,
+		...servicesProviders,
 	],
 })
 export class AppointmentsModule {}

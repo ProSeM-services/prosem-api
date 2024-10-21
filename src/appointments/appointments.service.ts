@@ -5,7 +5,7 @@ import {
 } from 'src/core/constants'
 import { Appointment } from './schema/appointment.model'
 import { AppointmentDTO } from './dto/appointment.dto'
-import { UpdateSlotDTO } from './dto/slot.dto'
+import { User } from 'src/user/schema/user.model'
 
 @Injectable()
 export class AppointmentsService {
@@ -27,5 +27,21 @@ export class AppointmentsService {
 
 	async delete(id: string) {
 		return await this.AppointmentModel.destroy({ where: { id } })
+	}
+
+	async findByAppointmentInfo(data: {
+		UserId: string
+		time: string
+		date: string
+	}) {
+		return this.AppointmentModel.findOne({ where: { ...data } })
+	}
+
+	async getByUser(UserId: string) {
+		return this.AppointmentModel.findAll({ where: { UserId } })
+	}
+	async cancelAppointment(appointment: Appointment) {
+		appointment.canceled = true
+		await appointment.save()
 	}
 }
