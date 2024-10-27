@@ -8,6 +8,8 @@ import { userProvider } from 'src/user/user.provider'
 import { appointmentProvider } from './appointment.provider'
 import { ServicesService } from 'src/services/services.service'
 import { servicesProviders } from 'src/services/services.providers'
+import { CustomerService } from 'src/customer/customer.service'
+import { customerProvider } from 'src/customer/customer.provider'
 
 @Module({
 	controllers: [AppointmentsController],
@@ -16,6 +18,8 @@ import { servicesProviders } from 'src/services/services.providers'
 		CompanyService,
 		UserService,
 		ServicesService,
+		CustomerService,
+		...customerProvider,
 		...companyProviders,
 		...userProvider,
 		...appointmentProvider,

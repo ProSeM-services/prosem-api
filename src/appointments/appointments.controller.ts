@@ -9,6 +9,7 @@ import {
 	Delete,
 	Param,
 } from '@nestjs/common'
+import { Request as ExpressRequest } from 'express'
 import { AppointmentsService } from './appointments.service'
 import { AppointmentDTO } from './dto/appointment.dto'
 import { UserService } from 'src/user/user.service'
@@ -16,13 +17,16 @@ import { ServicesService } from 'src/services/services.service'
 import { IWorkhour } from 'src/core/types/workhours'
 import { getAvailableTimes } from './utlis'
 import { SlotAppointmentDTO } from './dto/slot.dto'
+import { CustomerService } from 'src/customer/customer.service'
+import { ICreateCustomer } from 'src/customer/schema/customer.zod'
 
 @Controller('appointments')
 export class AppointmentsController {
 	constructor(
 		private readonly appointmentService: AppointmentsService,
 		private readonly userService: UserService,
-		private readonly servicesSerivce: ServicesService
+		private readonly servicesSerivce: ServicesService,
+		private readonly customerService: CustomerService
 	) {}
 	async getSlotsByDate(userId: string, date: string, duration: number) {
 		const user = await this.userService.getById(userId)
@@ -91,6 +95,15 @@ export class AppointmentsController {
 		}
 	}
 
+	@Get('/customer/:id')
+	async getByCustomer(@Param('id') id: string) {
+		try {
+			return await this.appointmentService.getByCustomer(id)
+		} catch (error) {
+			return error
+		}
+	}
+
 	@Post('member-slots')
 	async memberSlots(
 		@Body()
@@ -106,43 +119,47 @@ export class AppointmentsController {
 	async create(@Body() data: AppointmentDTO) {
 		try {
 			const user = await this.userService.getById(data.UserId)
-
 			if (!user) {
 				throw new UnauthorizedException('User not found.')
 			}
-
 			if (!user.CompanyId) {
 				throw new UnauthorizedException('User no tiene company')
 			}
-
 			const service = await this.servicesSerivce.getById(data.ServiceId)
-
 			if (!service) {
 				throw new UnauthorizedException('Service not found.')
 			}
-
 			await this.validateAppointmentData(data, user.workhours, service.duration)
 
 			//EN ESTE PUNTO LOS DATOS INGRESADOS PARA EL USUARIO, SERVICIO Y HORARIO, SON VALIDOS.
 
 			// Ahora tenemos que validar que no haya un turno con esa misma data!
-
 			const appointment = await this.appointmentService.findByAppointmentInfo({
 				date: data.date,
 				UserId: data.UserId,
 				time: data.time,
 			})
-
 			if (appointment && !appointment.canceled) {
 				throw new UnauthorizedException('This appointment slot is not available.')
 			}
 
-			//EN ESTE PUNTO: Los datos estan OK y se puede sacar el turno.
+			const customerData: ICreateCustomer = {
+				email: data.email,
+				firstName: data.name,
+				lastName: data.lastName,
+				phone: data.phone,
+				tenantName: user.tenantName,
+			}
+			const customer = await this.customerService.findOrCreateByEmail(customerData)
 
+			//EN ESTE PUNTO: Los datos estan OK y se puede sacar el turno.
 			const newAppointment = await this.appointmentService.create({
 				...data,
 				duration: service.duration,
 				canceled: false,
+				CustomerId: customer.id,
+				tenantName: user.tenantName,
+				companyId: user.CompanyId,
 			})
 
 			//TODO: Luego de crear el turno hay que hacer la logica de customer, usando el email cómo valor unico.
