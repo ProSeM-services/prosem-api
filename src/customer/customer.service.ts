@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common'
 import { CreateCustomerDTO } from './dto/customer.dto'
 import { CUSTOMERS_REPOSITORY } from 'src/core/constants'
 import { Customer } from './schema/customer.model'
+import { Appointment } from 'src/appointments/schema/appointment.model'
 
 @Injectable()
 export class CustomerService {
@@ -10,7 +11,7 @@ export class CustomerService {
 	) {}
 
 	async getAll(): Promise<Customer[]> {
-		return this.customerModel.findAll()
+		return this.customerModel.findAll({ include: [Appointment] })
 	}
 	async getById(id: string): Promise<Customer> {
 		return this.customerModel.findOne({
