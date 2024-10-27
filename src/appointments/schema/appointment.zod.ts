@@ -17,6 +17,9 @@ export const AppointmentZodSchema = z.object({
 		}),
 	UserId: z.string().min(1),
 	ServiceId: z.string().min(1),
+	CustomerId: z.string().optional(),
+	tenantName: z.string().optional(),
+	companyId: z.string().optional(),
 	canceled: z.boolean().optional(),
 })
 

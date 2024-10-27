@@ -1,12 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common'
-import {
-	APPOINTMENTSLOTS_REPOSITORY,
-	APPOINTMENT_REPOSITORY,
-} from 'src/core/constants'
+import { APPOINTMENT_REPOSITORY } from 'src/core/constants'
 import { Appointment } from './schema/appointment.model'
 import { AppointmentDTO } from './dto/appointment.dto'
-import { User } from 'src/user/schema/user.model'
-
 @Injectable()
 export class AppointmentsService {
 	constructor(
@@ -39,6 +34,9 @@ export class AppointmentsService {
 
 	async getByUser(UserId: string) {
 		return this.AppointmentModel.findAll({ where: { UserId } })
+	}
+	async getByCustomer(CustomerId: string) {
+		return this.AppointmentModel.findAll({ where: { CustomerId } })
 	}
 	async cancelAppointment(appointment: Appointment) {
 		appointment.canceled = true

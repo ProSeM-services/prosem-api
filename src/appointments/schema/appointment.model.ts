@@ -26,4 +26,12 @@ export class Appointment extends BaseModel<Appointment> {
 		type: DataType.UUID,
 	})
 	ServiceId: string
+	@Column({
+		type: DataType.UUID,
+	})
+	CustomerId: string
+	@Column({
+		type: DataType.UUID,
+	})
+	companyId: string
 }
