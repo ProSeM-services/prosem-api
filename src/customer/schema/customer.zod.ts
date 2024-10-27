@@ -2,7 +2,7 @@ import { AppointmentZodSchema } from 'src/appointments/schema/appointment.zod'
 import { z } from 'zod'
 
 export const CustomerZodSchema = z.object({
-	_id: z.string(),
+	id: z.string(),
 	firstName: z.string(),
 	lastName: z.string(),
 	tenantName: z.string().optional(),
@@ -11,11 +11,11 @@ export const CustomerZodSchema = z.object({
 	apointments: z.array(AppointmentZodSchema),
 })
 export const CreateCustomerZodSchema = CustomerZodSchema.omit({
-	_id: true,
+	id: true,
 	apointments: true,
 })
 export const UpdateCustomerZodSchema = CustomerZodSchema.omit({
-	_id: true,
+	id: true,
 	apointments: true,
 }).optional()
 
