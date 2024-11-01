@@ -10,6 +10,8 @@ import { ServicesService } from 'src/services/services.service'
 import { servicesProviders } from 'src/services/services.providers'
 import { CustomerService } from 'src/customer/customer.service'
 import { customerProvider } from 'src/customer/customer.provider'
+import { AuthService } from 'src/auth/auth.service'
+import { JwtService } from '@nestjs/jwt'
 
 @Module({
 	controllers: [AppointmentsController],
@@ -19,6 +21,8 @@ import { customerProvider } from 'src/customer/customer.provider'
 		UserService,
 		ServicesService,
 		CustomerService,
+		AuthService,
+		JwtService,
 		...customerProvider,
 		...companyProviders,
 		...userProvider,
