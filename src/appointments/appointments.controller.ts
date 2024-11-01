@@ -8,6 +8,7 @@ import {
 	UnauthorizedException,
 	Delete,
 	Param,
+	Request,
 } from '@nestjs/common'
 import { Request as ExpressRequest } from 'express'
 import { AppointmentsService } from './appointments.service'
@@ -19,6 +20,7 @@ import { getAvailableTimes } from './utlis'
 import { SlotAppointmentDTO } from './dto/slot.dto'
 import { CustomerService } from 'src/customer/customer.service'
 import { ICreateCustomer } from 'src/customer/schema/customer.zod'
+import { AuthService } from 'src/auth/auth.service'
 
 @Controller('appointments')
 export class AppointmentsController {
@@ -26,10 +28,12 @@ export class AppointmentsController {
 		private readonly appointmentService: AppointmentsService,
 		private readonly userService: UserService,
 		private readonly servicesSerivce: ServicesService,
-		private readonly customerService: CustomerService
+		private readonly customerService: CustomerService,
+		private authService: AuthService
 	) {}
 	async getSlotsByDate(userId: string, date: string, duration: number) {
 		const user = await this.userService.getById(userId)
+
 		if (!user) {
 			throw new UnauthorizedException('Member not found.')
 		}
@@ -87,9 +91,14 @@ export class AppointmentsController {
 		throw new UnauthorizedException('This time is not avaialble.')
 	}
 	@Get()
-	async getAll() {
+	async getAll(@Request() req: ExpressRequest) {
 		try {
-			return await this.appointmentService.getAll()
+			const token = await this.authService.getTenantFromHeaders(req)
+			if (!token) {
+				throw new UnauthorizedException('Missing or invalid token')
+			}
+			console.log('EL TOKEN INGRESADO:', token)
+			return await this.appointmentService.getAll(token)
 		} catch (error) {
 			return error
 		}

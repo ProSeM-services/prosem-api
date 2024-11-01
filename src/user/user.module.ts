@@ -16,7 +16,6 @@ import { JwtService } from '@nestjs/jwt'
 		CompanyService,
 		AuthService,
 		JwtService,
-		AuthService,
 		...userProvider,
 		...companyProviders,
 	],

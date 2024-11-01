@@ -9,8 +9,12 @@ export class AppointmentsService {
 		private readonly AppointmentModel: typeof Appointment
 	) {}
 
-	async getAll() {
-		return await this.AppointmentModel.findAll()
+	async getAll(token: string) {
+		return await this.AppointmentModel.findAll({
+			where: {
+				tenantName: token,
+			},
+		})
 	}
 
 	async getById(id: string) {
