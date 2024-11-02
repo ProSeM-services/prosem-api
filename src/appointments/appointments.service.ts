@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common'
 import { APPOINTMENT_REPOSITORY } from 'src/core/constants'
 import { Appointment } from './schema/appointment.model'
 import { AppointmentDTO } from './dto/appointment.dto'
+import { User } from 'src/user/schema/user.model'
 @Injectable()
 export class AppointmentsService {
 	constructor(
@@ -14,6 +15,7 @@ export class AppointmentsService {
 			where: {
 				tenantName: token,
 			},
+			include: [User],
 		})
 	}
 
