@@ -97,7 +97,7 @@ export class AppointmentsController {
 			if (!token) {
 				throw new UnauthorizedException('Missing or invalid token')
 			}
-			console.log('EL TOKEN INGRESADO:', token)
+
 			return await this.appointmentService.getAll(token)
 		} catch (error) {
 			return error
