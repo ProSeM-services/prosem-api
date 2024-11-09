@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module'
 import { AppointmentsModule } from './appointments/appointments.module'
 import { ServicesModule } from './services/services.module'
 import { CustomerModule } from './customer/customer.module';
+import { StatsModule } from './stats/stats.module';
 import * as dotenv from 'dotenv'
 dotenv.config()
 @Module({
@@ -19,6 +20,7 @@ dotenv.config()
 		AppointmentsModule,
 		ServicesModule,
 		CustomerModule,
+		StatsModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
