@@ -34,7 +34,7 @@ export class UserController {
 
 			return user
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 
@@ -61,7 +61,7 @@ export class UserController {
 			}
 			return user
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Get('/details/:id')
@@ -73,7 +73,7 @@ export class UserController {
 			}
 			return user
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Get('/free')
@@ -85,7 +85,7 @@ export class UserController {
 			}
 			return this.userService.getFree(token)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 
@@ -100,7 +100,7 @@ export class UserController {
 			if (deleteStatus === 1)
 				return { message: 'user has been deleted succesfully' }
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Post()
@@ -116,7 +116,7 @@ export class UserController {
 
 			return await this.userService.create(data)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Post('/add-to-company')
@@ -138,7 +138,7 @@ export class UserController {
 
 			return `User added to company ${company.name} successfully!`
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Post('/remove-from-company')
@@ -152,7 +152,7 @@ export class UserController {
 			await this.userService.removeFromCompany(userId)
 			return `User removed from company successfully!`
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Patch('/:id')
@@ -177,7 +177,7 @@ export class UserController {
 			}
 			return await this.userService.update(id, data)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 }
