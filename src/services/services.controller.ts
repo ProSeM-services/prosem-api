@@ -34,40 +34,67 @@ export class ServicesController {
 
 	@Get()
 	async getAll(@Request() req: ExpressRequest) {
-		const tenantName = await this.authService.getTenantFromHeaders(req)
-		return this.servicesService.getAll(tenantName)
+		try {
+			const tenantName = await this.authService.getTenantFromHeaders(req)
+			return this.servicesService.getAll(tenantName)
+		} catch (error) {
+			throw error
+		}
 	}
+
 	@Get('/clients')
 	async getAllFromCLients(@Request() req: ExpressRequest) {
-		return this.servicesService.getAll()
+		try {
+			return this.servicesService.getAll()
+		} catch (error) {
+			throw error
+		}
 	}
+
 	@Get('/clients/:id')
 	async getByIdFromCLients(@Param('id') id: string) {
-		if (!id) throw new Error('id require ')
-		return this.servicesService.getById(id)
+		try {
+			if (!id) throw new Error('id require ')
+			return this.servicesService.getById(id)
+		} catch (error) {
+			throw error
+		}
 	}
 
 	@Get(':id')
 	async getById(@Param('id') id: string) {
-		if (!id) throw new Error('id require ')
-		return this.servicesService.getById(id)
+		try {
+			if (!id) throw new Error('id require ')
+			return this.servicesService.getById(id)
+		} catch (error) {
+			throw error
+		}
 	}
 
 	@Get('search/title')
 	async getByTitle(@Query('title') title: string) {
-		return this.servicesService.getByTitle(title)
+		try {
+			return this.servicesService.getByTitle(title)
+		} catch (error) {
+			throw error
+		}
 	}
 
 	@Post()
 	async create(@Body() data: CreateServicesDto, @Request() req: ExpressRequest) {
-		const tenantName = await this.authService.getTenantFromHeaders(req)
+		try {
+			const tenantName = await this.authService.getTenantFromHeaders(req)
+			const existTitle = await this.servicesService.getByTitle(data.title)
 
-		const existTitle = await this.servicesService.getByTitle(data.title)
-
-		if (existTitle) {
-			throw new UnauthorizedException('This title already exist in your services!')
+			if (existTitle) {
+				throw new UnauthorizedException(
+					'This title already exist in your services!'
+				)
+			}
+			return this.servicesService.create({ ...data, tenantName })
+		} catch (error) {
+			throw error
 		}
-		return this.servicesService.create({ ...data, tenantName })
 	}
 
 	@Post('/add-to-company')
@@ -86,9 +113,10 @@ export class ServicesController {
 
 			return await this.servicesService.addToCompany(companyId, serviceId)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
+
 	@Post('/add-member')
 	async addMember(@Body() addMemberDto: AddUserToServiceDTO) {
 		try {
@@ -105,9 +133,10 @@ export class ServicesController {
 
 			return await this.servicesService.addMember(serviceId, userId)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
+
 	@Post('/remove-member')
 	async removeMember(@Body() addToCompanyDto: AddUserToServiceDTO) {
 		try {
@@ -124,9 +153,10 @@ export class ServicesController {
 
 			return await this.servicesService.removeMember(serviceId, userId)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
+
 	@Post('/remove-from-company')
 	async removeFromCompany(@Body() addToCompanyDto: AddToCompanyServicesDto) {
 		try {
@@ -143,17 +173,25 @@ export class ServicesController {
 
 			return await this.servicesService.removeFromCompany(companyId, serviceId)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 
 	@Patch(':id')
 	async update(@Param('id') id: string, @Body() data: UpdateServicesDto) {
-		return this.servicesService.update(id, data)
+		try {
+			return this.servicesService.update(id, data)
+		} catch (error) {
+			throw error
+		}
 	}
 
 	@Delete(':id')
 	async delete(@Param('id') id: string) {
-		return this.servicesService.delete(id)
+		try {
+			return this.servicesService.delete(id)
+		} catch (error) {
+			throw error
+		}
 	}
 }

@@ -32,35 +32,39 @@ export class AppointmentsController {
 		private authService: AuthService
 	) {}
 	async getSlotsByDate(userId: string, date: string, duration: number) {
-		const user = await this.userService.getById(userId)
+		try {
+			const user = await this.userService.getById(userId)
 
-		if (!user) {
-			throw new UnauthorizedException('Member not found.')
-		}
-		const appointments = await this.appointmentService.getByUser(userId)
-		const selectedDate = new Date(date).getDay()
-		const availableTimes = getAvailableTimes(
-			user.workhours,
-			selectedDate,
-			duration,
-			appointments.filter((appointment) => appointment.date === date)
-		)
+			if (!user) {
+				throw new UnauthorizedException('Member not found.')
+			}
+			const appointments = await this.appointmentService.getByUser(userId)
+			const selectedDate = new Date(date).getDay()
+			const availableTimes = getAvailableTimes(
+				user.workhours,
+				selectedDate,
+				duration,
+				appointments.filter((appointment) => appointment.date === date)
+			)
 
-		const isAvaialable = (hs: string) => {
-			if (appointments.filter((app) => app.time === hs).length === 0) return true
+			const isAvaialable = (hs: string) => {
+				if (appointments.filter((app) => app.time === hs).length === 0) return true
 
-			return !appointments
-				.filter((app) => app.time === hs)
-				.some((app) => !app.canceled)
-		}
-		const res = availableTimes.map((hs) => ({
-			hs,
-			available: isAvaialable(hs),
-		}))
+				return !appointments
+					.filter((app) => app.time === hs)
+					.some((app) => !app.canceled)
+			}
+			const res = availableTimes.map((hs) => ({
+				hs,
+				available: isAvaialable(hs),
+			}))
 
-		return {
-			availableTimes: res,
-			user,
+			return {
+				availableTimes: res,
+				user,
+			}
+		} catch (error) {
+			throw error
 		}
 	}
 	async validateAppointmentData(
@@ -68,27 +72,31 @@ export class AppointmentsController {
 		workhours: IWorkhour[],
 		duration: number
 	) {
-		const selectedWorkhours = workhours.find(
-			(wh) => wh.day === new Date(data.date).getDay()
-		)
-		if (!selectedWorkhours) {
-			throw new UnauthorizedException('This day is not work day.')
-		}
-		for (const segment of selectedWorkhours.segments) {
-			if (data.time >= segment.startime && data.time <= segment.endTime) {
-				const { availableTimes } = await this.getSlotsByDate(
-					data.UserId,
-					data.date,
-					duration
-				)
+		try {
+			const selectedWorkhours = workhours.find(
+				(wh) => wh.day === new Date(data.date).getDay()
+			)
+			if (!selectedWorkhours) {
+				throw new UnauthorizedException('This day is not work day.')
+			}
+			for (const segment of selectedWorkhours.segments) {
+				if (data.time >= segment.startime && data.time <= segment.endTime) {
+					const { availableTimes } = await this.getSlotsByDate(
+						data.UserId,
+						data.date,
+						duration
+					)
 
-				if (availableTimes.some((slot) => slot.hs === data.time)) {
-					return true
+					if (availableTimes.some((slot) => slot.hs === data.time)) {
+						return true
+					}
 				}
 			}
-		}
 
-		throw new UnauthorizedException('This time is not avaialble.')
+			throw new UnauthorizedException('This time is not avaialble.')
+		} catch (error) {
+			throw error
+		}
 	}
 	@Get()
 	async getAll(@Request() req: ExpressRequest) {
@@ -100,7 +108,7 @@ export class AppointmentsController {
 
 			return await this.appointmentService.getAll(token)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 
@@ -109,7 +117,7 @@ export class AppointmentsController {
 		try {
 			return await this.appointmentService.getByCustomer(id)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 
@@ -121,7 +129,7 @@ export class AppointmentsController {
 		try {
 			return await this.getSlotsByDate(UserId, date, duration)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Post()
@@ -175,7 +183,7 @@ export class AppointmentsController {
 
 			return newAppointment
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Post('cancel')
@@ -198,7 +206,7 @@ export class AppointmentsController {
 
 			return 'Appointment cancelled succesfully!'
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 }

@@ -37,6 +37,7 @@ export class CompanyController {
 		if (!companyToUpdate) {
 			throw new UnauthorizedException('Company not found!')
 		}
+		return companyToUpdate
 	}
 
 	@Get('/clients')
@@ -63,7 +64,7 @@ export class CompanyController {
 			await this.checkCompanyExist(id)
 			return await this.companyService.getById(id)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Get('/clients/company-detail/:id/services')
@@ -76,7 +77,7 @@ export class CompanyController {
 			//@ts-ignore
 			return data.Services
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Get()
@@ -88,7 +89,7 @@ export class CompanyController {
 			const tenantName = await this.authService.getTenantFromHeaders(req)
 			return await this.companyService.getAll(tenantName)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Get(':id')
@@ -97,7 +98,7 @@ export class CompanyController {
 			await this.checkCompanyExist(id)
 			return await this.companyService.getById(id)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Get('/name/:name')
@@ -108,7 +109,7 @@ export class CompanyController {
 
 			return company
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 
@@ -131,21 +132,27 @@ export class CompanyController {
 				city: locationData.city,
 			})
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Delete(':id')
 	async delete(@Param() { id }: { id: string }) {
 		try {
 			await this.checkCompanyExist(id)
+			const usersFromCompany = await this.userServices.getByCompany(id)
+			if (usersFromCompany.length > 0) {
+				throw new UnauthorizedException(
+					'Please delete the members form the company'
+				)
+			}
 			const deleteStatus = await this.companyService.delete(id)
 			if (deleteStatus !== 1) {
-				return 'error at deleting company'
+				throw new UnauthorizedException('error at deleting company')
 			}
 			return 'company has been deleted, succesfully!'
 		} catch (error) {
-			console.log(error)
-			return error
+			// Re-throw the error to maintain proper status code
+			throw error
 		}
 	}
 	@Patch(':id')
@@ -155,7 +162,7 @@ export class CompanyController {
 			await this.companyService.update(id, data)
 			return 'company has been updated, succesfully!'
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 }

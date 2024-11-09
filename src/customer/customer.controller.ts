@@ -20,11 +20,11 @@ export class CustomerController {
 
 	@Get()
 	async getAll(@Request() req: ExpressRequest) {
-		const token = await this.authService.getTenantFromHeaders(req)
 		try {
+			const token = await this.authService.getTenantFromHeaders(req)
 			return this.customerService.getAll(token)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Get('/:id')
@@ -32,7 +32,7 @@ export class CustomerController {
 		try {
 			return this.customerService.getById(params.id)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Post()
@@ -45,7 +45,7 @@ export class CustomerController {
 
 			return customer
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Delete('/:id')
@@ -53,7 +53,7 @@ export class CustomerController {
 		try {
 			return this.customerService.delete(params.id)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 }
