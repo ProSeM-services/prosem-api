@@ -13,16 +13,16 @@ export class User extends BaseModel<User> {
 	role: Role
 	@Column
 	lastName: string
-	@Column({ unique: true })
+	@Column
 	email: string
-	@Column({ unique: true })
+	@Column
 	userName: string
 	@Column
 	phone: string
 
 	@Column
 	companyName: string
-	@Column({ unique: true })
+	@Column
 	password: string
 	@Column
 	image: string

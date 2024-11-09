@@ -18,6 +18,9 @@ export class UserService {
 	async getByTenantName(tenantName: string) {
 		return this.UserModel.findOne({ where: { tenantName } })
 	}
+	async getByUserName(userName: string, tenantName: string) {
+		return this.UserModel.findOne({ where: { userName, tenantName } })
+	}
 	async getFree(tenantName: string): Promise<User[]> {
 		return this.UserModel.findAll({ where: { CompanyId: null, tenantName } })
 	}

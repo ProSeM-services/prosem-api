@@ -114,6 +114,17 @@ export class UserController {
 				tenantName,
 			}
 
+			const checkUserName = await this.userService.getByUserName(
+				data.userName,
+				tenantName
+			)
+
+			if (checkUserName) {
+				throw new UnauthorizedException(
+					`UserName ${checkUserName.userName} already exist in this account. `
+				)
+			}
+
 			return await this.userService.create(data)
 		} catch (error) {
 			throw error
