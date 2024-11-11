@@ -12,6 +12,8 @@ import { AppointmentsService } from 'src/appointments/appointments.service'
 import { appointmentProvider } from 'src/appointments/appointment.provider'
 import { CustomerService } from 'src/customer/customer.service'
 import { customerProvider } from 'src/customer/customer.provider'
+import { ServicesService } from 'src/services/services.service'
+import { servicesProviders } from 'src/services/services.providers'
 
 @Module({
 	controllers: [StatsController],
@@ -21,8 +23,10 @@ import { customerProvider } from 'src/customer/customer.provider'
 		UserService,
 		AuthService,
 		AppointmentsService,
+		ServicesService,
 		CustomerService,
 		JwtService,
+		...servicesProviders,
 		...userProvider,
 		...companyProviders,
 		...appointmentProvider,

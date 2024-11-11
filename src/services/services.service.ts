@@ -20,6 +20,22 @@ export class ServicesService {
 			return await this.serviceModel.findAll({ include: [User] })
 		}
 	}
+
+	async getServicesByUserId(
+		tenantName: string,
+		userId: string
+	): Promise<Service[]> {
+		return await this.serviceModel.findAll({
+			where: { tenantName },
+			include: [
+				{
+					model: User,
+					where: { id: userId },
+				},
+			],
+		})
+	}
+
 	async getById(id: string): Promise<Service> {
 		return await this.serviceModel.findOne({ where: { id }, include: [User] })
 	}

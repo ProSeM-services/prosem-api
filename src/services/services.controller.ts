@@ -61,6 +61,17 @@ export class ServicesController {
 		}
 	}
 
+	@Get('/by-user/:id')
+	async getByUser(@Param('id') id: string, @Request() req: ExpressRequest) {
+		try {
+			if (!id) throw new Error('id require ')
+			const tenantName = await this.authService.getTenantFromHeaders(req)
+			return await this.servicesService.getServicesByUserId(tenantName, id)
+		} catch (error) {
+			throw error
+		}
+	}
+
 	@Get(':id')
 	async getById(@Param('id') id: string) {
 		try {

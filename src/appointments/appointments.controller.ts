@@ -9,6 +9,7 @@ import {
 	Delete,
 	Param,
 	Request,
+	Query,
 } from '@nestjs/common'
 import { Request as ExpressRequest } from 'express'
 import { AppointmentsService } from './appointments.service'
@@ -111,7 +112,31 @@ export class AppointmentsController {
 			throw error
 		}
 	}
+	@Get('/user/:id')
+	async getByMember(
+		@Request() req: ExpressRequest,
+		@Param('id') id: string,
+		@Query() query: { date: string }
+	) {
+		const { date } = query
+		try {
+			const token = await this.authService.getTenantFromHeaders(req)
+			if (!token) {
+				throw new UnauthorizedException('Missing or invalid token')
+			}
 
+			const appoitnemtnList = await this.appointmentService.getByUser(id)
+			if (date) {
+				return appoitnemtnList.filter(
+					(appointment) => appointment.date.split('T')[0] === date.split('T')[0]
+				)
+			}
+
+			return appoitnemtnList
+		} catch (error) {
+			throw error
+		}
+	}
 	@Get('/customer/:id')
 	async getByCustomer(@Param('id') id: string) {
 		try {
