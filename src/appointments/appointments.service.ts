@@ -22,6 +22,11 @@ export class AppointmentsService {
 	async getById(id: string) {
 		return await this.AppointmentModel.findOne({ where: { id } })
 	}
+	async getByService(tenantName: string, ServiceId: string) {
+		return await this.AppointmentModel.findAll({
+			where: { tenantName, ServiceId },
+		})
+	}
 	async create(data: AppointmentDTO) {
 		return await this.AppointmentModel.create(data)
 	}
