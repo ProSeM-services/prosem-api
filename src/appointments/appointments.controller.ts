@@ -100,14 +100,17 @@ export class AppointmentsController {
 		}
 	}
 	@Get()
-	async getAll(@Request() req: ExpressRequest) {
+	async getAll(
+		@Request() req: ExpressRequest,
+		@Query() query: { limit: number; page: number }
+	) {
 		try {
 			const token = await this.authService.getTenantFromHeaders(req)
 			if (!token) {
 				throw new UnauthorizedException('Missing or invalid token')
 			}
-
-			return await this.appointmentService.getAll(token)
+			const { limit, page } = query
+			return await this.appointmentService.getAll(token, limit, page)
 		} catch (error) {
 			throw error
 		}

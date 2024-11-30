@@ -93,7 +93,7 @@ export class StatsController {
 		]
 		try {
 			const tenantName = await this.authService.getTenantFromHeaders(req)
-			const appointments = await this.appointmentService.getAll(tenantName)
+			const { appointments } = await this.appointmentService.getAll(tenantName)
 			const services = await this.serviceService.getAll()
 			const { start, end, year } = query
 			const startDate = new Date(`${year}-${start}-01`)

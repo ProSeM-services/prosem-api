@@ -9,14 +9,32 @@ export class AppointmentsService {
 		@Inject(APPOINTMENT_REPOSITORY)
 		private readonly AppointmentModel: typeof Appointment
 	) {}
+	async getAll(token: string, limit: number = 10, page: number = 1) {
+		const offset = (page - 1) * limit
+		const [appointments, total] = await Promise.all([
+			this.AppointmentModel.findAll({
+				where: {
+					tenantName: token,
+				},
+				include: [User],
+				limit: limit,
+				offset: offset,
+				order: [['createdAt', 'DESC']],
+			}),
+			this.AppointmentModel.count({
+				where: {
+					tenantName: token,
+				},
+			}),
+		])
 
-	async getAll(token: string) {
-		return await this.AppointmentModel.findAll({
-			where: {
-				tenantName: token,
-			},
-			include: [User],
-		})
+		return {
+			appointments,
+			total,
+			limit,
+			offset,
+			page,
+		}
 	}
 
 	async getById(id: string) {
