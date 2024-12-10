@@ -2,13 +2,13 @@ import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { LoginAuthDto } from './dto/login-auth.dto'
 import { UserDTO } from 'src/user/dto/user.dto'
-import { CompanyService } from 'src/company/company.service'
+import { UserService } from 'src/user/user.service'
 
 @Controller('auth')
 export class AuthController {
 	constructor(
 		private readonly authService: AuthService,
-		private readonly companyService: CompanyService
+		private readonly userService: UserService
 	) {}
 
 	@Post('login')
@@ -31,11 +31,19 @@ export class AuthController {
 	@Post('register')
 	async register(@Body() user: UserDTO) {
 		try {
+			const validateEmail = await this.userService.findBy({
+				key: 'email',
+				value: user.email,
+			})
+			if (validateEmail) {
+				throw new UnauthorizedException('El email ya se encuentra registrado.')
+			}
+
 			const newUser = this.authService.register({ ...user, role: 'OWNER' })
 
 			return newUser
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Post('me')
