@@ -7,7 +7,7 @@ export class MailerService {
 	async sendEmail(email: string, data: { name: string; token: string }) {
 		await this.mailerSerivice.sendMail({
 			to: email,
-			subject: 'Titulo del correo',
+			subject: 'Bienvenido a ReservePro',
 			template: './welcome',
 			context: {
 				name: data.name,
