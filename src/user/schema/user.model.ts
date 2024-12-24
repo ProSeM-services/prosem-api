@@ -24,6 +24,12 @@ export class User extends BaseModel<User> {
 	companyName: string
 	@Column
 	password: string
+	@Column({ type: DataType.BOOLEAN, defaultValue: false })
+	emailConfirmed: boolean
+	@Column({ allowNull: true })
+	confirmationToken: string
+	@Column({ allowNull: true })
+	confirmationTokenExpiresAt: Date
 	@Column
 	image: string
 	@Column({

@@ -4,11 +4,16 @@ import { MailerService as MailerMainService } from '@nestjs-modules/mailer'
 export class MailerService {
 	constructor(private mailerSerivice: MailerMainService) {}
 
-	async sendEmail(email: string) {
+	async sendEmail(email: string, data: { name: string; token: string }) {
 		await this.mailerSerivice.sendMail({
 			to: email,
 			subject: 'Titulo del correo',
-			html: 'Hola',
+			template: './welcome',
+			context: {
+				name: data.name,
+				year: 2024,
+				confirmationLink: `${process.env.WEB_CLIENT_URL}/confirmation?token=${data.token}`,
+			},
 		})
 	}
 }

@@ -13,6 +13,9 @@ export const UserZodSchema = z.object({
 	tenantName: z.string().optional(),
 	phone: z.string().optional(),
 	image: z.string().optional(),
+	emailConfirmed: z.boolean().optional(),
+	confirmationToken: z.string().optional(),
+	confirmationTokenExpiresAt: z.date().optional(),
 	workhours: z.array(WorkhourZodSchema).optional(),
 })
 export const UpdateUserZodSchema = z.object({
