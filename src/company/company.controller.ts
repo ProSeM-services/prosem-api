@@ -10,6 +10,7 @@ import {
 	NotFoundException,
 	Request,
 	Query,
+	UseGuards,
 } from '@nestjs/common'
 import { CompanyService } from './company.service'
 import {
@@ -23,7 +24,10 @@ import { AuthService } from 'src/auth/auth.service'
 import { Request as ExpressRequest } from 'express'
 import { GeocodeService } from 'src/geocode/geocode.services'
 import { Location } from './interfaces/location.interface'
+import { AuthGuard } from 'src/auth/guards/auth.guard'
+import { PublicAcces } from 'src/auth/decorators/public.decorator'
 @Controller('company')
+@UseGuards(AuthGuard)
 export class CompanyController {
 	constructor(
 		private readonly companyService: CompanyService,
@@ -39,7 +43,7 @@ export class CompanyController {
 		}
 		return companyToUpdate
 	}
-
+	@PublicAcces()
 	@Get('/clients')
 	async getCompaniesForClients(
 		@Query() query: { name: string; category: string; city: string }
@@ -58,6 +62,7 @@ export class CompanyController {
 			throw error
 		}
 	}
+	@PublicAcces()
 	@Get('/clients/company-detail/:id')
 	async getCompanyDetailForClients(@Param() { id }: { id: Company['id'] }) {
 		try {
@@ -67,6 +72,7 @@ export class CompanyController {
 			throw error
 		}
 	}
+	@PublicAcces()
 	@Get('/clients/company-detail/:id/services')
 	async getServicesFromCompanyForClients(
 		@Param() { id }: { id: Company['id'] }
@@ -80,6 +86,7 @@ export class CompanyController {
 			throw error
 		}
 	}
+
 	@Get()
 	async getAll(
 		@Request() req: ExpressRequest,

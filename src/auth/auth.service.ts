@@ -99,7 +99,7 @@ export class AuthService {
 
 	async getTenantFromHeaders(request: Request) {
 		const [type, token] = request.headers.authorization?.split(' ') ?? []
-		if (!token) throw new UnauthorizedException()
+		if (!token) throw new UnauthorizedException('Invalid token')
 		try {
 			const payload = await this.jwtService.verifyAsync(token, {
 				secret: process.env.JWTKEY,
@@ -111,6 +111,23 @@ export class AuthService {
 				throw new NotFoundException('Tenant does not exist')
 			}
 			return tenantName
+		} catch (error) {
+			throw new UnauthorizedException()
+		}
+	}
+
+	async getDataFromToken(request: Request) {
+		const [type, token] = request.headers.authorization?.split(' ') ?? []
+		if (!token) throw new UnauthorizedException('Invalid token')
+		try {
+			const payload: IPayloadToken = await this.jwtService.verifyAsync(token, {
+				secret: process.env.JWTKEY,
+			})
+
+			if (!payload) {
+				throw new NotFoundException('payload does not exist')
+			}
+			return payload
 		} catch (error) {
 			throw new UnauthorizedException()
 		}
