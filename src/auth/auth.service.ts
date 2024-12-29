@@ -76,6 +76,7 @@ export class AuthService {
 			image: getUser.image,
 			userName: getUser.userName,
 			tenantName: getUser.tenantName,
+			companyName: getUser.companyName,
 		}
 
 		return {

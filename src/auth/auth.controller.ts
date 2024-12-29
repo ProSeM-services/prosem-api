@@ -51,6 +51,15 @@ export class AuthController {
 			if (validateEmail) {
 				throw new UnauthorizedException('El email ya se encuentra registrado.')
 			}
+			const validateUserName = await this.userService.findBy({
+				key: 'userName',
+				value: user.userName,
+			})
+			if (validateUserName) {
+				throw new UnauthorizedException(
+					'El nombre de usuario ya se encuentra registrado.'
+				)
+			}
 
 			const token = uuidv4()
 			const expiration = new Date()
