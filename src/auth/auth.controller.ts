@@ -1,10 +1,17 @@
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common'
+import {
+	Body,
+	Controller,
+	Post,
+	Request,
+	UnauthorizedException,
+} from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { LoginAuthDto } from './dto/login-auth.dto'
 import { UserDTO } from 'src/user/dto/user.dto'
 import { UserService } from 'src/user/user.service'
 import { v4 as uuidv4 } from 'uuid'
 import { MailerService } from 'src/mailer/mailer.service'
+import { Request as ExpressRequest } from 'express'
 
 @Controller('auth')
 export class AuthController {
@@ -43,6 +50,15 @@ export class AuthController {
 			})
 			if (validateEmail) {
 				throw new UnauthorizedException('El email ya se encuentra registrado.')
+			}
+			const validateUserName = await this.userService.findBy({
+				key: 'userName',
+				value: user.userName,
+			})
+			if (validateUserName) {
+				throw new UnauthorizedException(
+					'El nombre de usuario ya se encuentra registrado.'
+				)
 			}
 
 			const token = uuidv4()
@@ -87,7 +103,7 @@ export class AuthController {
 		}
 	}
 	@Post('me')
-	me(@Body() { token }: { token: string }) {
-		return this.authService.me(token)
+	me(@Request() req: ExpressRequest) {
+		return this.authService.me(req)
 	}
 }

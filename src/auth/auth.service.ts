@@ -76,6 +76,7 @@ export class AuthService {
 			image: getUser.image,
 			userName: getUser.userName,
 			tenantName: getUser.tenantName,
+			companyName: getUser.companyName,
 		}
 
 		return {
@@ -87,14 +88,21 @@ export class AuthService {
 		}
 	}
 
-	public async me(token: string) {
-		const payload = jwt.verify(token, process.env.JWTKEY)
+	public async me(request: Request) {
+		const [type, token] = request.headers.authorization?.split(' ') ?? []
+		if (!token) throw new UnauthorizedException()
+		try {
+			const payload = await this.jwtService.verifyAsync(token, {
+				secret: process.env.JWTKEY,
+			})
+			if (!payload) {
+				throw new NotFoundException('Tenant does not exist')
+			}
 
-		if (!payload) {
-			throw new UnauthorizedException('Invalid token')
+			return payload
+		} catch (error) {
+			throw new UnauthorizedException()
 		}
-
-		return payload
 	}
 
 	async getTenantFromHeaders(request: Request) {

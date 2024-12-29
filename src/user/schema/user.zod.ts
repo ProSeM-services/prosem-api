@@ -27,7 +27,7 @@ export const UpdateUserZodSchema = z.object({
 	role: z.enum(ROLES_VALUES).optional(),
 	companyName: z.string().optional(),
 	tenantName: z.string().optional(),
-	phone: z.string().optional(),
+	phone: z.string().optional().nullable(),
 	image: z.string().optional(),
 	workhours: z.array(WorkhourZodSchema).optional(),
 })
