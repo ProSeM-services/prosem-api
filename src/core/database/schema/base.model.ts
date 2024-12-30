@@ -17,8 +17,11 @@ export class BaseModel<T> extends Model<T> {
 	})
 	id: string
 
-	@Column
-	tenantName: string
+	@Column({
+		type: DataType.STRING,
+		allowNull: true,
+	})
+	tenantName?: string
 
 	@BeforeCreate
 	static generateId(instance: BaseModel<any>) {
