@@ -26,8 +26,10 @@ import { GeocodeService } from 'src/geocode/geocode.services'
 import { Location } from './interfaces/location.interface'
 import { AuthGuard } from 'src/auth/guards/auth.guard'
 import { PublicAcces } from 'src/auth/decorators/public.decorator'
+import { RolesGuard } from 'src/auth/guards/roles.guard'
+import { Roles } from 'src/auth/decorators/roles.decorators'
 @Controller('company')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, RolesGuard)
 export class CompanyController {
 	constructor(
 		private readonly companyService: CompanyService,
@@ -87,6 +89,7 @@ export class CompanyController {
 		}
 	}
 
+	@Roles('ADMIN')
 	@Get()
 	async getAll(
 		@Request() req: ExpressRequest,

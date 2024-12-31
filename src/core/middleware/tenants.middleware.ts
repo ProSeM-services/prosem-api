@@ -21,7 +21,7 @@ export class TenantsMiddleware implements NestMiddleware {
 	async use(req: Request, res: any, next: () => void) {
 		const token = this.extractTokenFromHeader(req)
 
-		if (!token) throw new UnauthorizedException()
+		if (!token) throw new UnauthorizedException('Missing token')
 
 		try {
 			const payload = await this.jwtService.verifyAsync(token, {
