@@ -11,7 +11,7 @@ import {
 	PUBLIC_KEY,
 	ROLES_KEY,
 } from 'src/core/constants/key-decorators'
-import { ROLES, ROLES_VALUES } from 'src/core/types/role'
+import { ROLES, Role } from 'src/core/types/role'
 import { Request } from 'express'
 
 @Injectable()
@@ -31,7 +31,7 @@ export class RolesGuard implements CanActivate {
 		const admin = this.reflector.get<string>(ADMIN_KEY, context.getHandler())
 
 		const { role } = context.switchToHttp().getRequest<Request>()
-
+		const roleValue = role as Role
 		if (!roles) {
 			if (!admin) {
 				return true
@@ -42,7 +42,7 @@ export class RolesGuard implements CanActivate {
 			}
 		}
 
-		if (role === ROLES.ADMIN || role === ROLES.OWNER) {
+		if (roleValue === 'ADMIN' || roleValue === 'OWNER') {
 			return true
 		}
 

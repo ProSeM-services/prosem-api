@@ -1,5 +1,6 @@
 import { Table, Column, DataType } from 'sequelize-typescript'
 import { BaseModel } from 'src/core/database/schema/base.model'
+import { Permission } from 'src/core/types/permissions'
 import { Role, ROLES_VALUES } from 'src/core/types/role'
 import { IWorkhour } from 'src/core/types/workhours'
 @Table
@@ -37,6 +38,11 @@ export class User extends BaseModel<User> {
 		defaultValue: [],
 	})
 	workhours: IWorkhour[]
+	@Column({
+		type: DataType.ARRAY(DataType.JSON),
+		defaultValue: [],
+	})
+	permissions: Permission[]
 	@Column({
 		type: DataType.UUID,
 	})

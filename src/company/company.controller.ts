@@ -28,8 +28,11 @@ import { AuthGuard } from 'src/auth/guards/auth.guard'
 import { PublicAcces } from 'src/auth/decorators/public.decorator'
 import { RolesGuard } from 'src/auth/guards/roles.guard'
 import { Roles } from 'src/auth/decorators/roles.decorators'
+import { RequiresPermission } from 'src/auth/decorators/permissions.decorator'
+import { Permission } from 'src/core/types/permissions'
+import { PermissionsGuard } from 'src/auth/guards/permissions.guard'
 @Controller('company')
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, PermissionsGuard)
 export class CompanyController {
 	constructor(
 		private readonly companyService: CompanyService,
@@ -89,7 +92,8 @@ export class CompanyController {
 		}
 	}
 
-	@Roles('ADMIN')
+	// @Roles('ADMIN')
+	@RequiresPermission(Permission.CREATE_COMPANY)
 	@Get()
 	async getAll(
 		@Request() req: ExpressRequest,

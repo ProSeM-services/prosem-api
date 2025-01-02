@@ -1,7 +1,7 @@
 import { ROLES_VALUES } from 'src/core/types/role'
 import { WorkhourZodSchema } from 'src/core/types/workhours'
-import { z } from 'zod'
-
+import { number, z } from 'zod'
+import { Permission } from 'src/core/types/permissions'
 export const UserZodSchema = z.object({
 	name: z.string().min(1),
 	lastName: z.string().min(1),
@@ -17,6 +17,9 @@ export const UserZodSchema = z.object({
 	confirmationToken: z.string().optional(),
 	confirmationTokenExpiresAt: z.date().optional(),
 	workhours: z.array(WorkhourZodSchema).optional(),
+	perimissions: z
+		.array(z.nativeEnum(Permission), { description: 'El permiso no es válido' })
+		.optional(),
 })
 export const UpdateUserZodSchema = z.object({
 	name: z.string().optional(),
