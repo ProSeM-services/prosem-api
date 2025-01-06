@@ -10,6 +10,7 @@ import {
 	NotFoundException,
 	Request,
 	Query,
+	UseGuards,
 } from '@nestjs/common'
 import { CompanyService } from './company.service'
 import {
@@ -23,7 +24,15 @@ import { AuthService } from 'src/auth/auth.service'
 import { Request as ExpressRequest } from 'express'
 import { GeocodeService } from 'src/geocode/geocode.services'
 import { Location } from './interfaces/location.interface'
+import { AuthGuard } from 'src/auth/guards/auth.guard'
+import { PublicAcces } from 'src/auth/decorators/public.decorator'
+import { RolesGuard } from 'src/auth/guards/roles.guard'
+import { Roles } from 'src/auth/decorators/roles.decorators'
+import { RequiresPermission } from 'src/auth/decorators/permissions.decorator'
+import { Permission } from 'src/core/types/permissions'
+import { PermissionsGuard } from 'src/auth/guards/permissions.guard'
 @Controller('company')
+@UseGuards(AuthGuard, RolesGuard, PermissionsGuard)
 export class CompanyController {
 	constructor(
 		private readonly companyService: CompanyService,
@@ -39,7 +48,7 @@ export class CompanyController {
 		}
 		return companyToUpdate
 	}
-
+	@PublicAcces()
 	@Get('/clients')
 	async getCompaniesForClients(
 		@Query() query: { name: string; category: string; city: string }
@@ -58,6 +67,7 @@ export class CompanyController {
 			throw error
 		}
 	}
+	@PublicAcces()
 	@Get('/clients/company-detail/:id')
 	async getCompanyDetailForClients(@Param() { id }: { id: Company['id'] }) {
 		try {
@@ -67,6 +77,7 @@ export class CompanyController {
 			throw error
 		}
 	}
+	@PublicAcces()
 	@Get('/clients/company-detail/:id/services')
 	async getServicesFromCompanyForClients(
 		@Param() { id }: { id: Company['id'] }
@@ -80,6 +91,9 @@ export class CompanyController {
 			throw error
 		}
 	}
+
+	// @Roles('ADMIN')
+
 	@Get()
 	async getAll(
 		@Request() req: ExpressRequest,
@@ -113,6 +127,7 @@ export class CompanyController {
 		}
 	}
 
+	@RequiresPermission(Permission.CREATE_COMPANY)
 	@Post()
 	async create(@Request() req: ExpressRequest, @Body() data: CreateCompanyDTO) {
 		try {
@@ -135,6 +150,7 @@ export class CompanyController {
 			throw error
 		}
 	}
+	@RequiresPermission(Permission.DELETE_COMPANY)
 	@Delete(':id')
 	async delete(@Param() { id }: { id: string }) {
 		try {
@@ -155,6 +171,7 @@ export class CompanyController {
 			throw error
 		}
 	}
+	@RequiresPermission(Permission.UPDATE_COMPANY)
 	@Patch(':id')
 	async update(@Param() { id }: { id: string }, @Body() data: UpdateCompanyDTO) {
 		try {
