@@ -11,6 +11,7 @@ import {
 	UnauthorizedException,
 	Request,
 	BadRequestException,
+	Query,
 } from '@nestjs/common'
 import { UserService } from './user.service'
 import { CompanyService } from 'src/company/company.service'
@@ -19,12 +20,14 @@ import * as bcrypt from 'bcrypt'
 import { AuthService } from 'src/auth/auth.service'
 import { Request as ExpressRequest } from 'express'
 import { Permission } from 'src/core/types/permissions'
+import { MailerService } from 'src/mailer/mailer.service'
 @Controller('user')
 export class UserController {
 	constructor(
 		private readonly userService: UserService,
 		private readonly comapanyService: CompanyService,
-		private authService: AuthService
+		private authService: AuthService,
+		private mailerService: MailerService
 	) {}
 
 	async checkUserExist(id: string) {
@@ -204,6 +207,40 @@ export class UserController {
 			// Guardar el modelo actualizado
 			await user.save()
 			return user
+		} catch (error) {
+			throw error
+		}
+	}
+
+	@Post('/invite/:id')
+	async inviteUser(
+		@Param() { id }: { id: string },
+		@Request() req: ExpressRequest
+	) {
+		try {
+			const tenantName = await this.authService.getTenantFromHeaders(req)
+			const user = await this.checkUserExist(id)
+			if (!user) {
+				throw new NotFoundException('User not found!')
+			}
+			const { email, name } = user
+
+			await this.mailerService.sendInvite(email, {
+				companyName: tenantName,
+				name,
+				token: '',
+			})
+		} catch (error) {
+			throw error
+		}
+	}
+	@Get('/search')
+	async searchMembers(@Query('value') value: string) {
+		try {
+			if (!value) {
+				return [] // Retornar vacío si no hay valor
+			}
+			return this.userService.searchUsers(value)
 		} catch (error) {
 			throw error
 		}
