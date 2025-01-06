@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common'
 import { USER_REPOSITORY } from 'src/core/constants'
 import { User } from './schema/user.model'
 import { Appointment } from 'src/appointments/schema/appointment.model'
+import { Op } from 'sequelize'
 @Injectable()
 export class UserService {
 	constructor(
@@ -41,6 +42,16 @@ export class UserService {
 
 	async getByCompany(CompanyId: string): Promise<User[]> {
 		return this.UserModel.findAll({ where: { CompanyId } })
+	}
+	async searchUsers(value: string): Promise<User[]> {
+		return await this.UserModel.findAll({
+			where: {
+				[Op.or]: [
+					{ name: { [Op.iLike]: `%${value}%` } }, // Buscar en `name`
+					{ lastName: { [Op.iLike]: `%${value}%` } }, // Buscar en `lastName`
+				],
+			},
+		})
 	}
 	public async findBy({
 		key,
