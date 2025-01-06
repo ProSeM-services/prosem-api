@@ -20,18 +20,4 @@ import { GeocodeService } from 'src/geocode/geocode.services'
 		...companyProviders,
 	],
 })
-export class CompanyModule {
-	// configure(consumer: MiddlewareConsumer) {
-	// 	consumer
-	// 		.apply(TenantsMiddleware)
-	// 		.exclude(
-	// 			{ path: 'company/clients', method: RequestMethod.GET },
-	// 			{ path: 'company/clients/company-detail/:id', method: RequestMethod.GET },
-	// 			{
-	// 				path: 'company/clients/company-detail/:id/services',
-	// 				method: RequestMethod.GET,
-	// 			}
-	// 		)
-	// 		.forRoutes(CompanyController)
-	// }
-}
+export class CompanyModule {}

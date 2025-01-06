@@ -10,6 +10,7 @@ import {
 	Headers,
 	UnauthorizedException,
 	Request,
+	BadRequestException,
 } from '@nestjs/common'
 import { UserService } from './user.service'
 import { CompanyService } from 'src/company/company.service'
@@ -17,6 +18,7 @@ import { UpdateUserDTO, UserDTO } from './dto/user.dto'
 import * as bcrypt from 'bcrypt'
 import { AuthService } from 'src/auth/auth.service'
 import { Request as ExpressRequest } from 'express'
+import { Permission } from 'src/core/types/permissions'
 @Controller('user')
 export class UserController {
 	constructor(
@@ -186,7 +188,22 @@ export class UserController {
 					password: hashPassword,
 				})
 			}
-			return await this.userService.update(id, data)
+			if (data.permissions) {
+				const invalidPermissions = data.permissions.filter(
+					(perm) => !Object.values(Permission).includes(perm)
+				)
+				if (invalidPermissions.length > 0) {
+					throw new BadRequestException(
+						`Permisos inválidos: ${invalidPermissions.join(', ')}`
+					)
+				}
+			}
+
+			await user.update(data)
+
+			// Guardar el modelo actualizado
+			await user.save()
+			return user
 		} catch (error) {
 			throw error
 		}

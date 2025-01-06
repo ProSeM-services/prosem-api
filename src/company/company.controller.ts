@@ -93,7 +93,7 @@ export class CompanyController {
 	}
 
 	// @Roles('ADMIN')
-	@RequiresPermission(Permission.CREATE_COMPANY)
+
 	@Get()
 	async getAll(
 		@Request() req: ExpressRequest,
@@ -127,6 +127,7 @@ export class CompanyController {
 		}
 	}
 
+	@RequiresPermission(Permission.CREATE_COMPANY)
 	@Post()
 	async create(@Request() req: ExpressRequest, @Body() data: CreateCompanyDTO) {
 		try {
@@ -149,6 +150,7 @@ export class CompanyController {
 			throw error
 		}
 	}
+	@RequiresPermission(Permission.DELETE_COMPANY)
 	@Delete(':id')
 	async delete(@Param() { id }: { id: string }) {
 		try {
@@ -169,6 +171,7 @@ export class CompanyController {
 			throw error
 		}
 	}
+	@RequiresPermission(Permission.UPDATE_COMPANY)
 	@Patch(':id')
 	async update(@Param() { id }: { id: string }, @Body() data: UpdateCompanyDTO) {
 		try {

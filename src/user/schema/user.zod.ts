@@ -17,8 +17,8 @@ export const UserZodSchema = z.object({
 	confirmationToken: z.string().optional(),
 	confirmationTokenExpiresAt: z.date().optional(),
 	workhours: z.array(WorkhourZodSchema).optional(),
-	perimissions: z
-		.array(z.nativeEnum(Permission), { description: 'El permiso no es válido' })
+	permissions: z
+		.array(z.nativeEnum(Permission), { message: 'El permiso no es válido' })
 		.optional(),
 })
 export const UpdateUserZodSchema = z.object({
@@ -33,6 +33,9 @@ export const UpdateUserZodSchema = z.object({
 	phone: z.string().optional().nullable(),
 	image: z.string().optional(),
 	workhours: z.array(WorkhourZodSchema).optional(),
+	permissions: z
+		.array(z.nativeEnum(Permission), { message: 'El permiso no es válido' })
+		.optional(),
 })
 export type IUser = z.infer<typeof UserZodSchema>
 export type IUpdateUser = z.infer<typeof UpdateUserZodSchema>
