@@ -10,6 +10,7 @@ import {
 	Headers,
 	UnauthorizedException,
 	Request,
+	BadRequestException,
 	Query,
 } from '@nestjs/common'
 import { UserService } from './user.service'
@@ -17,7 +18,8 @@ import { CompanyService } from 'src/company/company.service'
 import { UpdateUserDTO, UserDTO } from './dto/user.dto'
 import * as bcrypt from 'bcrypt'
 import { AuthService } from 'src/auth/auth.service'
-import { Request as ExpressRequest, query } from 'express'
+import { Request as ExpressRequest } from 'express'
+import { Permission } from 'src/core/types/permissions'
 import { MailerService } from 'src/mailer/mailer.service'
 @Controller('user')
 export class UserController {
@@ -75,39 +77,6 @@ export class UserController {
 				throw new NotFoundException('User not found!')
 			}
 			return user
-		} catch (error) {
-			throw error
-		}
-	}
-	@Post('/invite/:id')
-	async inviteUser(
-		@Param() { id }: { id: string },
-		@Request() req: ExpressRequest
-	) {
-		try {
-			const tenantName = await this.authService.getTenantFromHeaders(req)
-			const user = await this.checkUserExist(id)
-			if (!user) {
-				throw new NotFoundException('User not found!')
-			}
-			const { email, name } = user
-
-			await this.mailerService.sendInvite(email, {
-				companyName: tenantName,
-				name,
-				token: '',
-			})
-		} catch (error) {
-			throw error
-		}
-	}
-	@Get('/search')
-	async searchMembers(@Query('value') value: string) {
-		try {
-			if (!value) {
-				return [] // Retornar vacío si no hay valor
-			}
-			return this.userService.searchUsers(value)
 		} catch (error) {
 			throw error
 		}
@@ -222,7 +191,56 @@ export class UserController {
 					password: hashPassword,
 				})
 			}
-			return await this.userService.update(id, data)
+			if (data.permissions) {
+				const invalidPermissions = data.permissions.filter(
+					(perm) => !Object.values(Permission).includes(perm)
+				)
+				if (invalidPermissions.length > 0) {
+					throw new BadRequestException(
+						`Permisos inválidos: ${invalidPermissions.join(', ')}`
+					)
+				}
+			}
+
+			await user.update(data)
+
+			// Guardar el modelo actualizado
+			await user.save()
+			return user
+		} catch (error) {
+			throw error
+		}
+	}
+
+	@Post('/invite/:id')
+	async inviteUser(
+		@Param() { id }: { id: string },
+		@Request() req: ExpressRequest
+	) {
+		try {
+			const tenantName = await this.authService.getTenantFromHeaders(req)
+			const user = await this.checkUserExist(id)
+			if (!user) {
+				throw new NotFoundException('User not found!')
+			}
+			const { email, name } = user
+
+			await this.mailerService.sendInvite(email, {
+				companyName: tenantName,
+				name,
+				token: '',
+			})
+		} catch (error) {
+			throw error
+		}
+	}
+	@Get('/search')
+	async searchMembers(@Query('value') value: string) {
+		try {
+			if (!value) {
+				return [] // Retornar vacío si no hay valor
+			}
+			return this.userService.searchUsers(value)
 		} catch (error) {
 			throw error
 		}
