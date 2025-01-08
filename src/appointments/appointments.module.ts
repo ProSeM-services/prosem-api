@@ -12,6 +12,7 @@ import { CustomerService } from 'src/customer/customer.service'
 import { customerProvider } from 'src/customer/customer.provider'
 import { AuthService } from 'src/auth/auth.service'
 import { JwtService } from '@nestjs/jwt'
+import { AppointmentsGateway } from './appointment.gateway'
 
 @Module({
 	controllers: [AppointmentsController],
@@ -23,11 +24,13 @@ import { JwtService } from '@nestjs/jwt'
 		CustomerService,
 		AuthService,
 		JwtService,
+		AppointmentsGateway,
 		...customerProvider,
 		...companyProviders,
 		...userProvider,
 		...appointmentProvider,
 		...servicesProviders,
 	],
+	exports: [AppointmentsGateway],
 })
 export class AppointmentsModule {}
