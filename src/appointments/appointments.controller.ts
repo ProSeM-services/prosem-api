@@ -22,7 +22,9 @@ import { SlotAppointmentDTO } from './dto/slot.dto'
 import { CustomerService } from 'src/customer/customer.service'
 import { ICreateCustomer } from 'src/customer/schema/customer.zod'
 import { AuthService } from 'src/auth/auth.service'
-
+import { v4 as uuidv4 } from 'uuid'
+import { MailerService } from 'src/mailer/mailer.service'
+import { formatDate } from 'src/utils/format-date'
 @Controller('appointments')
 export class AppointmentsController {
 	constructor(
@@ -30,7 +32,8 @@ export class AppointmentsController {
 		private readonly userService: UserService,
 		private readonly servicesSerivce: ServicesService,
 		private readonly customerService: CustomerService,
-		private authService: AuthService
+		private authService: AuthService,
+		private mailerSerivce: MailerService
 	) {}
 	async getSlotsByDate(userId: string, date: string, duration: number) {
 		try {
@@ -148,6 +151,19 @@ export class AppointmentsController {
 			throw error
 		}
 	}
+	@Get('/cancelationToken/:token')
+	async getByCancelationToken(@Param('token') token: string) {
+		try {
+			const appointment =
+				await this.appointmentService.getByCancelationToken(token)
+			if (!appointment) {
+				throw new UnauthorizedException('Missing appointment')
+			}
+			return appointment
+		} catch (error) {
+			throw error
+		}
+	}
 
 	@Post('member-slots')
 	async memberSlots(
@@ -198,6 +214,7 @@ export class AppointmentsController {
 			const customer = await this.customerService.findOrCreateByEmail(customerData)
 
 			//EN ESTE PUNTO: Los datos estan OK y se puede sacar el turno.
+			const cancelationToken = uuidv4()
 			const newAppointment = await this.appointmentService.create({
 				...data,
 				duration: service.duration,
@@ -205,10 +222,18 @@ export class AppointmentsController {
 				CustomerId: customer.id,
 				tenantName: user.tenantName,
 				companyId: user.CompanyId,
+				cancelationToken,
 			})
 
-			//TODO: Luego de crear el turno hay que hacer la logica de customer, usando el email cómo valor unico.
-
+			await this.mailerSerivce.sendAppointmentdata(data.email, {
+				cancelationToken,
+				day: formatDate(data.date.toString()),
+				name: `${customerData.firstName}, ${customerData.lastName}`,
+				service: service.title,
+				serviceProvision: service.provision,
+				time: data.time,
+				userName: `${user.name}, ${user.lastName}`,
+			})
 			return newAppointment
 		} catch (error) {
 			throw error
@@ -229,9 +254,20 @@ export class AppointmentsController {
 			if (!user) {
 				throw new UnauthorizedException('User not found.')
 			}
+			const service = await this.servicesSerivce.getById(appointment.ServiceId)
+			if (!user) {
+				throw new UnauthorizedException('User not found.')
+			}
 
 			await this.appointmentService.cancelAppointment(appointment)
-
+			await this.mailerSerivce.sendCancelationOK(appointment.email, {
+				day: formatDate(appointment.date.toString()),
+				name: `${appointment.name}, ${appointment.lastName}`,
+				service: service.title,
+				serviceProvision: service.provision,
+				time: appointment.time,
+				userName: `${user.name}, ${user.lastName}`,
+			})
 			return 'Appointment cancelled succesfully!'
 		} catch (error) {
 			throw error
