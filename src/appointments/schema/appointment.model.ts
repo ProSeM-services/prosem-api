@@ -15,6 +15,8 @@ export class Appointment extends BaseModel<Appointment> {
 	@Column
 	time: string
 	@Column
+	cancelationToken: string
+	@Column
 	canceled: boolean
 	@Column
 	duration: number
