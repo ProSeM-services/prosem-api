@@ -17,6 +17,8 @@ export enum Permission {
 	VIEW_APPOINTMENTS = 'view:appointments',
 	CREATE_WORKHOURS = 'create:workhours',
 	UPDATE_WORKHOURS = 'update:workhours',
+	UPDATE_OWN_WORKHOURS = 'update:own_workhours',
 	DELETE_WORKHOURS = 'delete:workhours',
 	VIEW_WORKHOURS = 'view:workhours',
+	VIEW_CUSTOMERS = 'view:customers',
 }
