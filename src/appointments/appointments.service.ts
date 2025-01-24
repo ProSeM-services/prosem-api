@@ -3,6 +3,7 @@ import { APPOINTMENT_REPOSITORY } from 'src/core/constants'
 import { Appointment } from './schema/appointment.model'
 import { AppointmentDTO } from './dto/appointment.dto'
 import { User } from 'src/user/schema/user.model'
+import { Service } from 'src/services/schema/service.model'
 import { AppointmentsGateway } from './appointment.gateway'
 @Injectable()
 export class AppointmentsService {
@@ -40,7 +41,10 @@ export class AppointmentsService {
 	}
 
 	async getById(id: string) {
-		return await this.AppointmentModel.findOne({ where: { id } })
+		return await this.AppointmentModel.findOne({
+			where: { id },
+			include: [User, Service],
+		})
 	}
 	async getByService(tenantName: string, ServiceId: string) {
 		return await this.AppointmentModel.findAll({
@@ -69,6 +73,12 @@ export class AppointmentsService {
 
 	async getByUser(UserId: string) {
 		return this.AppointmentModel.findAll({ where: { UserId } })
+	}
+	async getByCancelationToken(cancelationToken: string) {
+		return this.AppointmentModel.findOne({
+			where: { cancelationToken },
+			include: [User, Service],
+		})
 	}
 	async getByCustomer(CustomerId: string) {
 		return this.AppointmentModel.findAll({ where: { CustomerId } })

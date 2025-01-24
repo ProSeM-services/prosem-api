@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { MailerService as MailerMainService } from '@nestjs-modules/mailer'
+import { IAppointment } from 'src/appointments/schema/appointment.zod'
 @Injectable()
 export class MailerService {
 	constructor(private mailerSerivice: MailerMainService) {}
@@ -30,6 +31,49 @@ export class MailerService {
 				companyName: data.companyName,
 				year: 2024,
 				confirmationLink: `${process.env.WEB_CLIENT_URL}/confimrInvitaion?token=${data.token}`,
+			},
+		})
+	}
+	async sendAppointmentdata(
+		email: string,
+		data: {
+			name: string
+			userName: string
+			time: string
+			day: string
+			serviceProvision: string
+			service: string
+			cancelationToken: string
+		}
+	) {
+		await this.mailerSerivice.sendMail({
+			to: email,
+			subject: `Agendaste un turno en ReservePro`,
+			template: './appointment-data',
+			context: {
+				...data,
+				year: 2024,
+				cancelationLink: `${process.env.WEB_CLIENT_URL}/cancel-appointment?token=${data.cancelationToken}`,
+			},
+		})
+	}
+	async sendCancelationOK(
+		email: string,
+		data: {
+			name: string
+			userName: string
+			time: string
+			day: string
+			serviceProvision: string
+			service: string
+		}
+	) {
+		await this.mailerSerivice.sendMail({
+			to: email,
+			subject: `Cancelación de turno`,
+			template: './appointment-cancel',
+			context: {
+				...data,
 			},
 		})
 	}

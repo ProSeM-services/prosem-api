@@ -24,11 +24,9 @@ export const ROLES: Record<Role, { permissions: Permission[] }> = {
 	},
 	BASIC: {
 		permissions: [
-			Permission.VIEW_COMPANY,
-			Permission.VIEW_MEMBERS,
-			Permission.VIEW_SERVICES,
 			Permission.VIEW_APPOINTMENTS,
 			Permission.VIEW_WORKHOURS,
+			Permission.VIEW_CUSTOMERS,
 		],
 	},
 }

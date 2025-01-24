@@ -12,6 +12,7 @@ import { CustomerService } from 'src/customer/customer.service'
 import { customerProvider } from 'src/customer/customer.provider'
 import { AuthService } from 'src/auth/auth.service'
 import { JwtService } from '@nestjs/jwt'
+import { MailerService } from 'src/mailer/mailer.service'
 import { AppointmentsGateway } from './appointment.gateway'
 
 @Module({
@@ -24,6 +25,7 @@ import { AppointmentsGateway } from './appointment.gateway'
 		CustomerService,
 		AuthService,
 		JwtService,
+		MailerService,
 		AppointmentsGateway,
 		...customerProvider,
 		...companyProviders,
