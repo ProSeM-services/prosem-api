@@ -52,11 +52,8 @@ export class AppointmentsService {
 		})
 	}
 	async create(data: AppointmentDTO) {
-		this.appointmentsGateway.notifyNewTurno(data)
+		this.appointmentsGateway.notifyNewTurno(data, data.tenantName)
 		return await this.AppointmentModel.create(data)
-	}
-	async notificatiom(data: any) {
-		return this.appointmentsGateway.notifyNewTurno(data)
 	}
 
 	async delete(id: string) {

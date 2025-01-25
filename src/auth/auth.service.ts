@@ -123,6 +123,23 @@ export class AuthService {
 			throw new UnauthorizedException()
 		}
 	}
+	async getTenantFromToken(token: string) {
+		if (!token) throw new UnauthorizedException('Invalid token')
+		try {
+			const payload = await this.jwtService.verifyAsync(token, {
+				secret: process.env.JWTKEY,
+			})
+
+			const { tenantName } = payload
+
+			if (!tenantName) {
+				throw new NotFoundException('Tenant does not exist')
+			}
+			return tenantName
+		} catch (error) {
+			throw new UnauthorizedException()
+		}
+	}
 
 	async getDataFromToken(request: Request) {
 		const [type, token] = request.headers.authorization?.split(' ') ?? []

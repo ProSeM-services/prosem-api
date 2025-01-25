@@ -6,7 +6,7 @@ export class Customer extends BaseModel<Customer> {
 	firstName: string
 	@Column
 	lastName: string
-	@Column({ unique: true })
+	@Column
 	email: string
 	@Column
 	phone: string

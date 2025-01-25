@@ -171,7 +171,7 @@ export class AppointmentsController {
 		{ turno }: { turno: any }
 	) {
 		try {
-			return await this.appointmentService.notificatiom(turno)
+			// return await this.appointmentService.notificatiom(turno)
 		} catch (error) {
 			throw error
 		}
