@@ -12,7 +12,12 @@ import { AuthService } from 'src/auth/auth.service'
 
 @WebSocketGateway({
 	cors: {
-		origin: ['http://localhost:3000', 'http://localhost:5173'], // Dominios permitidos (Backoffice y Client Page)
+		origin: [
+			'http://localhost:3000',
+			'http://localhost:5173',
+			'https://reserve-pro-backoffice.vercel.app/',
+			'https://reservepro.vercel.app/',
+		], // Dominios permitidos (Backoffice y Client Page)
 	},
 })
 export class AppointmentsGateway
