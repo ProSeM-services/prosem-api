@@ -165,6 +165,17 @@ export class AppointmentsController {
 		}
 	}
 
+	@Post('notifications')
+	async send(
+		@Body()
+		{ turno }: { turno: any }
+	) {
+		try {
+			// return await this.appointmentService.notificatiom(turno)
+		} catch (error) {
+			throw error
+		}
+	}
 	@Post('member-slots')
 	async memberSlots(
 		@Body()

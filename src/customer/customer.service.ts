@@ -30,7 +30,7 @@ export class CustomerService {
 	}
 	async findOrCreateByEmail(data: CreateCustomerDTO): Promise<Customer> {
 		const customer = await this.customerModel.findOne({
-			where: { email: data.email },
+			where: { email: data.email, tenantName: data.tenantName },
 		})
 
 		if (customer) return customer

@@ -18,6 +18,7 @@ const envZodModel = z.object({
 	AWS_SECRET_ACCESS_KEY: z.string(),
 	AWS_BUCKET: z.string(),
 	WEB_CLIENT_URL: z.string().url(),
+	WEB_BACKOFFICE_URL: z.string().url(),
 	NODE_ENV: z.string().optional(),
 })
 

@@ -6,6 +6,7 @@ export class MailerService {
 	constructor(private mailerSerivice: MailerMainService) {}
 
 	async sendEmail(email: string, data: { name: string; token: string }) {
+		//THIS IS FOR EMAIL CONFIRAMTION
 		await this.mailerSerivice.sendMail({
 			to: email,
 			subject: 'Bienvenido a ReservePro',
@@ -13,7 +14,7 @@ export class MailerService {
 			context: {
 				name: data.name,
 				year: 2024,
-				confirmationLink: `${process.env.WEB_CLIENT_URL}/confirmation?token=${data.token}`,
+				confirmationLink: `${process.env.WEB_BACKOFFICE_URL}/confirmation?token=${data.token}`,
 			},
 		})
 	}
@@ -30,7 +31,7 @@ export class MailerService {
 				name: data.name,
 				companyName: data.companyName,
 				year: 2024,
-				confirmationLink: `${process.env.WEB_CLIENT_URL}/confimrInvitaion?token=${data.token}`,
+				confirmationLink: `${process.env.WEB_BACKOFFICE_URL}/confimrInvitaion?token=${data.token}`,
 			},
 		})
 	}

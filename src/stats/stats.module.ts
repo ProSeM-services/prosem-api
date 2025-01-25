@@ -14,8 +14,10 @@ import { CustomerService } from 'src/customer/customer.service'
 import { customerProvider } from 'src/customer/customer.provider'
 import { ServicesService } from 'src/services/services.service'
 import { servicesProviders } from 'src/services/services.providers'
+import { AppointmentsModule } from 'src/appointments/appointments.module'
 
 @Module({
+	imports: [AppointmentsModule],
 	controllers: [StatsController],
 	providers: [
 		StatsService,
