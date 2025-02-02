@@ -8,6 +8,9 @@ export const AppointmentZodSchema = z.object({
 	email: z.string().email(),
 	phone: z.string().min(1),
 	time: z.string().min(1),
+	price: z.number().optional(),
+	confirmed: z.boolean().optional(),
+	payment_method: z.string().optional(),
 	cancelationToken: z.string().optional(),
 	duration: z.number().optional(),
 	date: z

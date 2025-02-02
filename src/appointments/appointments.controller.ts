@@ -2,14 +2,12 @@ import {
 	Body,
 	Controller,
 	Get,
-	NotFoundException,
 	Post,
-	NotAcceptableException,
 	UnauthorizedException,
-	Delete,
 	Param,
 	Request,
 	Query,
+	Patch,
 } from '@nestjs/common'
 import { Request as ExpressRequest } from 'express'
 import { AppointmentsService } from './appointments.service'
@@ -234,6 +232,8 @@ export class AppointmentsController {
 				tenantName: user.tenantName,
 				companyId: user.CompanyId,
 				cancelationToken,
+				confirmed: false,
+				price: service.price,
 			})
 
 			await this.mailerSerivce.sendAppointmentdata(data.email, {
@@ -280,6 +280,19 @@ export class AppointmentsController {
 				userName: `${user.name}, ${user.lastName}`,
 			})
 			return 'Appointment cancelled succesfully!'
+		} catch (error) {
+			throw error
+		}
+	}
+	@Patch(':id')
+	async update(@Body() data: Partial<AppointmentDTO>, @Param('id') id: string) {
+		try {
+			const appointment = await this.appointmentService.getById(id)
+			if (!appointment) {
+				throw new UnauthorizedException('Appointment not found.')
+			}
+
+			await this.appointmentService.update(appointment.id, data)
 		} catch (error) {
 			throw error
 		}
