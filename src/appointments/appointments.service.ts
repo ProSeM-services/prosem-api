@@ -84,4 +84,8 @@ export class AppointmentsService {
 		appointment.canceled = true
 		await appointment.save()
 	}
+
+	async update(id: string, data: Partial<AppointmentDTO>) {
+		return await this.AppointmentModel.update(data, { where: { id } })
+	}
 }

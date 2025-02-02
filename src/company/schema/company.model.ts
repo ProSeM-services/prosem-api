@@ -20,7 +20,8 @@ export class Company extends BaseModel<Company> {
 		allowNull: false,
 	})
 	name: string
-
+	@Column({ type: DataTypes.ARRAY(DataTypes.STRING) })
+	payment_methods: string[]
 	@Column({
 		type: DataTypes.JSON,
 		allowNull: false,
