@@ -21,6 +21,7 @@ import { AuthService } from 'src/auth/auth.service'
 import { Request as ExpressRequest } from 'express'
 import { Permission } from 'src/core/types/permissions'
 import { MailerService } from 'src/mailer/mailer.service'
+import { User } from './schema/user.model'
 @Controller('user')
 export class UserController {
 	constructor(
@@ -140,6 +141,7 @@ export class UserController {
 		@Body() { companyId, userId }: { companyId: string; userId: string }
 	) {
 		try {
+			const updatedUser: Partial<User> = {}
 			const user = await this.userService.getById(userId)
 			if (!user) {
 				throw new UnauthorizedException('User not found')
@@ -150,7 +152,12 @@ export class UserController {
 				throw new UnauthorizedException('Company not found')
 			}
 
-			await this.userService.addToCompany(userId, companyId)
+			if (!user.workhours.length) {
+				updatedUser.workhours = company.workhours
+			}
+			updatedUser.CompanyId = companyId
+
+			await this.userService.update(userId, updatedUser)
 
 			return `User added to company ${company.name} successfully!`
 		} catch (error) {
