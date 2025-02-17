@@ -53,17 +53,19 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>¡{{name}}, tu turno ha sido reactivado correcamente!</h1>
+      <h1>¡{{name}}, tu turno ha sido cancelado correcamente!</h1>
     </div>
     <div class="content">
       <p>Hola {{name}}</p>
-      <p>Se ha <b>reactivado</b> un turno con {{userName}} para {{service}}</p>
+      <p> <b>Cancelaste</b> un turno con {{userName}} para {{service}}</p>
       <p>Detalles del turno:</p>
       <p>Dia: {{day}}</p>
       <p>Horario: {{time}}</p>
       <p>Profesional: {{userName}}</p>
       <p>Servicio: {{service}}</p>
       <p>Tipo de servicio: {{serviceProvision}}</p>
+      <p>Por favor, si desea cancelar el turno, haga click en el botón de abajo:</p>
+      <p><a href="{{cancelationLink}}" class="button">Cancelar turno</a></p>
       <hr/>
       <p>Saludos cordiales,</p>
       <p>Reserve Pro</p>

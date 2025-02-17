@@ -78,4 +78,26 @@ export class MailerService {
 			},
 		})
 	}
+	async sendReactivationOK(
+		email: string,
+		data: {
+			name: string
+			userName: string
+			time: string
+			day: string
+			serviceProvision: string
+			service: string
+			cancelationToken: string
+		}
+	) {
+		await this.mailerSerivice.sendMail({
+			to: email,
+			subject: `Cancelación de turno`,
+			template: './appointment-reactive',
+			context: {
+				...data,
+				cancelationLink: `${process.env.WEB_CLIENT_URL}/cancel-appointment?token=${data.cancelationToken}`,
+			},
+		})
+	}
 }
