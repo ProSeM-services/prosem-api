@@ -92,7 +92,7 @@ export class MailerService {
 	) {
 		await this.mailerSerivice.sendMail({
 			to: email,
-			subject: `Cancelación de turno`,
+			subject: `Reactivación de turno`,
 			template: './appointment-reactive',
 			context: {
 				...data,
