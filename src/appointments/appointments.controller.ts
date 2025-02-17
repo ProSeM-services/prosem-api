@@ -284,6 +284,41 @@ export class AppointmentsController {
 			throw error
 		}
 	}
+	@Post('reactive')
+	async reactiveAppointment(
+		@Body()
+		{ appointmemntId }: { appointmemntId: string }
+	) {
+		try {
+			const appointment = await this.appointmentService.getById(appointmemntId)
+			if (!appointment) {
+				throw new UnauthorizedException('Appointment not found.')
+			}
+
+			const user = await this.userService.getById(appointment.UserId)
+			if (!user) {
+				throw new UnauthorizedException('User not found.')
+			}
+			const service = await this.servicesSerivce.getById(appointment.ServiceId)
+			if (!user) {
+				throw new UnauthorizedException('User not found.')
+			}
+
+			await this.appointmentService.update(appointment.id, { canceled: false })
+			await this.mailerSerivce.sendReactivationOK(appointment.email, {
+				day: formatDate(appointment.date.toString()),
+				name: `${appointment.name}, ${appointment.lastName}`,
+				service: service.title,
+				serviceProvision: service.provision,
+				time: appointment.time,
+				userName: `${user.name}, ${user.lastName}`,
+				cancelationToken: appointment.cancelationToken,
+			})
+			return 'Appointment reactivated succesfully!'
+		} catch (error) {
+			throw error
+		}
+	}
 	@Patch(':id')
 	async update(@Body() data: Partial<AppointmentDTO>, @Param('id') id: string) {
 		try {
