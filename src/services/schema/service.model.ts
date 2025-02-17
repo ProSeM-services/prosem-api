@@ -36,7 +36,11 @@ export class Service extends BaseModel<Service> {
 		type: DataTypes.STRING,
 	})
 	provision: Provision
-
+	@Column({
+		type: DataTypes.ARRAY(DataTypes.STRING),
+		allowNull: true,
+	})
+	images: string[]
 	@Column({
 		type: DataTypes.STRING,
 		allowNull: true,
