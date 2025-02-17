@@ -23,6 +23,7 @@ import { AuthService } from 'src/auth/auth.service'
 import { v4 as uuidv4 } from 'uuid'
 import { MailerService } from 'src/mailer/mailer.service'
 import { formatDate } from 'src/utils/format-date'
+import { AppointmentsGateway } from './appointment.gateway'
 @Controller('appointments')
 export class AppointmentsController {
 	constructor(
@@ -31,7 +32,8 @@ export class AppointmentsController {
 		private readonly servicesSerivce: ServicesService,
 		private readonly customerService: CustomerService,
 		private authService: AuthService,
-		private mailerSerivce: MailerService
+		private mailerSerivce: MailerService,
+		private readonly appointmentsGateway: AppointmentsGateway
 	) {}
 	async getSlotsByDate(userId: string, date: string, duration: number) {
 		try {
@@ -235,7 +237,7 @@ export class AppointmentsController {
 				confirmed: false,
 				price: service.price,
 			})
-
+			await this.appointmentsGateway.notifyNewTurno(data, data.tenantName)
 			await this.mailerSerivce.sendAppointmentdata(data.email, {
 				cancelationToken,
 				day: formatDate(data.date.toString()),

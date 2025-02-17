@@ -4,13 +4,11 @@ import { Appointment } from './schema/appointment.model'
 import { AppointmentDTO } from './dto/appointment.dto'
 import { User } from 'src/user/schema/user.model'
 import { Service } from 'src/services/schema/service.model'
-import { AppointmentsGateway } from './appointment.gateway'
 @Injectable()
 export class AppointmentsService {
 	constructor(
 		@Inject(APPOINTMENT_REPOSITORY)
-		private readonly AppointmentModel: typeof Appointment,
-		private readonly appointmentsGateway: AppointmentsGateway
+		private readonly AppointmentModel: typeof Appointment
 	) {}
 	async getAll(token: string, limit: number = 10, page: number = 1) {
 		const offset = (page - 1) * limit
@@ -52,7 +50,6 @@ export class AppointmentsService {
 		})
 	}
 	async create(data: AppointmentDTO) {
-		this.appointmentsGateway.notifyNewTurno(data, data.tenantName)
 		return await this.AppointmentModel.create(data)
 	}
 
