@@ -314,7 +314,7 @@ export class AppointmentsController {
 				userName: `${user.name}, ${user.lastName}`,
 				cancelationToken: appointment.cancelationToken,
 			})
-			return 'Appointment cancelled succesfully!'
+			return 'Appointment reactivated succesfully!'
 		} catch (error) {
 			throw error
 		}
