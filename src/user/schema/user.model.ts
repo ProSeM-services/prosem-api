@@ -27,6 +27,8 @@ export class User extends BaseModel<User> {
 	password: string
 	@Column({ type: DataType.BOOLEAN, defaultValue: false })
 	emailConfirmed: boolean
+	@Column({ type: DataType.BOOLEAN, defaultValue: true })
+	membership_status: boolean
 	@Column({ allowNull: true })
 	confirmationToken: string
 	@Column({ allowNull: true })
