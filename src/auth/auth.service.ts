@@ -77,6 +77,7 @@ export class AuthService {
 			userName: getUser.userName,
 			tenantName: getUser.tenantName,
 			companyName: getUser.companyName,
+			membership_status: getUser.membership_status,
 		}
 
 		return {

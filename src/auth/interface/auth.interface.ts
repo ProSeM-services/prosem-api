@@ -10,6 +10,7 @@ export const PayloadTokenSchema = z.object({
 	image: z.string(),
 	tenantName: z.string(),
 	companyName: z.string(),
+	membership_status: z.boolean(),
 })
 
 export const AuthBodySchema = z.object({
