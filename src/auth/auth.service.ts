@@ -61,7 +61,7 @@ export class AuthService {
 		payload: jwt.JwtPayload
 		secret: string
 	}): string {
-		return jwt.sign(payload, secret, { noTimestamp: true })
+		return jwt.sign(payload, secret, { expiresIn: '7d' })
 	}
 
 	public async generateJWT(user: User): Promise<IAuthResponse> {
@@ -102,7 +102,7 @@ export class AuthService {
 
 			return payload
 		} catch (error) {
-			throw new UnauthorizedException()
+			throw new UnauthorizedException('Token expired or invalid')
 		}
 	}
 
