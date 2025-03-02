@@ -9,7 +9,14 @@ export class UserService {
 		@Inject(USER_REPOSITORY) private readonly UserModel: typeof User
 	) {}
 
-	async getAll(tenantName: string): Promise<User[]> {
+	async getAllOwners(): Promise<User[]> {
+		return this.UserModel.findAll({
+			where: { role: 'OWNER' },
+			include: [Appointment],
+		})
+	}
+	async getAll(tenantName?: string): Promise<User[]> {
+		if (!tenantName) return this.UserModel.findAll({ include: [Appointment] })
 		return this.UserModel.findAll({
 			where: { tenantName },
 			include: [Appointment],

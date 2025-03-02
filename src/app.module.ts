@@ -11,6 +11,7 @@ import { CustomerModule } from './customer/customer.module';
 import { StatsModule } from './stats/stats.module';
 import { UploadModule } from './upload/upload.module';
 import { MailerModule } from './mailer/mailer.module';
+import { AdminModule } from './admin/admin.module';
 import * as dotenv from 'dotenv'
 dotenv.config()
 @Module({
@@ -25,6 +26,7 @@ dotenv.config()
 		StatsModule,
 		UploadModule,
 		MailerModule,
+		AdminModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
