@@ -237,7 +237,7 @@ export class AppointmentsController {
 				confirmed: false,
 				price: service.price,
 			})
-			await this.appointmentsGateway.notifyNewTurno(data, data.tenantName)
+			this.appointmentsGateway.notifyNewTurno(data, user.tenantName)
 			await this.mailerSerivce.sendAppointmentdata(data.email, {
 				cancelationToken,
 				day: formatDate(data.date.toString()),
