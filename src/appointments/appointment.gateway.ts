@@ -15,8 +15,8 @@ import { AuthService } from 'src/auth/auth.service'
 		origin: [
 			'http://localhost:3000',
 			'http://localhost:5173',
-			'https://reserve-pro-backoffice.vercel.app/',
-			'https://reservepro.vercel.app/',
+			'https://reserve-pro-backoffice.vercel.app',
+			'https://reservepro.vercel.app',
 		], // Dominios permitidos (Backoffice y Client Page)
 	},
 })
