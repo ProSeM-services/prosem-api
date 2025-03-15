@@ -100,4 +100,17 @@ export class MailerService {
 			},
 		})
 	}
+
+	async sendResetPassword(email: string, data: { name: string; token: string }) {
+		await this.mailerSerivice.sendMail({
+			to: email,
+			subject: 'Reseteo de contraseña',
+			template: './reset-password',
+			context: {
+				name: data.name,
+				year: 2025,
+				resetLink: `${process.env.WEB_BACKOFFICE_URL}/reset-password?token=${data.token}`,
+			},
+		})
+	}
 }

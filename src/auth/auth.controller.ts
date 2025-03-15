@@ -66,8 +66,8 @@ export class AuthController {
 			expiration.setHours(expiration.getHours() + 24)
 			const data: UserDTO = {
 				...user,
-				confirmationToken: token,
 				emailConfirmed: false,
+				confirmationToken: token,
 				confirmationTokenExpiresAt: expiration,
 			}
 			const newUser = this.authService.register({ ...data, role: 'OWNER' })
@@ -77,6 +77,56 @@ export class AuthController {
 				token,
 			})
 			return newUser
+		} catch (error) {
+			throw error
+		}
+	}
+	@Post('reset-password')
+	async resetPassword(@Body() { email }: { email: string }) {
+		try {
+			const user = await this.userService.findBy({
+				key: 'email',
+				value: email,
+			})
+			if (!user) {
+				throw new UnauthorizedException(
+					'El usuario no se encuentra registrado en base de datos.'
+				)
+			}
+
+			const token = uuidv4()
+			const expiration = new Date()
+			expiration.setHours(expiration.getHours() + 24)
+
+			await user.update({
+				confirmationToken: token,
+				confirmationTokenExpiresAt: expiration,
+			})
+			await user.save()
+
+			await this.mailerSerivce.sendResetPassword(user.email, {
+				name: `${user.name} ${user.lastName}`,
+				token,
+			})
+
+			return 'Mail enviado correctamente!'
+		} catch (error) {
+			throw error
+		}
+	}
+	// get-user-by-token
+	@Post('get-user-by-token')
+	async getUserbyToken(@Body() { token }: { token: string }) {
+		try {
+			const user = await this.userService.findBy({
+				key: 'confirmationToken',
+				value: token,
+			})
+			if (!user || user.confirmationTokenExpiresAt < new Date()) {
+				throw new Error('Token inválido o expirado.')
+			}
+
+			return user
 		} catch (error) {
 			throw error
 		}
