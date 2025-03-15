@@ -93,13 +93,14 @@ export class AuthService {
 		const [type, token] = request.headers.authorization?.split(' ') ?? []
 		if (!token) throw new UnauthorizedException()
 		try {
-			const payload = await this.jwtService.verifyAsync(token, {
+			const payload: IPayloadToken = await this.jwtService.verifyAsync(token, {
 				secret: process.env.JWTKEY,
 			})
 			if (!payload) {
 				throw new NotFoundException('Tenant does not exist')
 			}
-
+			const user = await this.userService.getById(payload.id)
+			if (!user) throw new NotFoundException('User does not exist')
 			return payload
 		} catch (error) {
 			throw new UnauthorizedException('Token expired or invalid')

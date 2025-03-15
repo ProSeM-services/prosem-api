@@ -1,4 +1,8 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import {
+	DeleteObjectCommand,
+	PutObjectCommand,
+	S3Client,
+} from '@aws-sdk/client-s3'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 @Injectable()
@@ -22,7 +26,20 @@ export class UploadService {
 
 		return {
 			...res,
-			url: `https://${bucketName}.s3.${region}.amazonaws.com/${fileName}`,
+			fileName,
 		}
+	}
+
+	async delete(fileName: string) {
+		const bucketName = 'reservepro-media'
+
+		await this.s3Client.send(
+			new DeleteObjectCommand({
+				Bucket: bucketName,
+				Key: fileName,
+			})
+		)
+
+		return { message: `File ${fileName} deleted successfully` }
 	}
 }
