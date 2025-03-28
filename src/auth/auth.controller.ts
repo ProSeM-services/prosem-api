@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { LoginAuthDto } from './dto/login-auth.dto'
-import { UserDTO } from 'src/user/dto/user.dto'
+import { RegisterUserDTO, UserDTO } from 'src/user/dto/user.dto'
 import { UserService } from 'src/user/user.service'
 import { v4 as uuidv4 } from 'uuid'
 import { MailerService } from 'src/mailer/mailer.service'
@@ -42,7 +42,7 @@ export class AuthController {
 		}
 	}
 	@Post('register')
-	async register(@Body() user: UserDTO) {
+	async register(@Body() user: RegisterUserDTO) {
 		try {
 			const validateEmail = await this.userService.findBy({
 				key: 'email',
@@ -70,7 +70,7 @@ export class AuthController {
 				confirmationToken: token,
 				confirmationTokenExpiresAt: expiration,
 			}
-			const newUser = this.authService.register({ ...data, role: 'OWNER' })
+			const newUser = this.authService.register({ ...data })
 
 			await this.mailerSerivce.sendEmail(user.email, {
 				name: `${user.name} ${user.lastName}`,

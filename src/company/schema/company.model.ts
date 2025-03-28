@@ -67,6 +67,11 @@ export class Company extends BaseModel<Company> {
 		allowNull: true,
 	})
 	image?: string
+
+	@Column({
+		type: DataTypes.UUID,
+	})
+	EnterpriseId: string
 }
 
 export { Company as CompanyDocument, Company as CompanyModel }

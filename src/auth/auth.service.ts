@@ -23,10 +23,10 @@ export class AuthService {
 		const data: UserDTO = {
 			...user,
 			password: hashPassword,
-			tenantName: user.companyName
-				.split(' ')
-				.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-				.join(''),
+			// tenantName: user.companyName
+			// 	.split(' ')
+			// 	.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			// 	.join(''),
 		}
 
 		return await this.userService.create(data)
@@ -67,7 +67,7 @@ export class AuthService {
 	public async generateJWT(user: User): Promise<IAuthResponse> {
 		const getUser = await this.userService.getById(user.id)
 
-		const payload: IPayloadToken = {
+		const payload: Partial<User> = {
 			id: getUser.id,
 			name: getUser.name,
 			email: getUser.email,
@@ -78,6 +78,7 @@ export class AuthService {
 			tenantName: getUser.tenantName,
 			companyName: getUser.companyName,
 			membership_status: getUser.membership_status,
+			account_type: getUser.account_type,
 		}
 
 		return {

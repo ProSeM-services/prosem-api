@@ -52,4 +52,8 @@ export class Service extends BaseModel<Service> {
 		allowNull: true,
 	})
 	companies: Company[]
+	@Column({
+		type: DataTypes.UUID,
+	})
+	EnterpriseId: string
 }
