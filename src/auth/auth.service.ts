@@ -102,7 +102,7 @@ export class AuthService {
 			}
 			const user = await this.userService.getById(payload.id)
 			if (!user) throw new NotFoundException('User does not exist')
-			return payload
+			return user
 		} catch (error) {
 			throw new UnauthorizedException('Token expired or invalid')
 		}
@@ -116,12 +116,11 @@ export class AuthService {
 				secret: process.env.JWTKEY,
 			})
 
-			const { tenantName } = payload
-
-			if (!tenantName) {
-				throw new NotFoundException('Tenant does not exist')
+			const user = await this.userService.getById(payload.id)
+			if (!user.tenantName) {
+				throw new NotFoundException('Tenant is not defined')
 			}
-			return tenantName
+			return user.tenantName
 		} catch (error) {
 			throw new UnauthorizedException()
 		}
@@ -133,12 +132,11 @@ export class AuthService {
 				secret: process.env.JWTKEY,
 			})
 
-			const { tenantName } = payload
-
-			if (!tenantName) {
-				throw new NotFoundException('Tenant does not exist')
+			const user = await this.userService.getById(payload.id)
+			if (!user.tenantName) {
+				throw new NotFoundException('Tenant is not defined')
 			}
-			return tenantName
+			return user.tenantName
 		} catch (error) {
 			throw new UnauthorizedException()
 		}
@@ -152,10 +150,11 @@ export class AuthService {
 				secret: process.env.JWTKEY,
 			})
 
-			if (!payload) {
-				throw new NotFoundException('payload does not exist')
+			const user = await this.userService.getById(payload.id)
+			if (!user) {
+				throw new NotFoundException('Tenant is not defined')
 			}
-			return payload
+			return user
 		} catch (error) {
 			throw new UnauthorizedException()
 		}
