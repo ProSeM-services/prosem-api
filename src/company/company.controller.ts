@@ -131,7 +131,8 @@ export class CompanyController {
 	@Post()
 	async create(@Request() req: ExpressRequest, @Body() data: CreateCompanyDTO) {
 		try {
-			const tenantName = await this.authService.getTenantFromHeaders(req)
+			const { tenantName, EnterpriseId } =
+				await this.authService.getDataFromToken(req)
 			const { address } = data
 			const locationData = await this.geocodeService.geocodeAddress(address)
 			const formatedAddress: Location = {
@@ -144,6 +145,7 @@ export class CompanyController {
 				...data,
 				address: formatedAddress,
 				tenantName,
+				EnterpriseId,
 				city: locationData.city,
 			})
 		} catch (error) {

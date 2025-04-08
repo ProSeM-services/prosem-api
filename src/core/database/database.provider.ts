@@ -54,6 +54,18 @@ export const databaseProviders = [
 				targetKey: 'id',
 				foreignKey: 'EnterpriseId',
 			})
+
+			Enterprise.hasMany(Customer)
+			Customer.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
+
+			Enterprise.hasMany(Appointment)
+			Appointment.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
 			Company.hasMany(User)
 			User.belongsTo(Company, { targetKey: 'id', foreignKey: 'CompanyId' })
 

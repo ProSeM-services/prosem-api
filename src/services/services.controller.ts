@@ -94,7 +94,8 @@ export class ServicesController {
 	@Post()
 	async create(@Body() data: CreateServicesDto, @Request() req: ExpressRequest) {
 		try {
-			const tenantName = await this.authService.getTenantFromHeaders(req)
+			const { tenantName, EnterpriseId } =
+				await this.authService.getDataFromToken(req)
 			const existTitle = await this.servicesService.getByTitle(data.title)
 
 			if (existTitle) {
@@ -102,7 +103,7 @@ export class ServicesController {
 					'This title already exist in your services!'
 				)
 			}
-			return this.servicesService.create({ ...data, tenantName })
+			return this.servicesService.create({ ...data, tenantName, EnterpriseId })
 		} catch (error) {
 			throw error
 		}

@@ -112,7 +112,8 @@ export class UserController {
 	@Post()
 	async createUser(@Request() req: ExpressRequest, @Body() user: UserDTO) {
 		try {
-			const tenantName = await this.authService.getTenantFromHeaders(req)
+			const { tenantName, EnterpriseId } =
+				await this.authService.getDataFromToken(req)
 			const hashPassword = await bcrypt.hash(user.password, +process.env.HASH_SALT)
 			const data: UserDTO = {
 				...user,
@@ -131,7 +132,7 @@ export class UserController {
 				)
 			}
 
-			return await this.userService.create(data)
+			return await this.userService.create({ ...data, EnterpriseId })
 		} catch (error) {
 			throw error
 		}

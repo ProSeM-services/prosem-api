@@ -221,6 +221,7 @@ export class AppointmentsController {
 				lastName: data.lastName,
 				phone: data.phone,
 				tenantName: user.tenantName,
+				EnterpriseId: user.EnterpriseId,
 			}
 			const customer = await this.customerService.findOrCreateByEmail(customerData)
 
@@ -236,6 +237,7 @@ export class AppointmentsController {
 				cancelationToken,
 				confirmed: false,
 				price: service.price,
+				EnterpriseId: user.EnterpriseId,
 			})
 			this.appointmentsGateway.notifyNewTurno(data, user.tenantName)
 			await this.mailerSerivce.sendAppointmentdata(data.email, {
