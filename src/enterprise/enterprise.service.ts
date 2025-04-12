@@ -14,8 +14,8 @@ export class EnterpriseService {
 		return await this.enterpriseModel.create(data)
 	}
 
-	findAll() {
-		return `This action returns all enterprise`
+	async findAll() {
+		return await this.enterpriseModel.findAll()
 	}
 
 	findOne(id: number) {
