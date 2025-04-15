@@ -22,6 +22,12 @@ export class Enterprise extends BaseModel<Enterprise> {
 	email: string
 
 	@Column({
+		type: DataType.INTEGER,
+		allowNull: true,
+	})
+	company_count: number
+
+	@Column({
 		type: DataType.STRING,
 		allowNull: true,
 	})
