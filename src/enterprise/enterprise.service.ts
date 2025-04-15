@@ -18,8 +18,8 @@ export class EnterpriseService {
 		return await this.enterpriseModel.findAll()
 	}
 
-	findOne(id: number) {
-		return `This action returns a #${id} enterprise`
+	async findOne(id: string) {
+		return await this.enterpriseModel.findOne({ where: { id } })
 	}
 
 	update(id: number, updateEnterpriseDto: UpdateEnterpriseDto) {

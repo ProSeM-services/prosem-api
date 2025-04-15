@@ -69,8 +69,8 @@ export class EnterpriseController {
 	}
 
 	@Get(':id')
-	findOne(@Param('id') id: string) {
-		return this.enterpriseService.findOne(+id)
+	async findOne(@Param('id') id: string) {
+		return await this.enterpriseService.findOne(id)
 	}
 
 	@Patch(':id')
