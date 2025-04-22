@@ -19,6 +19,7 @@ export const UserZodSchema = z.object({
 	confirmationToken: z.string().optional(),
 	confirmationTokenExpiresAt: z.date().optional(),
 	workhours: z.array(WorkhourZodSchema).optional(),
+	account_type: z.enum(ACCOUNT_TYPE_VALUES).optional(),
 	permissions: z
 		.array(z.nativeEnum(Permission), { message: 'El permiso no es válido' })
 		.optional(),

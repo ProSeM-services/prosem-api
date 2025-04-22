@@ -22,6 +22,7 @@ import { Request as ExpressRequest } from 'express'
 import { Permission } from 'src/core/types/permissions'
 import { MailerService } from 'src/mailer/mailer.service'
 import { User } from './schema/user.model'
+import { v4 as uuidv4 } from 'uuid'
 @Controller('user')
 export class UserController {
 	constructor(
@@ -114,15 +115,9 @@ export class UserController {
 		try {
 			const { tenantName, EnterpriseId } =
 				await this.authService.getDataFromToken(req)
-			const hashPassword = await bcrypt.hash(user.password, +process.env.HASH_SALT)
-			const data: UserDTO = {
-				...user,
-				password: hashPassword,
-				tenantName,
-			}
 
 			const checkUserName = await this.userService.getByUserName(
-				data.userName,
+				user.userName,
 				tenantName
 			)
 
@@ -131,8 +126,25 @@ export class UserController {
 					`UserName ${checkUserName.userName} already exist in this account. `
 				)
 			}
-
-			return await this.userService.create({ ...data, EnterpriseId })
+			const token = uuidv4()
+			const expiration = new Date()
+			expiration.setHours(expiration.getHours() + 24)
+			const hashPassword = await bcrypt.hash(user.password, +process.env.HASH_SALT)
+			const data: UserDTO = {
+				...user,
+				password: hashPassword,
+				tenantName,
+				emailConfirmed: false,
+				confirmationToken: token,
+				confirmationTokenExpiresAt: expiration,
+				account_type: 'PROFESSIONAL',
+			}
+			const newUser = await this.userService.create({ ...data, EnterpriseId })
+			await this.mailerService.sendEmail(user.email, {
+				name: `${user.name} ${user.lastName}`,
+				token,
+			})
+			return newUser
 		} catch (error) {
 			throw error
 		}

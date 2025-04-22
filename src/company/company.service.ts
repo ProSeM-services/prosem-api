@@ -71,7 +71,7 @@ export class CompanyService {
 		})
 	}
 	async create(data: Partial<Company>): Promise<Company> {
-		return this.companyModel.create(data)
+		return await this.companyModel.create(data)
 	}
 	async delete(id: string): Promise<number> {
 		return this.companyModel.destroy({ where: { id } })
