@@ -49,11 +49,11 @@ export class CompanyService {
 			include: [User, Service],
 		})
 	}
-	async getAll(tenantName?: string): Promise<Company[]> {
-		if (!tenantName)
+	async getAll(EnterpriseId?: string): Promise<Company[]> {
+		if (!EnterpriseId)
 			return await this.companyModel.findAll({ include: [User, Service] })
 		return await this.companyModel.findAll({
-			where: { tenantName },
+			where: { EnterpriseId },
 			include: [User, Service],
 		})
 	}
@@ -71,7 +71,7 @@ export class CompanyService {
 		})
 	}
 	async create(data: Partial<Company>): Promise<Company> {
-		return this.companyModel.create(data)
+		return await this.companyModel.create(data)
 	}
 	async delete(id: string): Promise<number> {
 		return this.companyModel.destroy({ where: { id } })

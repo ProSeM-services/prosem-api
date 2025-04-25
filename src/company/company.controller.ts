@@ -13,11 +13,7 @@ import {
 	UseGuards,
 } from '@nestjs/common'
 import { CompanyService } from './company.service'
-import {
-	CompanyDTO,
-	CreateCompanyDTO,
-	UpdateCompanyDTO,
-} from './dto/company.dto'
+import { CreateCompanyDTO, UpdateCompanyDTO } from './dto/company.dto'
 import { Company } from './schema/company.model'
 import { UserService } from 'src/user/user.service'
 import { AuthService } from 'src/auth/auth.service'
@@ -27,7 +23,6 @@ import { Location } from './interfaces/location.interface'
 import { AuthGuard } from 'src/auth/guards/auth.guard'
 import { PublicAcces } from 'src/auth/decorators/public.decorator'
 import { RolesGuard } from 'src/auth/guards/roles.guard'
-import { Roles } from 'src/auth/decorators/roles.decorators'
 import { RequiresPermission } from 'src/auth/decorators/permissions.decorator'
 import { Permission } from 'src/core/types/permissions'
 import { PermissionsGuard } from 'src/auth/guards/permissions.guard'
@@ -100,8 +95,8 @@ export class CompanyController {
 		@Query() query: { name: string; category: string; city: string }
 	) {
 		try {
-			const tenantName = await this.authService.getTenantFromHeaders(req)
-			return await this.companyService.getAll(tenantName)
+			const { EnterpriseId } = await this.authService.getDataFromToken(req)
+			return await this.companyService.getAll(EnterpriseId)
 		} catch (error) {
 			throw error
 		}
@@ -131,7 +126,8 @@ export class CompanyController {
 	@Post()
 	async create(@Request() req: ExpressRequest, @Body() data: CreateCompanyDTO) {
 		try {
-			const tenantName = await this.authService.getTenantFromHeaders(req)
+			const { tenantName, EnterpriseId } =
+				await this.authService.getDataFromToken(req)
 			const { address } = data
 			const locationData = await this.geocodeService.geocodeAddress(address)
 			const formatedAddress: Location = {
@@ -140,12 +136,15 @@ export class CompanyController {
 				value: address,
 				city: locationData.city,
 			}
-			return await this.companyService.create({
+			const newCompany = await this.companyService.create({
 				...data,
 				address: formatedAddress,
 				tenantName,
+				EnterpriseId,
 				city: locationData.city,
 			})
+
+			return newCompany
 		} catch (error) {
 			throw error
 		}

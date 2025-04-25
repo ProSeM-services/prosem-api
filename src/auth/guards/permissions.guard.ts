@@ -7,9 +7,8 @@ import {
 } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { Request } from 'express'
-import { Observable } from 'rxjs'
 import { Permission } from 'src/core/types/permissions'
-import { ROLES, Role } from 'src/core/types/role'
+import { ROLES } from 'src/core/types/role'
 import { UserService } from 'src/user/user.service'
 
 @Injectable()

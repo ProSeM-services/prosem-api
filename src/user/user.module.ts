@@ -8,6 +8,8 @@ import { companyProviders } from 'src/company/company.providers'
 import { AuthService } from 'src/auth/auth.service'
 import { JwtService } from '@nestjs/jwt'
 import { MailerService } from 'src/mailer/mailer.service'
+import { EnterpriseService } from 'src/enterprise/enterprise.service'
+import { enterpriseProvider } from 'src/enterprise/enterprise.provider'
 
 @Module({
 	imports: [CompanyModule],
@@ -18,6 +20,8 @@ import { MailerService } from 'src/mailer/mailer.service'
 		AuthService,
 		JwtService,
 		MailerService,
+		EnterpriseService,
+		...enterpriseProvider,
 		...userProvider,
 		...companyProviders,
 	],

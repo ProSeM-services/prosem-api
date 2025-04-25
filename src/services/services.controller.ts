@@ -35,8 +35,8 @@ export class ServicesController {
 	@Get()
 	async getAll(@Request() req: ExpressRequest) {
 		try {
-			const tenantName = await this.authService.getTenantFromHeaders(req)
-			return this.servicesService.getAll(tenantName)
+			const { EnterpriseId } = await this.authService.getDataFromToken(req)
+			return this.servicesService.getAll(EnterpriseId)
 		} catch (error) {
 			throw error
 		}
@@ -65,8 +65,8 @@ export class ServicesController {
 	async getByUser(@Param('id') id: string, @Request() req: ExpressRequest) {
 		try {
 			if (!id) throw new Error('id require ')
-			const tenantName = await this.authService.getTenantFromHeaders(req)
-			return await this.servicesService.getServicesByUserId(tenantName, id)
+			const { EnterpriseId } = await this.authService.getDataFromToken(req)
+			return await this.servicesService.getServicesByUserId(EnterpriseId, id)
 		} catch (error) {
 			throw error
 		}
@@ -94,7 +94,8 @@ export class ServicesController {
 	@Post()
 	async create(@Body() data: CreateServicesDto, @Request() req: ExpressRequest) {
 		try {
-			const tenantName = await this.authService.getTenantFromHeaders(req)
+			const { tenantName, EnterpriseId } =
+				await this.authService.getDataFromToken(req)
 			const existTitle = await this.servicesService.getByTitle(data.title)
 
 			if (existTitle) {
@@ -102,7 +103,7 @@ export class ServicesController {
 					'This title already exist in your services!'
 				)
 			}
-			return this.servicesService.create({ ...data, tenantName })
+			return this.servicesService.create({ ...data, tenantName, EnterpriseId })
 		} catch (error) {
 			throw error
 		}

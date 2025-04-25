@@ -25,6 +25,7 @@ export const AppointmentZodSchema = z.object({
 	tenantName: z.string().optional(),
 	companyId: z.string().optional(),
 	canceled: z.boolean().optional(),
+	EnterpriseId: z.string().optional(),
 })
 
 export const SlotsZodSchmea = z.object({

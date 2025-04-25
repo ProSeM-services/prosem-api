@@ -8,6 +8,7 @@ export const CustomerZodSchema = z.object({
 	tenantName: z.string().optional(),
 	email: z.string(),
 	phone: z.string(),
+	EnterpriseId: z.string(),
 	apointments: z.array(AppointmentZodSchema),
 })
 export const CreateCustomerZodSchema = CustomerZodSchema.omit({

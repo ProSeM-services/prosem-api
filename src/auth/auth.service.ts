@@ -23,10 +23,10 @@ export class AuthService {
 		const data: UserDTO = {
 			...user,
 			password: hashPassword,
-			tenantName: user.companyName
-				.split(' ')
-				.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-				.join(''),
+			// tenantName: user.companyName
+			// 	.split(' ')
+			// 	.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			// 	.join(''),
 		}
 
 		return await this.userService.create(data)
@@ -67,7 +67,7 @@ export class AuthService {
 	public async generateJWT(user: User): Promise<IAuthResponse> {
 		const getUser = await this.userService.getById(user.id)
 
-		const payload: IPayloadToken = {
+		const payload: Partial<User> = {
 			id: getUser.id,
 			name: getUser.name,
 			email: getUser.email,
@@ -78,6 +78,8 @@ export class AuthService {
 			tenantName: getUser.tenantName,
 			companyName: getUser.companyName,
 			membership_status: getUser.membership_status,
+			account_type: getUser.account_type,
+			EnterpriseId: getUser.EnterpriseId,
 		}
 
 		return {
@@ -101,7 +103,7 @@ export class AuthService {
 			}
 			const user = await this.userService.getById(payload.id)
 			if (!user) throw new NotFoundException('User does not exist')
-			return payload
+			return user
 		} catch (error) {
 			throw new UnauthorizedException('Token expired or invalid')
 		}
@@ -115,12 +117,11 @@ export class AuthService {
 				secret: process.env.JWTKEY,
 			})
 
-			const { tenantName } = payload
-
-			if (!tenantName) {
-				throw new NotFoundException('Tenant does not exist')
+			const user = await this.userService.getById(payload.id)
+			if (!user.tenantName) {
+				throw new NotFoundException('Tenant is not defined')
 			}
-			return tenantName
+			return user.tenantName
 		} catch (error) {
 			throw new UnauthorizedException()
 		}
@@ -132,12 +133,11 @@ export class AuthService {
 				secret: process.env.JWTKEY,
 			})
 
-			const { tenantName } = payload
-
-			if (!tenantName) {
-				throw new NotFoundException('Tenant does not exist')
+			const user = await this.userService.getById(payload.id)
+			if (!user.tenantName) {
+				throw new NotFoundException('Tenant is not defined')
 			}
-			return tenantName
+			return user.tenantName
 		} catch (error) {
 			throw new UnauthorizedException()
 		}
@@ -151,10 +151,11 @@ export class AuthService {
 				secret: process.env.JWTKEY,
 			})
 
-			if (!payload) {
-				throw new NotFoundException('payload does not exist')
+			const user = await this.userService.getById(payload.id)
+			if (!user) {
+				throw new NotFoundException('Tenant is not defined')
 			}
-			return payload
+			return user
 		} catch (error) {
 			throw new UnauthorizedException()
 		}

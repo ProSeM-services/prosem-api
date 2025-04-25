@@ -22,11 +22,14 @@ import { Request as ExpressRequest } from 'express'
 import { Permission } from 'src/core/types/permissions'
 import { MailerService } from 'src/mailer/mailer.service'
 import { User } from './schema/user.model'
+import { v4 as uuidv4 } from 'uuid'
+import { EnterpriseService } from 'src/enterprise/enterprise.service'
 @Controller('user')
 export class UserController {
 	constructor(
 		private readonly userService: UserService,
 		private readonly comapanyService: CompanyService,
+		private readonly enterpriseService: EnterpriseService,
 		private authService: AuthService,
 		private mailerService: MailerService
 	) {}
@@ -47,12 +50,12 @@ export class UserController {
 	@Get()
 	async getAll(@Request() req: ExpressRequest) {
 		try {
-			const token = await this.authService.getTenantFromHeaders(req)
-			if (!token) {
+			const { EnterpriseId } = await this.authService.getDataFromToken(req)
+			if (!EnterpriseId) {
 				throw new UnauthorizedException('Missing or invalid token')
 			}
 
-			return this.userService.getAll(token)
+			return this.userService.getAll(EnterpriseId)
 		} catch (error) {
 			throw error
 		}
@@ -85,11 +88,11 @@ export class UserController {
 	@Get('/free')
 	async getFree(@Request() req: ExpressRequest) {
 		try {
-			const token = await this.authService.getTenantFromHeaders(req)
-			if (!token) {
+			const { EnterpriseId } = await this.authService.getDataFromToken(req)
+			if (!EnterpriseId) {
 				throw new UnauthorizedException('Missing or invalid token')
 			}
-			return this.userService.getFree(token)
+			return this.userService.getFree(EnterpriseId)
 		} catch (error) {
 			throw error
 		}
@@ -112,16 +115,11 @@ export class UserController {
 	@Post()
 	async createUser(@Request() req: ExpressRequest, @Body() user: UserDTO) {
 		try {
-			const tenantName = await this.authService.getTenantFromHeaders(req)
-			const hashPassword = await bcrypt.hash(user.password, +process.env.HASH_SALT)
-			const data: UserDTO = {
-				...user,
-				password: hashPassword,
-				tenantName,
-			}
+			const { tenantName, EnterpriseId } =
+				await this.authService.getDataFromToken(req)
 
 			const checkUserName = await this.userService.getByUserName(
-				data.userName,
+				user.userName,
 				tenantName
 			)
 
@@ -130,8 +128,25 @@ export class UserController {
 					`UserName ${checkUserName.userName} already exist in this account. `
 				)
 			}
-
-			return await this.userService.create(data)
+			const token = uuidv4()
+			const expiration = new Date()
+			expiration.setHours(expiration.getHours() + 24)
+			const hashPassword = await bcrypt.hash(user.password, +process.env.HASH_SALT)
+			const data: UserDTO = {
+				...user,
+				password: hashPassword,
+				tenantName,
+				emailConfirmed: false,
+				confirmationToken: token,
+				confirmationTokenExpiresAt: expiration,
+				account_type: 'PROFESSIONAL',
+			}
+			const newUser = await this.userService.create({ ...data, EnterpriseId })
+			await this.mailerService.sendEmail(user.email, {
+				name: `${user.name} ${user.lastName}`,
+				token,
+			})
+			return newUser
 		} catch (error) {
 			throw error
 		}
@@ -225,15 +240,17 @@ export class UserController {
 		@Request() req: ExpressRequest
 	) {
 		try {
-			const tenantName = await this.authService.getTenantFromHeaders(req)
+			const { EnterpriseId } = await this.authService.getDataFromToken(req)
 			const user = await this.checkUserExist(id)
 			if (!user) {
 				throw new NotFoundException('User not found!')
 			}
+
+			const enterprise = await this.enterpriseService.findOne(EnterpriseId)
 			const { email, name } = user
 
 			await this.mailerService.sendInvite(email, {
-				companyName: tenantName,
+				companyName: enterprise.name,
 				name,
 				token: '',
 			})

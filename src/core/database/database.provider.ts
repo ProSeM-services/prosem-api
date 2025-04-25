@@ -6,6 +6,7 @@ import { User } from 'src/user/schema/user.model'
 import { Appointment } from 'src/appointments/schema/appointment.model'
 import { Service } from 'src/services/schema/service.model'
 import { Customer } from 'src/customer/schema/customer.model'
+import { Enterprise } from 'src/enterprise/schema/enterprise.model'
 export const databaseProviders = [
 	{
 		provide: 'SEQUELIZE',
@@ -28,8 +29,43 @@ export const databaseProviders = [
 				dialect: 'postgres',
 				logging: false,
 			})
-			sequelize.addModels([Company, User, Appointment, Service, Customer])
+			sequelize.addModels([
+				Enterprise,
+				Company,
+				User,
+				Appointment,
+				Service,
+				Customer,
+			])
 
+			Enterprise.hasMany(Company)
+			Company.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
+
+			Enterprise.hasMany(User)
+			User.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
+			Enterprise.hasMany(Service)
+			Service.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
+
+			Enterprise.hasMany(Customer)
+			Customer.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
+
+			Enterprise.hasMany(Appointment)
+			Appointment.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
 			Company.hasMany(User)
 			User.belongsTo(Company, { targetKey: 'id', foreignKey: 'CompanyId' })
 
