@@ -10,10 +10,10 @@ export class CustomerService {
 		@Inject(CUSTOMERS_REPOSITORY) private readonly customerModel: typeof Customer
 	) {}
 
-	async getAll(token: string): Promise<Customer[]> {
+	async getAll(EnterpriseId: string): Promise<Customer[]> {
 		return this.customerModel.findAll({
 			where: {
-				tenantName: token,
+				EnterpriseId,
 			},
 			include: [Appointment],
 		})

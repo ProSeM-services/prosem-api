@@ -21,8 +21,8 @@ export class CustomerController {
 	@Get()
 	async getAll(@Request() req: ExpressRequest) {
 		try {
-			const token = await this.authService.getTenantFromHeaders(req)
-			return this.customerService.getAll(token)
+			const { EnterpriseId } = await this.authService.getDataFromToken(req)
+			return this.customerService.getAll(EnterpriseId)
 		} catch (error) {
 			throw error
 		}

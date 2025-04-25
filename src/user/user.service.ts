@@ -15,22 +15,22 @@ export class UserService {
 			include: [Appointment],
 		})
 	}
-	async getAll(tenantName?: string): Promise<User[]> {
-		if (!tenantName) return this.UserModel.findAll({ include: [Appointment] })
+	async getAll(EnterpriseId?: string): Promise<User[]> {
+		if (!EnterpriseId) return this.UserModel.findAll({ include: [Appointment] })
 		return this.UserModel.findAll({
-			where: { tenantName },
+			where: { EnterpriseId },
 			include: [Appointment],
 		})
 	}
 
-	async getByTenantName(tenantName: string) {
-		return this.UserModel.findOne({ where: { tenantName } })
+	async getByTenantName(EnterpriseId: string) {
+		return this.UserModel.findOne({ where: { EnterpriseId } })
 	}
 	async getByUserName(userName: string, tenantName: string) {
 		return this.UserModel.findOne({ where: { userName, tenantName } })
 	}
-	async getFree(tenantName: string): Promise<User[]> {
-		return this.UserModel.findAll({ where: { CompanyId: null, tenantName } })
+	async getFree(EnterpriseId: string): Promise<User[]> {
+		return this.UserModel.findAll({ where: { CompanyId: null, EnterpriseId } })
 	}
 	async addToCompany(userId: string, CompanyId: string) {
 		return this.UserModel.update({ CompanyId }, { where: { id: userId } })

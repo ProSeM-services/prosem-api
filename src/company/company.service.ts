@@ -49,11 +49,11 @@ export class CompanyService {
 			include: [User, Service],
 		})
 	}
-	async getAll(tenantName?: string): Promise<Company[]> {
-		if (!tenantName)
+	async getAll(EnterpriseId?: string): Promise<Company[]> {
+		if (!EnterpriseId)
 			return await this.companyModel.findAll({ include: [User, Service] })
 		return await this.companyModel.findAll({
-			where: { tenantName },
+			where: { EnterpriseId },
 			include: [User, Service],
 		})
 	}

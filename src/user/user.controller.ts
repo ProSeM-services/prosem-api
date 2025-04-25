@@ -23,11 +23,13 @@ import { Permission } from 'src/core/types/permissions'
 import { MailerService } from 'src/mailer/mailer.service'
 import { User } from './schema/user.model'
 import { v4 as uuidv4 } from 'uuid'
+import { EnterpriseService } from 'src/enterprise/enterprise.service'
 @Controller('user')
 export class UserController {
 	constructor(
 		private readonly userService: UserService,
 		private readonly comapanyService: CompanyService,
+		private readonly enterpriseService: EnterpriseService,
 		private authService: AuthService,
 		private mailerService: MailerService
 	) {}
@@ -48,12 +50,12 @@ export class UserController {
 	@Get()
 	async getAll(@Request() req: ExpressRequest) {
 		try {
-			const token = await this.authService.getTenantFromHeaders(req)
-			if (!token) {
+			const { EnterpriseId } = await this.authService.getDataFromToken(req)
+			if (!EnterpriseId) {
 				throw new UnauthorizedException('Missing or invalid token')
 			}
 
-			return this.userService.getAll(token)
+			return this.userService.getAll(EnterpriseId)
 		} catch (error) {
 			throw error
 		}
@@ -86,11 +88,11 @@ export class UserController {
 	@Get('/free')
 	async getFree(@Request() req: ExpressRequest) {
 		try {
-			const token = await this.authService.getTenantFromHeaders(req)
-			if (!token) {
+			const { EnterpriseId } = await this.authService.getDataFromToken(req)
+			if (!EnterpriseId) {
 				throw new UnauthorizedException('Missing or invalid token')
 			}
-			return this.userService.getFree(token)
+			return this.userService.getFree(EnterpriseId)
 		} catch (error) {
 			throw error
 		}
@@ -238,15 +240,17 @@ export class UserController {
 		@Request() req: ExpressRequest
 	) {
 		try {
-			const tenantName = await this.authService.getTenantFromHeaders(req)
+			const { EnterpriseId } = await this.authService.getDataFromToken(req)
 			const user = await this.checkUserExist(id)
 			if (!user) {
 				throw new NotFoundException('User not found!')
 			}
+
+			const enterprise = await this.enterpriseService.findOne(EnterpriseId)
 			const { email, name } = user
 
 			await this.mailerService.sendInvite(email, {
-				companyName: tenantName,
+				companyName: enterprise.name,
 				name,
 				token: '',
 			})

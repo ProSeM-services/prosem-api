@@ -10,10 +10,10 @@ export class ServicesService {
 		@Inject(SERVICES_REPOSITORY) private readonly serviceModel: typeof Service
 	) {}
 
-	async getAll(tenantName?: string): Promise<Service[]> {
-		if (tenantName) {
+	async getAll(EnterpriseId?: string): Promise<Service[]> {
+		if (EnterpriseId) {
 			return await this.serviceModel.findAll({
-				where: { tenantName },
+				where: { EnterpriseId },
 				include: [User],
 			})
 		} else {
@@ -22,11 +22,11 @@ export class ServicesService {
 	}
 
 	async getServicesByUserId(
-		tenantName: string,
+		EnterpriseId: string,
 		userId: string
 	): Promise<Service[]> {
 		return await this.serviceModel.findAll({
-			where: { tenantName },
+			where: { EnterpriseId },
 			include: [
 				{
 					model: User,

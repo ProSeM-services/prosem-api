@@ -95,8 +95,8 @@ export class CompanyController {
 		@Query() query: { name: string; category: string; city: string }
 	) {
 		try {
-			const tenantName = await this.authService.getTenantFromHeaders(req)
-			return await this.companyService.getAll(tenantName)
+			const { EnterpriseId } = await this.authService.getDataFromToken(req)
+			return await this.companyService.getAll(EnterpriseId)
 		} catch (error) {
 			throw error
 		}

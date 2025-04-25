@@ -79,6 +79,7 @@ export class AuthService {
 			companyName: getUser.companyName,
 			membership_status: getUser.membership_status,
 			account_type: getUser.account_type,
+			EnterpriseId: getUser.EnterpriseId,
 		}
 
 		return {
