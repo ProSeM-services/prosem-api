@@ -22,8 +22,7 @@ export class Company extends BaseModel<Company> {
 	name: string
 	@Column({ type: DataTypes.ARRAY(DataTypes.STRING) })
 	payment_methods: string[]
-	@Column({ type: DataTypes.ARRAY(DataTypes.STRING) })
-	images: string[]
+
 	@Column({
 		type: DataTypes.JSON,
 		allowNull: false,
@@ -67,7 +66,8 @@ export class Company extends BaseModel<Company> {
 		allowNull: true,
 	})
 	image?: string
-
+	@Column({ type: DataTypes.ARRAY(DataTypes.STRING) })
+	images: string[]
 	@Column({
 		type: DataTypes.UUID,
 	})

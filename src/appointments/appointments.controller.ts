@@ -108,12 +108,12 @@ export class AppointmentsController {
 		@Query() query: { limit: number; page: number }
 	) {
 		try {
-			const token = await this.authService.getTenantFromHeaders(req)
-			if (!token) {
+			const { EnterpriseId } = await this.authService.getDataFromToken(req)
+			if (!EnterpriseId) {
 				throw new UnauthorizedException('Missing or invalid token')
 			}
 			const { limit, page } = query
-			return await this.appointmentService.getAll(token, limit, page)
+			return await this.appointmentService.getAll(EnterpriseId, limit, page)
 		} catch (error) {
 			throw error
 		}

@@ -83,17 +83,9 @@ export class StatsController {
 		@Query()
 		query: { start: string; end: string; year: string; serivceId: string }
 	) {
-		const chartData = [
-			{ month: 'January', desktop: 186, mobile: 80, celu: 10 },
-			{ month: 'February', desktop: 305, mobile: 200, celu: 10 },
-			{ month: 'March', desktop: 237, mobile: 120, celu: 10 },
-			{ month: 'April', desktop: 73, mobile: 190, celu: 10 },
-			{ month: 'May', desktop: 209, mobile: 130, celu: 10 },
-			{ month: 'June', desktop: 214, mobile: 140, celu: 10 },
-		]
 		try {
-			const tenantName = await this.authService.getTenantFromHeaders(req)
-			const { appointments } = await this.appointmentService.getAll(tenantName)
+			const { EnterpriseId } = await this.authService.getDataFromToken(req)
+			const { appointments } = await this.appointmentService.getAll(EnterpriseId)
 			const services = await this.serviceService.getAll()
 			const { start, end, year } = query
 			const startDate = new Date(`${year}-${start}-01`)

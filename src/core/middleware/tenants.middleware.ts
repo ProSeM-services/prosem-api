@@ -28,18 +28,18 @@ export class TenantsMiddleware implements NestMiddleware {
 				secret: process.env.JWTKEY,
 			})
 
-			const { tenantName } = payload
+			const { EnterpriseId } = payload
 
-			const tenantExits = await this.userServices.getByTenantName(tenantName)
+			const tenantExits = await this.userServices.getByTenantName(EnterpriseId)
 
 			if (!tenantExits) {
 				throw new NotFoundException('Tenant does not exist')
 			}
 
-			req['tenantName'] = tenantName
+			req['EnterpriseId'] = EnterpriseId
 			next()
 		} catch (error) {
-			throw new UnauthorizedException()
+			throw error
 		}
 	}
 }
