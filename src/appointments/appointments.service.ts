@@ -10,12 +10,12 @@ export class AppointmentsService {
 		@Inject(APPOINTMENT_REPOSITORY)
 		private readonly AppointmentModel: typeof Appointment
 	) {}
-	async getAll(token: string, limit: number = 10, page: number = 1) {
+	async getAll(EnterpriseId: string, limit: number = 10, page: number = 1) {
 		const offset = (page - 1) * limit
 		const [appointments, total] = await Promise.all([
 			this.AppointmentModel.findAll({
 				where: {
-					tenantName: token,
+					EnterpriseId,
 				},
 				include: [User],
 				limit: limit,
@@ -24,7 +24,7 @@ export class AppointmentsService {
 			}),
 			this.AppointmentModel.count({
 				where: {
-					tenantName: token,
+					EnterpriseId,
 				},
 			}),
 		])
