@@ -66,7 +66,7 @@ export class Company extends BaseModel<Company> {
 		allowNull: true,
 	})
 	image?: string
-	@Column({ type: DataTypes.ARRAY(DataTypes.STRING) })
+	@Column({ type: DataTypes.ARRAY(DataTypes.STRING), defaultValue: [] })
 	images: string[]
 	@Column({
 		type: DataTypes.UUID,
