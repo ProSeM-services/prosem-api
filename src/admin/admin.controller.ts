@@ -1,9 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common'
+import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common'
+import { AuthGuard } from 'src/auth/guards/auth.guard'
+import { MasterGuard } from 'src/auth/guards/master.guard'
 import { CompanyService } from 'src/company/company.service'
 import { User } from 'src/user/schema/user.model'
 import { UserService } from 'src/user/user.service'
 
 @Controller('admin')
+@UseGuards(AuthGuard, MasterGuard)
 export class AdminController {
 	constructor(
 		private readonly userService: UserService,
