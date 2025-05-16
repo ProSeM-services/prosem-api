@@ -13,6 +13,7 @@ import { UploadModule } from './upload/upload.module';
 import { MailerModule } from './mailer/mailer.module';
 import { AdminModule } from './admin/admin.module';
 import { EnterpriseModule } from './enterprise/enterprise.module';
+import { WebhookModule } from './webhook/webhook.module';
 import * as dotenv from 'dotenv'
 dotenv.config()
 @Module({
@@ -29,6 +30,7 @@ dotenv.config()
 		MailerModule,
 		AdminModule,
 		EnterpriseModule,
+		WebhookModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
