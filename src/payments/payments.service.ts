@@ -8,14 +8,17 @@ export class PaymentsService {
 	constructor(
 		@Inject(PAYMENT_REPOSITORY) private readonly paymentModel: typeof Payment
 	) {}
-	private payments: Payment[] = []
-	private idCounter = 1
 
 	async create(paymentData: Partial<Payment>) {
 		return await this.paymentModel.create(paymentData)
 	}
 
-	async findAll() {
+	async findAll(EnterpriseId?: string) {
+		if (EnterpriseId) {
+			return await this.paymentModel.findAll({
+				where: { EnterpriseId },
+			})
+		}
 		return await this.paymentModel.findAll()
 	}
 
@@ -23,7 +26,11 @@ export class PaymentsService {
 		return await this.paymentModel.findOne({ where: { id } })
 	}
 
-	async update(id: number, updateData: Partial<Omit<Payment, 'id'>>) {}
+	async update(id: string, updateData: Partial<Payment>) {
+		return await this.paymentModel.update(updateData, {
+			where: { id },
+		})
+	}
 
 	async remove(id: number) {}
 

@@ -7,6 +7,7 @@ import {
 	Request,
 	UnauthorizedException,
 	Body,
+	Param,
 } from '@nestjs/common'
 import { AuthService } from 'src/auth/auth.service'
 import { EnterpriseService } from 'src/enterprise/enterprise.service'
@@ -15,13 +16,15 @@ import { Request as ExpressRequest } from 'express'
 import { CreatePaymentDto } from './dto/create-payment-dto'
 import { UserService } from 'src/user/user.service'
 import { Payment } from './schema/payment.model'
+import { NotificactionsService } from 'src/notificactions/notificactions.service'
 @Controller('payments')
 export class PaymentsController {
 	constructor(
 		private readonly appointmentService: PaymentsService,
 		private readonly enterpriseService: EnterpriseService,
 		private readonly userService: UserService,
-		private authService: AuthService
+		private authService: AuthService,
+		private readonly notificationService: NotificactionsService
 	) {}
 
 	@Get()
@@ -65,7 +68,7 @@ export class PaymentsController {
 			const { EnterpriseId, id: payment_by } =
 				await this.authService.getDataFromToken(req)
 			if (!EnterpriseId || !payment_by) {
-				throw new UnauthorizedException('Missing or invalid token')
+				throw new UnauthorizedException('Missing or invalid token!')
 			}
 
 			const validUser = await this.userService.getById(payment_by)
@@ -89,7 +92,36 @@ export class PaymentsController {
 				end_date: endDate.toISOString(),
 			}
 			const payment = await this.appointmentService.create(paymentData)
+
+			await this.notificationService.create({
+				title: 'Nuevo pago recibido',
+				message: `El cliente ${validEnterprise.name} realizó un pago de $${body.amount}`,
+				relatedEntityId: payment.id,
+				EnterpriseId: payment.EnterpriseId,
+				type: 'payment',
+				read: false,
+			})
 			return payment
+		} catch (error) {
+			console.error('Error fetching payments:', error)
+			throw error
+		}
+	}
+
+	@Patch('/:id')
+	async updatePayment(
+		@Param('id') id: string,
+		@Request() req: ExpressRequest,
+		@Body() body: Partial<CreatePaymentDto>
+	) {
+		try {
+			const { role } = await this.authService.getDataFromToken(req)
+			if (role !== 'MASTER') {
+				throw new UnauthorizedException(
+					'No tienes permisos para realizar esta acción'
+				)
+			}
+			return await this.appointmentService.update(id, body)
 		} catch (error) {
 			console.error('Error fetching payments:', error)
 			throw error

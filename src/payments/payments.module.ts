@@ -8,6 +8,8 @@ import { JwtService } from '@nestjs/jwt'
 import { enterpriseProvider } from 'src/enterprise/enterprise.provider'
 import { UserService } from 'src/user/user.service'
 import { userProvider } from 'src/user/user.provider'
+import { NotificactionsService } from 'src/notificactions/notificactions.service'
+import { notificationsProvider } from 'src/notificactions/notifications.provider'
 
 @Module({
 	controllers: [PaymentsController],
@@ -17,6 +19,8 @@ import { userProvider } from 'src/user/user.provider'
 		AuthService,
 		JwtService,
 		UserService,
+		NotificactionsService,
+		...notificationsProvider,
 		...userProvider,
 		...enterpriseProvider,
 		...paymentProvider,
