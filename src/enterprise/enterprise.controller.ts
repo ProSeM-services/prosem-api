@@ -48,6 +48,7 @@ export class EnterpriseController {
 		const newEnterpise = await this.enterpriseService.create({
 			...data,
 			address: formatedAddress,
+			membership_price: data.membership_price ? data.membership_price : 0,
 		})
 
 		await this.userServices.update(user.id, {
