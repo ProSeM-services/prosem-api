@@ -1,4 +1,12 @@
 export enum Permission {
+	VIEW_PAYMENTS = 'view:payments',
+	CREATE_PAYMENTS = 'create:payments',
+	UPDATE_PAYMENTS = 'update:payments',
+	DELETE_PAYMENTS = 'delete:payments',
+	VIEW_ENTERPRISES = 'view:enterprises',
+	CREATE_ENTERPRISES = 'create:enterprises',
+	UPDATE_ENTERPRISES = 'update:enterprises',
+	DELETE_ENTERPRISES = 'delete:enterprises',
 	CREATE_COMPANY = 'create:company',
 	UPDATE_COMPANY = 'update:company',
 	DELETE_COMPANY = 'delete:company',
