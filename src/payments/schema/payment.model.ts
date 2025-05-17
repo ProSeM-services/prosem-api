@@ -16,6 +16,10 @@ export class Payment extends BaseModel<Payment> {
 	})
 	date: string
 	@Column({
+		allowNull: false,
+	})
+	image: string
+	@Column({
 		type: DataTypes.UUID,
 	})
 	EnterpriseId: string
@@ -37,7 +41,7 @@ export class Payment extends BaseModel<Payment> {
 	@Column({
 		type: DataTypes.ENUM(...Object.values(PaymentStatus)),
 		allowNull: false,
-		defaultValue: PaymentStatus.PAID,
+		defaultValue: PaymentStatus.PENDING,
 	})
 	status: PaymentStatus
 

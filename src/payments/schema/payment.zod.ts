@@ -16,6 +16,7 @@ export const CreatePaymentSchema = z.object({
 			message: 'Date must be a valid ISO 8601 string including time and timezone',
 		}),
 	amount: z.number().min(1),
+	image: z.string(),
 	start_date: z
 		.string()
 		.trim()

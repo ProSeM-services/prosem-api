@@ -2,6 +2,8 @@ import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common'
 import { AuthGuard } from 'src/auth/guards/auth.guard'
 import { MasterGuard } from 'src/auth/guards/master.guard'
 import { CompanyService } from 'src/company/company.service'
+import { EnterpriseService } from 'src/enterprise/enterprise.service'
+import { PaymentsService } from 'src/payments/payments.service'
 import { User } from 'src/user/schema/user.model'
 import { UserService } from 'src/user/user.service'
 
@@ -10,13 +12,31 @@ import { UserService } from 'src/user/user.service'
 export class AdminController {
 	constructor(
 		private readonly userService: UserService,
-		private readonly companyService: CompanyService
+		private readonly companyService: CompanyService,
+		private readonly enterpriseService: EnterpriseService,
+		private readonly paymentService: PaymentsService
 	) {}
 
 	@Get('accounts')
 	async getAccounts() {
 		try {
 			return await this.userService.getAllOwners()
+		} catch (error) {
+			throw error
+		}
+	}
+	@Get('payments')
+	async getPayments() {
+		try {
+			return await this.paymentService.findAll()
+		} catch (error) {
+			throw error
+		}
+	}
+	@Get('enterprises')
+	async getEnterprises() {
+		try {
+			return await this.enterpriseService.findAll()
 		} catch (error) {
 			throw error
 		}
