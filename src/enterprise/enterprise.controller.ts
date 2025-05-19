@@ -17,13 +17,15 @@ import { Location } from 'src/company/interfaces/location.interface'
 import { AuthService } from 'src/auth/auth.service'
 import { Request as ExpressRequest } from 'express'
 import { UserService } from 'src/user/user.service'
+import { NotificactionsService } from 'src/notificactions/notificactions.service'
 @Controller('enterprise')
 export class EnterpriseController {
 	constructor(
 		private readonly enterpriseService: EnterpriseService,
 		private readonly geocodeService: GeocodeService,
 		private readonly authServices: AuthService,
-		private readonly userServices: UserService
+		private readonly userServices: UserService,
+		private readonly notificationService: NotificactionsService
 	) {}
 
 	@Post()
@@ -60,7 +62,14 @@ export class EnterpriseController {
 				.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 				.join(''),
 		})
-
+		await this.notificationService.create({
+			title: 'Nuevo negocio creado',
+			message: `Se ha creado un nuevo negocio llamado ${data.name}`,
+			relatedEntityId: newEnterpise.id,
+			EnterpriseId: newEnterpise.id,
+			type: 'system',
+			read: false,
+		})
 		return newEnterpise
 	}
 

@@ -8,7 +8,15 @@ export class NotificactionsService {
 		private readonly notificationsModel: typeof Notification
 	) {}
 
-	async findAll(read?: boolean) {
+	async findAll(read?: boolean, EnterpriseId?: string) {
+		if (EnterpriseId) {
+			if (read) {
+				return await this.notificationsModel.findAll({
+					where: { read, EnterpriseId },
+				})
+			}
+			return await this.notificationsModel.findAll({ where: { EnterpriseId } })
+		}
 		if (read) {
 			return await this.notificationsModel.findAll({ where: { read } })
 		}
@@ -16,5 +24,10 @@ export class NotificactionsService {
 	}
 	async create(data: Partial<Notification>) {
 		return await this.notificationsModel.create(data)
+	}
+	async update(id: string, data: Partial<Notification>) {
+		return await this.notificationsModel.update(data, {
+			where: { id },
+		})
 	}
 }

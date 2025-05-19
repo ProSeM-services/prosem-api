@@ -7,6 +7,8 @@ import { AuthService } from 'src/auth/auth.service'
 import { UserService } from 'src/user/user.service'
 import { JwtService } from '@nestjs/jwt'
 import { userProvider } from 'src/user/user.provider'
+import { NotificactionsService } from 'src/notificactions/notificactions.service'
+import { notificationsProvider } from 'src/notificactions/notifications.provider'
 
 @Module({
 	controllers: [EnterpriseController],
@@ -16,6 +18,8 @@ import { userProvider } from 'src/user/user.provider'
 		AuthService,
 		UserService,
 		JwtService,
+		NotificactionsService,
+		...notificationsProvider,
 		...enterpriseProvider,
 		...userProvider,
 	],

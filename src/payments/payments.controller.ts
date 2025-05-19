@@ -32,12 +32,15 @@ export class PaymentsController {
 		try {
 			const tokenDAta = await this.authService.getDataFromToken(req)
 
-			const { EnterpriseId } = tokenDAta
+			const { EnterpriseId, role } = tokenDAta
 			if (!EnterpriseId) {
 				throw new UnauthorizedException('Missing or invalid token')
 			}
-			const payments = await this.appointmentService.findAll()
-			return payments
+
+			if (role !== 'MASTER') {
+				return await this.appointmentService.findAll(EnterpriseId)
+			}
+			return await this.appointmentService.findAll()
 		} catch (error) {
 			console.error('Error fetching payments:', error)
 			throw error
