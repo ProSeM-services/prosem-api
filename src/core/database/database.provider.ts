@@ -7,6 +7,8 @@ import { Appointment } from 'src/appointments/schema/appointment.model'
 import { Service } from 'src/services/schema/service.model'
 import { Customer } from 'src/customer/schema/customer.model'
 import { Enterprise } from 'src/enterprise/schema/enterprise.model'
+import { Payment } from 'src/payments/schema/payment.model'
+import { Notification } from 'src/notificactions/schema/notifications.model'
 export const databaseProviders = [
 	{
 		provide: 'SEQUELIZE',
@@ -36,8 +38,20 @@ export const databaseProviders = [
 				Appointment,
 				Service,
 				Customer,
+				Payment,
+				Notification,
 			])
 
+			Enterprise.hasMany(Notification)
+			Notification.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
+			Enterprise.hasMany(Payment)
+			Payment.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
 			Enterprise.hasMany(Company)
 			Company.belongsTo(Enterprise, {
 				targetKey: 'id',

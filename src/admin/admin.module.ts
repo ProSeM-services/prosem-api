@@ -6,6 +6,10 @@ import { UserService } from 'src/user/user.service'
 import { userProvider } from 'src/user/user.provider'
 import { AuthService } from 'src/auth/auth.service'
 import { JwtService } from '@nestjs/jwt'
+import { EnterpriseService } from 'src/enterprise/enterprise.service'
+import { enterpriseProvider } from 'src/enterprise/enterprise.provider'
+import { PaymentsService } from 'src/payments/payments.service'
+import { paymentProvider } from 'src/payments/payment.provider'
 
 @Module({
 	controllers: [AdminController],
@@ -14,6 +18,12 @@ import { JwtService } from '@nestjs/jwt'
 		CompanyService,
 		AuthService,
 		JwtService,
+		EnterpriseService,
+		CompanyService,
+		PaymentsService,
+		...paymentProvider,
+		...companyProviders,
+		...enterpriseProvider,
 		...userProvider,
 		...companyProviders,
 	],

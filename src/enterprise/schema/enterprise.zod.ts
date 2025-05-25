@@ -5,6 +5,7 @@ export const EnterpriseSchema = z.object({
 	email: z.string().email('Invalid email format').optional(),
 	address: z.string(),
 	company_count: z.number(),
+	membership_price: z.number().optional(),
 })
 
 export type IEnterprise = z.infer<typeof EnterpriseSchema>

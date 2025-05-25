@@ -7,14 +7,16 @@ import { UserModule } from './user/user.module'
 import { AuthModule } from './auth/auth.module'
 import { AppointmentsModule } from './appointments/appointments.module'
 import { ServicesModule } from './services/services.module'
-import { CustomerModule } from './customer/customer.module';
-import { StatsModule } from './stats/stats.module';
-import { UploadModule } from './upload/upload.module';
-import { MailerModule } from './mailer/mailer.module';
-import { AdminModule } from './admin/admin.module';
-import { EnterpriseModule } from './enterprise/enterprise.module';
-import { WebhookModule } from './webhook/webhook.module';
+import { CustomerModule } from './customer/customer.module'
+import { StatsModule } from './stats/stats.module'
+import { UploadModule } from './upload/upload.module'
+import { MailerModule } from './mailer/mailer.module'
+import { AdminModule } from './admin/admin.module'
+import { EnterpriseModule } from './enterprise/enterprise.module'
+import { PaymentsModule } from './payments/payments.module'
+import { NotificactionsModule } from './notificactions/notificactions.module'
 import * as dotenv from 'dotenv'
+import { WebhookModule } from './webhook/webhook.module'
 dotenv.config()
 @Module({
 	imports: [

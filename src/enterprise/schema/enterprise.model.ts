@@ -14,7 +14,12 @@ export class Enterprise extends BaseModel<Enterprise> {
 		allowNull: false,
 	})
 	address: Location
-
+	@Column({
+		type: DataType.FLOAT,
+		allowNull: false,
+		defaultValue: 0,
+	})
+	membership_price: number
 	@Column({
 		type: DataType.STRING,
 		allowNull: true,
