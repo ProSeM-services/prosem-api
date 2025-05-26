@@ -20,6 +20,7 @@ const envZodModel = z.object({
 	WEB_CLIENT_URL: z.string().url(),
 	WEB_BACKOFFICE_URL: z.string().url(),
 	NODE_ENV: z.string().optional(),
+	MP_ACCESS_TOKEN: z.string(),
 })
 
 envZodModel.parse(process.env)

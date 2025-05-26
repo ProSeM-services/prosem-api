@@ -16,11 +16,12 @@ export class Payment extends BaseModel<Payment> {
 	})
 	date: string
 	@Column({
-		allowNull: false,
+		allowNull: true,
 	})
 	image: string
 	@Column({
 		type: DataTypes.UUID,
+		allowNull: false,
 	})
 	EnterpriseId: string
 	@Column({
