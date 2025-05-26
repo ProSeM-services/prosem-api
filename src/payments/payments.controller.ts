@@ -17,6 +17,8 @@ import { CreatePaymentDto } from './dto/create-payment-dto'
 import { UserService } from 'src/user/user.service'
 import { Payment } from './schema/payment.model'
 import { NotificactionsService } from 'src/notificactions/notificactions.service'
+import { PreApproval } from 'mercadopago'
+import { mercadopago } from 'src/core/config/mercadopago'
 @Controller('payments')
 export class PaymentsController {
 	constructor(
@@ -107,6 +109,35 @@ export class PaymentsController {
 			return payment
 		} catch (error) {
 			console.error('Error fetching payments:', error)
+			throw error
+		}
+	}
+
+	@Post('/subscribe')
+	async subscribe(
+		@Request() req: ExpressRequest,
+		@Body() body: { email: string; amount: number; frequency: number }
+	) {
+		const { id: userId } = await this.authService.getDataFromToken(req)
+		try {
+			const preapproval = await new PreApproval(mercadopago).create({
+				body: {
+					back_url: 'https://reserve-pro-backoffice.vercel.app/',
+					reason: 'Suscripción a reserve pro',
+					auto_recurring: {
+						frequency: body.frequency,
+						frequency_type: 'months',
+						transaction_amount: body.amount,
+						currency_id: 'ARS',
+					},
+					payer_email: body.email,
+					status: 'pending',
+					external_reference: userId,
+				},
+			})
+			return { init_point: preapproval.init_point }
+		} catch (error) {
+			console.error('Error creating preapproval:', error)
 			throw error
 		}
 	}
