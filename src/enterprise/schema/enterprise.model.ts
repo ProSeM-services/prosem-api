@@ -37,4 +37,9 @@ export class Enterprise extends BaseModel<Enterprise> {
 		allowNull: true,
 	})
 	website: string
+	@Column({
+		type: DataType.UUID,
+		allowNull: true,
+	})
+	payment_plan: string
 }

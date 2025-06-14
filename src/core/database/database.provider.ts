@@ -9,6 +9,7 @@ import { Customer } from 'src/customer/schema/customer.model'
 import { Enterprise } from 'src/enterprise/schema/enterprise.model'
 import { Payment } from 'src/payments/schema/payment.model'
 import { Notification } from 'src/notificactions/schema/notifications.model'
+import { PaymentPlan } from 'src/payment-plans/schema/payment-plan.model'
 export const databaseProviders = [
 	{
 		provide: 'SEQUELIZE',
@@ -40,6 +41,7 @@ export const databaseProviders = [
 				Customer,
 				Payment,
 				Notification,
+				PaymentPlan,
 			])
 
 			Enterprise.hasMany(Notification)
