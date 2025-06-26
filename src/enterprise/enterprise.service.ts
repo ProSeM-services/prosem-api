@@ -1,6 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { CreateEnterpriseDto } from './dto/create-enterprise.dto'
-import { UpdateEnterpriseDto } from './dto/update-enterprise.dto'
 import { Enterprise } from './schema/enterprise.model'
 import { ENTERPRISE_REPOSITORY } from 'src/core/constants'
 
@@ -22,11 +20,11 @@ export class EnterpriseService {
 		return await this.enterpriseModel.findOne({ where: { id } })
 	}
 
-	update(id: number, updateEnterpriseDto: UpdateEnterpriseDto) {
-		return `This action updates a #${id} enterprise`
+	async update(id: string, data: Partial<Enterprise>) {
+		return await this.enterpriseModel.update(data, { where: { id } })
 	}
 
-	remove(id: number) {
+	remove(id: string) {
 		return `This action removes a #${id} enterprise`
 	}
 }

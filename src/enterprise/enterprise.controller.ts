@@ -18,6 +18,7 @@ import { AuthService } from 'src/auth/auth.service'
 import { Request as ExpressRequest } from 'express'
 import { UserService } from 'src/user/user.service'
 import { NotificactionsService } from 'src/notificactions/notificactions.service'
+import { Enterprise } from './schema/enterprise.model'
 @Controller('enterprise')
 export class EnterpriseController {
 	constructor(
@@ -86,13 +87,13 @@ export class EnterpriseController {
 	@Patch(':id')
 	update(
 		@Param('id') id: string,
-		@Body() updateEnterpriseDto: UpdateEnterpriseDto
+		@Body() updateEnterpriseDto: Partial<Enterprise>
 	) {
-		return this.enterpriseService.update(+id, updateEnterpriseDto)
+		return this.enterpriseService.update(id, updateEnterpriseDto)
 	}
 
 	@Delete(':id')
 	remove(@Param('id') id: string) {
-		return this.enterpriseService.remove(+id)
+		return this.enterpriseService.remove(id)
 	}
 }
