@@ -42,4 +42,6 @@ export class Enterprise extends BaseModel<Enterprise> {
 		allowNull: true,
 	})
 	payment_plan: string
+	@Column({ defaultValue: 1, allowNull: true })
+	company_limit: number // Indicates the number of available companies
 }

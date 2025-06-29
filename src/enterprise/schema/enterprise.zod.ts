@@ -6,6 +6,7 @@ export const EnterpriseSchema = z.object({
 	address: z.string(),
 	company_count: z.number(),
 	membership_price: z.number().optional(),
+	company_limit: z.number().optional(),
 	payment_plan: z.string().optional(),
 })
 
