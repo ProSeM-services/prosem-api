@@ -14,6 +14,9 @@ export class PaymentPlan extends BaseModel<PaymentPlan> {
 	@Column({ allowNull: false })
 	duration: number // number of months or days for the plan duration.
 
+	@Column({ defaultValue: 1, allowNull: false })
+	company_limit: number // Indicates if the payment plan is currently active
+
 	@Column({ allowNull: true })
 	description: string
 
