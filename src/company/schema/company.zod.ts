@@ -15,7 +15,7 @@ export const CompanyZodSchema = z.object({
 	image: z.string().optional(),
 	images: z.array(z.string()).optional(),
 	tenantName: z.string().optional(),
-	email: z.string().email('Correo electrónico no válido').optional(),
+	email: z.string().optional(),
 	workhours: z.array(WorkhourZodSchema).optional(),
 })
 export const CreateCompanyZodSchema = CompanyZodSchema.omit({
