@@ -15,7 +15,13 @@ export const CompanyZodSchema = z.object({
 	image: z.string().optional(),
 	images: z.array(z.string()).optional(),
 	tenantName: z.string().optional(),
-	email: z.string().optional(),
+	email: z
+		.string()
+		.optional()
+		.refine((data) => !data || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data), {
+			path: ['email'],
+			message: 'Debe ser un correo válido',
+		}),
 	workhours: z.array(WorkhourZodSchema).optional(),
 })
 export const CreateCompanyZodSchema = CompanyZodSchema.omit({
