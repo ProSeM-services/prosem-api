@@ -65,6 +65,17 @@ export class Company extends BaseModel<Company> {
 		type: DataTypes.STRING,
 		allowNull: true,
 	})
+	apartment: string
+	@Column({
+		type: DataTypes.STRING,
+		allowNull: true,
+	})
+	floor: string
+
+	@Column({
+		type: DataTypes.STRING,
+		allowNull: true,
+	})
 	image?: string
 	@Column({ type: DataTypes.ARRAY(DataTypes.STRING), defaultValue: [] })
 	images: string[]
