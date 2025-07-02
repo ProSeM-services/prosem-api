@@ -1,6 +1,7 @@
 import {
 	Body,
 	Controller,
+	Patch,
 	Post,
 	Request,
 	UnauthorizedException,
@@ -12,7 +13,7 @@ import { UserService } from 'src/user/user.service'
 import { v4 as uuidv4 } from 'uuid'
 import { MailerService } from 'src/mailer/mailer.service'
 import { Request as ExpressRequest } from 'express'
-
+import * as bcrypt from 'bcrypt'
 @Controller('auth')
 export class AuthController {
 	constructor(
@@ -77,6 +78,44 @@ export class AuthController {
 				token,
 			})
 			return newUser
+		} catch (error) {
+			throw error
+		}
+	}
+	@Patch('update-password')
+	async validatePassword(
+		@Body()
+		{
+			password,
+			userId,
+			newPassword,
+		}: {
+			password: string
+			userId: string
+			newPassword: string
+		}
+	) {
+		try {
+			const user = await this.userService.getById(userId)
+			if (!user) {
+				throw new UnauthorizedException(
+					'El usuario no se encuentra registrado en base de datos.'
+				)
+			}
+			const userValidate = await this.authService.validateUser(
+				user.userName,
+				password
+			)
+			if (!userValidate) {
+				throw new UnauthorizedException('Contraseña incorrecta.')
+			}
+			const hashPassword = await bcrypt.hash(newPassword, +process.env.HASH_SALT)
+			await this.userService.update(user.id, {
+				...user,
+				password: hashPassword,
+			})
+
+			return user
 		} catch (error) {
 			throw error
 		}
