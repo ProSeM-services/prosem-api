@@ -44,7 +44,9 @@ export class AdminController {
 	@Get('users')
 	async getUsers() {
 		try {
-			return await this.userService.getAll()
+			const res = await this.userService.getAll()
+
+			return res.filter((u) => u.role !== 'MASTER')
 		} catch (error) {
 			throw error
 		}
