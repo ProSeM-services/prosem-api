@@ -6,8 +6,14 @@ import { UserService } from 'src/user/user.service'
 import { companyProviders } from 'src/company/company.providers'
 import { userProvider } from 'src/user/user.provider'
 import { appointmentProvider } from './appointment.provider'
-import { WorkhoursService } from 'src/workhours/workhours.service'
-import { workhourProvider } from 'src/workhours/workhours.provider'
+import { ServicesService } from 'src/services/services.service'
+import { servicesProviders } from 'src/services/services.providers'
+import { CustomerService } from 'src/customer/customer.service'
+import { customerProvider } from 'src/customer/customer.provider'
+import { AuthService } from 'src/auth/auth.service'
+import { JwtService } from '@nestjs/jwt'
+import { MailerService } from 'src/mailer/mailer.service'
+import { AppointmentsGateway } from './appointment.gateway'
 
 @Module({
 	controllers: [AppointmentsController],
@@ -15,11 +21,18 @@ import { workhourProvider } from 'src/workhours/workhours.provider'
 		AppointmentsService,
 		CompanyService,
 		UserService,
-		WorkhoursService,
+		ServicesService,
+		CustomerService,
+		AuthService,
+		JwtService,
+		MailerService,
+		AppointmentsGateway,
+		...customerProvider,
 		...companyProviders,
 		...userProvider,
 		...appointmentProvider,
-		...workhourProvider,
+		...servicesProviders,
 	],
+	exports: [AppointmentsGateway],
 })
 export class AppointmentsModule {}

@@ -5,8 +5,11 @@ import { userProvider } from './user.provider'
 import { CompanyService } from 'src/company/company.service'
 import { CompanyModule } from 'src/company/company.module'
 import { companyProviders } from 'src/company/company.providers'
-import { WorkhoursService } from 'src/workhours/workhours.service'
-import { workhourProvider } from 'src/workhours/workhours.provider'
+import { AuthService } from 'src/auth/auth.service'
+import { JwtService } from '@nestjs/jwt'
+import { MailerService } from 'src/mailer/mailer.service'
+import { EnterpriseService } from 'src/enterprise/enterprise.service'
+import { enterpriseProvider } from 'src/enterprise/enterprise.provider'
 
 @Module({
 	imports: [CompanyModule],
@@ -14,10 +17,13 @@ import { workhourProvider } from 'src/workhours/workhours.provider'
 	providers: [
 		UserService,
 		CompanyService,
-		WorkhoursService,
+		AuthService,
+		JwtService,
+		MailerService,
+		EnterpriseService,
+		...enterpriseProvider,
 		...userProvider,
 		...companyProviders,
-		...workhourProvider,
 	],
 })
 export class UserModule {}

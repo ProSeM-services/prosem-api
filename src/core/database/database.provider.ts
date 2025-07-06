@@ -4,8 +4,12 @@ import { enviromentType } from '../constants'
 import { databaseConfig } from './database.config'
 import { User } from 'src/user/schema/user.model'
 import { Appointment } from 'src/appointments/schema/appointment.model'
-import { Workhour } from 'src/workhours/schema/workhour.model'
-import { AppoinmentSlots } from 'src/appointments/schema/appointmentSlots.model'
+import { Service } from 'src/services/schema/service.model'
+import { Customer } from 'src/customer/schema/customer.model'
+import { Enterprise } from 'src/enterprise/schema/enterprise.model'
+import { Payment } from 'src/payments/schema/payment.model'
+import { Notification } from 'src/notificactions/schema/notifications.model'
+import { PaymentPlan } from 'src/payment-plans/schema/payment-plan.model'
 export const databaseProviders = [
 	{
 		provide: 'SEQUELIZE',
@@ -28,21 +32,76 @@ export const databaseProviders = [
 				dialect: 'postgres',
 				logging: false,
 			})
-			sequelize.addModels([Company, User, Appointment, Workhour, AppoinmentSlots])
+			sequelize.addModels([
+				Enterprise,
+				Company,
+				User,
+				Appointment,
+				Service,
+				Customer,
+				Payment,
+				Notification,
+				PaymentPlan,
+			])
 
+			Enterprise.hasMany(Notification)
+			Notification.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
+			Enterprise.hasMany(Payment)
+			Payment.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
+			Enterprise.hasMany(Company)
+			Company.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
+
+			Enterprise.hasMany(User)
+			User.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
+			Enterprise.hasMany(Service)
+			Service.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
+
+			Enterprise.hasMany(Customer)
+			Customer.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
+
+			Enterprise.hasMany(Appointment)
+			Appointment.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
 			Company.hasMany(User)
 			User.belongsTo(Company, { targetKey: 'id', foreignKey: 'CompanyId' })
 
-			Company.hasMany(Workhour)
-			Workhour.belongsTo(Company, { targetKey: 'id', foreignKey: 'CompanyId' })
+			Customer.hasMany(Appointment)
+			Appointment.belongsTo(Customer, {
+				targetKey: 'id',
+				foreignKey: 'CustomerId',
+			})
 
-			User.hasMany(Workhour)
-			Workhour.belongsTo(User, { targetKey: 'id', foreignKey: 'UserId' })
+			Company.belongsToMany(Service, { through: 'CompanyService' })
+			Service.belongsToMany(Company, { through: 'CompanyService' })
+
+			User.belongsToMany(Service, { through: 'UserService' })
+			Service.belongsToMany(User, { through: 'UserService' })
 
 			User.hasMany(Appointment)
 			Appointment.belongsTo(User, { targetKey: 'id', foreignKey: 'UserId' })
 
-			User.hasMany(Appointment)
+			Service.hasMany(Appointment)
+			Appointment.belongsTo(Service, { targetKey: 'id', foreignKey: 'ServiceId' })
 
 			await sequelize.sync({ alter: true })
 			return sequelize

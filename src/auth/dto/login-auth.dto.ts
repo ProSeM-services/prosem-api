@@ -1,12 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator'
-import { IAuthBody } from '../interface/auth.interface'
+import { AuthBodySchema } from '../interface/auth.interface'
+import { createZodDto } from '@anatine/zod-nestjs'
 
-export class LoginAuthDto implements IAuthBody {
-	@IsNotEmpty()
-	@IsString()
-	user: string
-
-	@IsNotEmpty()
-	@IsString()
-	password: string
-}
+export class LoginAuthDto extends createZodDto(AuthBodySchema) {}

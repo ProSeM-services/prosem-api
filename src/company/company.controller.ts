@@ -8,29 +8,97 @@ import {
 	Patch,
 	Post,
 	NotFoundException,
+	Request,
+	Query,
+	UseGuards,
 } from '@nestjs/common'
 import { CompanyService } from './company.service'
-import { CompanyDTO } from './dto/company.dto'
-import { UpdateCompanyDTO } from './dto/update-company.dto'
+import { CreateCompanyDTO, UpdateCompanyDTO } from './dto/company.dto'
 import { Company } from './schema/company.model'
-
+import { UserService } from 'src/user/user.service'
+import { AuthService } from 'src/auth/auth.service'
+import { Request as ExpressRequest } from 'express'
+import { GeocodeService } from 'src/geocode/geocode.services'
+import { Location } from './interfaces/location.interface'
+import { AuthGuard } from 'src/auth/guards/auth.guard'
+import { PublicAcces } from 'src/auth/decorators/public.decorator'
+import { RolesGuard } from 'src/auth/guards/roles.guard'
+import { RequiresPermission } from 'src/auth/decorators/permissions.decorator'
+import { Permission } from 'src/core/types/permissions'
+import { PermissionsGuard } from 'src/auth/guards/permissions.guard'
 @Controller('company')
+@UseGuards(AuthGuard, RolesGuard, PermissionsGuard)
 export class CompanyController {
-	constructor(private readonly companyService: CompanyService) {}
+	constructor(
+		private readonly companyService: CompanyService,
+		private readonly userServices: UserService,
+		private readonly geocodeService: GeocodeService,
+		private readonly authService: AuthService
+	) {}
 
 	async checkCompanyExist(id: string) {
 		const companyToUpdate = await this.companyService.getById(id)
 		if (!companyToUpdate) {
 			throw new UnauthorizedException('Company not found!')
 		}
+		return companyToUpdate
+	}
+	@PublicAcces()
+	@Get('/clients')
+	async getCompaniesForClients(
+		@Query() query: { name: string; category: string; city: string }
+	) {
+		try {
+			const { name, category, city } = query
+			const res = await this.companyService.getCompanies({
+				name: name || '',
+				category: category || '',
+				city: city ? city.split(',')[0] : '',
+			})
+
+			return !res || res.length === 0 ? [] : res
+		} catch (error) {
+			console.error('Controller: Error in getCompaniesForClients:', error)
+			throw error
+		}
+	}
+	@PublicAcces()
+	@Get('/clients/company-detail/:id')
+	async getCompanyDetailForClients(@Param() { id }: { id: Company['id'] }) {
+		try {
+			await this.checkCompanyExist(id)
+			return await this.companyService.getById(id)
+		} catch (error) {
+			throw error
+		}
+	}
+	@PublicAcces()
+	@Get('/clients/company-detail/:id/services')
+	async getServicesFromCompanyForClients(
+		@Param() { id }: { id: Company['id'] }
+	) {
+		try {
+			await this.checkCompanyExist(id)
+			const data = await this.companyService.getById(id)
+			//@ts-ignore
+			return data.Services
+		} catch (error) {
+			throw error
+		}
 	}
 
+	// @Roles('ADMIN')
+
 	@Get()
-	async getAll() {
+	async getAll(
+		@Request() req: ExpressRequest,
+		@Query() query: { name: string; category: string; city: string }
+	) {
 		try {
-			return await this.companyService.getAll()
+			const { EnterpriseId } = await this.authService.getDataFromToken(req)
+			return await this.companyService.getAll(EnterpriseId)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Get(':id')
@@ -39,7 +107,7 @@ export class CompanyController {
 			await this.checkCompanyExist(id)
 			return await this.companyService.getById(id)
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 	@Get('/name/:name')
@@ -50,31 +118,59 @@ export class CompanyController {
 
 			return company
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
+
+	@RequiresPermission(Permission.CREATE_COMPANY)
 	@Post()
-	async create(@Body() data: CompanyDTO) {
+	async create(@Request() req: ExpressRequest, @Body() data: CreateCompanyDTO) {
 		try {
-			return await this.companyService.create(data)
+			const { tenantName, EnterpriseId } =
+				await this.authService.getDataFromToken(req)
+			const { address } = data
+			const locationData = await this.geocodeService.geocodeAddress(address)
+			const formatedAddress: Location = {
+				lat: locationData.lat,
+				lng: locationData.lng,
+				value: address,
+				city: locationData.city,
+			}
+			const newCompany = await this.companyService.create({
+				...data,
+				address: formatedAddress,
+				tenantName,
+				EnterpriseId,
+				city: locationData.city,
+			})
+
+			return newCompany
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
+	@RequiresPermission(Permission.DELETE_COMPANY)
 	@Delete(':id')
 	async delete(@Param() { id }: { id: string }) {
 		try {
-			this.checkCompanyExist(id)
+			await this.checkCompanyExist(id)
+			const usersFromCompany = await this.userServices.getByCompany(id)
+			if (usersFromCompany.length > 0) {
+				throw new UnauthorizedException(
+					'Please delete the members form the company'
+				)
+			}
 			const deleteStatus = await this.companyService.delete(id)
 			if (deleteStatus !== 1) {
-				return 'error at deleting company'
+				throw new UnauthorizedException('error at deleting company')
 			}
 			return 'company has been deleted, succesfully!'
 		} catch (error) {
-			console.log(error)
-			return error
+			// Re-throw the error to maintain proper status code
+			throw error
 		}
 	}
+	@RequiresPermission(Permission.UPDATE_COMPANY)
 	@Patch(':id')
 	async update(@Param() { id }: { id: string }, @Body() data: UpdateCompanyDTO) {
 		try {
@@ -82,7 +178,7 @@ export class CompanyController {
 			await this.companyService.update(id, data)
 			return 'company has been updated, succesfully!'
 		} catch (error) {
-			return error
+			throw error
 		}
 	}
 }

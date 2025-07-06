@@ -1,7 +1,11 @@
 import { DataTypes } from 'sequelize'
 import { Table, Column } from 'sequelize-typescript'
+import { Location } from '../interfaces/location.interface'
+import { IWorkhour } from 'src/core/types/workhours'
+import { Category } from '../interfaces/categeory.interface'
 import { BaseModel } from 'src/core/database/schema/base.model'
-@Table
+
+@Table({ timestamps: true })
 export class Company extends BaseModel<Company> {
 	@Column({
 		type: DataTypes.UUID,
@@ -11,17 +15,74 @@ export class Company extends BaseModel<Company> {
 	})
 	id: string
 
-	@Column
+	@Column({
+		type: DataTypes.STRING,
+		allowNull: false,
+	})
 	name: string
-	@Column({ unique: true, allowNull: true })
-	dbUrl: string
+	@Column({ type: DataTypes.ARRAY(DataTypes.STRING) })
+	payment_methods: string[]
 
-	@Column({ unique: true })
+	@Column({
+		type: DataTypes.JSON,
+		allowNull: false,
+	})
+	address: Location
+
+	@Column({
+		type: DataTypes.ARRAY(DataTypes.STRING),
+		allowNull: false,
+		validate: {
+			max: 3,
+		},
+	})
+	category: Category[]
+
+	@Column({
+		type: DataTypes.ARRAY(DataTypes.JSON),
+		defaultValue: [],
+	})
+	workhours: IWorkhour[]
+
+	@Column({
+		type: DataTypes.BOOLEAN,
+		defaultValue: true,
+	})
+	status: boolean
+
+	@Column({
+		type: DataTypes.STRING,
+		allowNull: true,
+	})
 	email: string
+	@Column({
+		type: DataTypes.STRING,
+		allowNull: true,
+	})
+	city: string
 
-	@Column
-	address: string
+	@Column({
+		type: DataTypes.STRING,
+		allowNull: true,
+	})
+	apartment: string
+	@Column({
+		type: DataTypes.STRING,
+		allowNull: true,
+	})
+	floor: string
 
-	@Column
-	image: string
+	@Column({
+		type: DataTypes.STRING,
+		allowNull: true,
+	})
+	image?: string
+	@Column({ type: DataTypes.ARRAY(DataTypes.STRING), defaultValue: [] })
+	images: string[]
+	@Column({
+		type: DataTypes.UUID,
+	})
+	EnterpriseId: string
 }
+
+export { Company as CompanyDocument, Company as CompanyModel }
