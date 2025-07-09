@@ -88,8 +88,8 @@ export class StatsController {
 			const { appointments } = await this.appointmentService.getAll(EnterpriseId)
 			const services = await this.serviceService.getAll()
 			const { start, end, year } = query
-			const startDate = new Date(`${year}-${start}-01`)
-			const endDate = new Date(`${year}-${end}-31`)
+			const startDate = new Date(`${year}-${parseInt(start) + 1}-01`)
+			const endDate = new Date(`${year}-${parseInt(end) + 1}-31`)
 
 			const fleterdAppointments = appointments.filter((appointment) => {
 				const date = new Date(appointment.date)
@@ -120,7 +120,7 @@ export class StatsController {
 			]
 
 			// Initialize counts for each month in range
-			for (let i = parseInt(start) - 1; i <= parseInt(end) - 1; i++) {
+			for (let i = parseInt(start); i <= parseInt(end); i++) {
 				const servicesCounts = {}
 				scheduledServices.forEach((e) => {
 					servicesCounts[e] = 0
