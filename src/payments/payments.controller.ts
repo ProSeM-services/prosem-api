@@ -19,6 +19,7 @@ import { Payment } from './schema/payment.model'
 import { NotificactionsService } from 'src/notificactions/notificactions.service'
 import { PreApproval } from 'mercadopago'
 import { mercadopago } from 'src/core/config/mercadopago'
+import { SubscriptionService } from 'src/subscription/subscription.service'
 @Controller('payments')
 export class PaymentsController {
 	constructor(
@@ -26,7 +27,8 @@ export class PaymentsController {
 		private readonly enterpriseService: EnterpriseService,
 		private readonly userService: UserService,
 		private authService: AuthService,
-		private readonly notificationService: NotificactionsService
+		private readonly notificationService: NotificactionsService,
+		private readonly subscriptionService: SubscriptionService
 	) {}
 
 	@Get()
@@ -106,6 +108,13 @@ export class PaymentsController {
 				type: 'payment',
 				read: false,
 			})
+			const subscription =
+				await this.subscriptionService.getSubscriptionByEnterpriseId(EnterpriseId)
+			if (subscription) {
+				// actualizar subscrition
+			} else {
+				// crear subscrition
+			}
 			return payment
 		} catch (error) {
 			console.error('Error fetching payments:', error)
@@ -122,7 +131,7 @@ export class PaymentsController {
 		try {
 			const preapproval = await new PreApproval(mercadopago).create({
 				body: {
-					back_url: 'https://reserve-pro-backoffice.vercel.app/',
+					back_url: process.env.WEB_BACKOFFICE_URL,
 					reason: 'Suscripción a reserve pro',
 					auto_recurring: {
 						frequency: body.frequency,

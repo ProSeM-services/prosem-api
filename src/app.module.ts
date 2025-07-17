@@ -17,6 +17,7 @@ import { PaymentsModule } from './payments/payments.module'
 import { NotificactionsModule } from './notificactions/notificactions.module'
 import { WebhookModule } from './webhook/webhook.module'
 import { PaymentPlansModule } from './payment-plans/payment-plans.module';
+import { SubscriptionModule } from './subscription/subscription.module';
 import * as dotenv from 'dotenv'
 dotenv.config()
 @Module({
@@ -37,6 +38,7 @@ dotenv.config()
 		PaymentsModule,
 		NotificactionsModule,
 		PaymentPlansModule,
+		SubscriptionModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

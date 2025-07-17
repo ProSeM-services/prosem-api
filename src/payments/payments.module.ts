@@ -10,6 +10,8 @@ import { UserService } from 'src/user/user.service'
 import { userProvider } from 'src/user/user.provider'
 import { NotificactionsService } from 'src/notificactions/notificactions.service'
 import { notificationsProvider } from 'src/notificactions/notifications.provider'
+import { SubscriptionService } from 'src/subscription/subscription.service'
+import { subscriptionProvider } from 'src/subscription/subscription.provider'
 
 @Module({
 	controllers: [PaymentsController],
@@ -19,11 +21,13 @@ import { notificationsProvider } from 'src/notificactions/notifications.provider
 		AuthService,
 		JwtService,
 		UserService,
+		SubscriptionService,
 		NotificactionsService,
 		...notificationsProvider,
 		...userProvider,
 		...enterpriseProvider,
 		...paymentProvider,
+		...subscriptionProvider,
 	],
 })
 export class PaymentsModule {}
