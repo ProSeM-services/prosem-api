@@ -153,10 +153,16 @@ export class PaymentsController {
 	@Post('/subscribe')
 	async subscribe(
 		@Request() req: ExpressRequest,
-		@Body() body: { email: string; amount: number; frequency: number }
+		@Body()
+		body: { email: string; amount: number; frequency: number; plan_id: string }
 	) {
 		const { id: userId } = await this.authService.getDataFromToken(req)
 		try {
+			const externalReference = JSON.stringify({
+				userId,
+				planId: body.plan_id,
+			})
+			// : Enviar un JSON serializado
 			const preapproval = await new PreApproval(mercadopago).create({
 				body: {
 					back_url: process.env.WEB_BACKOFFICE_URL,
@@ -169,7 +175,7 @@ export class PaymentsController {
 					},
 					payer_email: body.email,
 					status: 'pending',
-					external_reference: userId,
+					external_reference: externalReference,
 				},
 			})
 			return { init_point: preapproval.init_point }

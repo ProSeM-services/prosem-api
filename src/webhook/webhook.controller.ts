@@ -40,10 +40,10 @@ export class WebhookController {
 				})
 
 				if (preapproval.status === 'authorized') {
-					console.log('Pago aprobado', preapproval)
-
-					// Obtenemos el usuario (en external_reference guardaste el userId)
-					const userId = preapproval.external_reference
+					const ref = preapproval.external_reference
+					const parsed = JSON.parse(ref)
+					const userId = parsed.userId
+					const planId = parsed.planId
 					const user = await this.userService.getById(userId)
 
 					if (!user || !user.EnterpriseId) {
@@ -63,6 +63,7 @@ export class WebhookController {
 
 					// Detectamos el ciclo (ej: mensual)
 					const frequency = preapproval.auto_recurring.frequency_type // months, days, etc.
+					// months, days, etc.
 
 					const payment = await this.paymentService.create({
 						date: preapproval.date_created,
@@ -117,6 +118,8 @@ export class WebhookController {
 							amount: payment.amount,
 							discountApplied: 0,
 							EnterpriseId: user.EnterpriseId,
+							PlanId: planId,
+							status: 'active',
 						})
 					}
 				}
