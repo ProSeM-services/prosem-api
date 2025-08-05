@@ -108,12 +108,40 @@ export class PaymentsController {
 				type: 'payment',
 				read: false,
 			})
+
+			const billingCycle = 'monthly' // TODO: INCLUIR  body.billingCycle
+			const monthsToAdd =
+				billingCycle === 'monthly' ? 1 : billingCycle === 'quarterly' ? 3 : 12
+
 			const subscription =
 				await this.subscriptionService.getSubscriptionByEnterpriseId(EnterpriseId)
 			if (subscription) {
 				// actualizar subscrition
+
+				console.log('ACTUALIZAR SUBSCRIPTION')
+				// Extender suscripción existente si sigue activa
+				const currentEnd = new Date(subscription.endDate)
+				const now = new Date()
+				// Si la suscripción sigue activa, extendemos desde el endDate actual
+				const baseDate = currentEnd >= now ? currentEnd : now
+				baseDate.setMonth(baseDate.getMonth() + monthsToAdd)
+
+				await subscription.update({
+					endDate: baseDate.toISOString(),
+					status: 'active',
+					amount: (subscription.amount || 0) + body.amount,
+				})
 			} else {
 				// crear subscrition
+				console.log('CREAR SUBSCRIPTION')
+				await this.subscriptionService.createSubscription({
+					billingCycle,
+					startDate: startDate.toISOString(),
+					endDate: endDate.toISOString(),
+					amount: body.amount,
+					discountApplied: 0,
+					EnterpriseId,
+				})
 			}
 			return payment
 		} catch (error) {
