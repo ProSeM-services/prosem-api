@@ -55,6 +55,12 @@ export class Company extends BaseModel<Company> {
 		allowNull: true,
 	})
 	email: string
+
+	@Column({
+		type: DataTypes.STRING,
+		allowNull: true,
+	})
+	alias: string
 	@Column({
 		type: DataTypes.STRING,
 		allowNull: true,

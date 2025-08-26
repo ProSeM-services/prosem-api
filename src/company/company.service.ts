@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common'
+import { Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { Company } from './schema/company.model'
 import { COMPANY_REPOSITORY } from 'src/core/constants'
 import { User } from 'src/user/schema/user.model'
@@ -63,6 +63,15 @@ export class CompanyService {
 			include: [User, Service],
 		})
 	}
+	async getByAlias(alias: string): Promise<Company> {
+		const company = await this.companyModel.findOne({
+			where: { alias },
+			include: [User, Service],
+		})
+
+		if (!company) throw new NotFoundException('Company not found')
+		return company
+	}
 
 	async getByName(searchTerm: string): Promise<Company[]> {
 		return this.companyModel.findAll({
@@ -71,7 +80,8 @@ export class CompanyService {
 		})
 	}
 	async create(data: Partial<Company>): Promise<Company> {
-		return await this.companyModel.create(data)
+		const alias = data.name.split(' ').join('-').toLowerCase()
+		return await this.companyModel.create({ ...data, alias })
 	}
 	async delete(id: string): Promise<number> {
 		return this.companyModel.destroy({ where: { id } })

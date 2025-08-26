@@ -17,6 +17,7 @@ export const CompanyZodSchema = z.object({
 	apartment: z.string().optional(),
 	images: z.array(z.string()).optional(),
 	tenantName: z.string().optional(),
+	alias: z.string().optional(),
 	email: z
 		.string()
 		.optional()
