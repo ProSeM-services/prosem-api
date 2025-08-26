@@ -87,6 +87,16 @@ export class CompanyController {
 		}
 	}
 
+	@PublicAcces()
+	@Get('/alias/:alias')
+	async getByAlias(@Param() { alias }: { alias: Company['alias'] }) {
+		try {
+			return await this.companyService.getByAlias(alias)
+		} catch (error) {
+			throw error
+		}
+	}
+
 	// @Roles('ADMIN')
 
 	@Get()
@@ -110,14 +120,7 @@ export class CompanyController {
 			throw error
 		}
 	}
-	@Get('/alias/:alias')
-	async getByAlias(@Param() { alias }: { alias: Company['alias'] }) {
-		try {
-			return await this.companyService.getById(alias)
-		} catch (error) {
-			throw error
-		}
-	}
+
 	@Get('/name/:name')
 	async getByName(@Param() { name }: { name: Company['name'] }) {
 		try {
