@@ -1,6 +1,7 @@
 import { Table, Column, DataType } from 'sequelize-typescript'
 import { Location } from 'src/company/interfaces/location.interface'
 import { BaseModel } from 'src/core/database/schema/base.model'
+import { EnterpriseStatusEnum } from '../constants/enterprise-status.constants'
 
 @Table
 export class Enterprise extends BaseModel<Enterprise> {
@@ -37,6 +38,12 @@ export class Enterprise extends BaseModel<Enterprise> {
 		allowNull: true,
 	})
 	website: string
+	@Column({
+		type: DataType.ENUM(...Object.values(EnterpriseStatusEnum)),
+		allowNull: true,
+		defaultValue: EnterpriseStatusEnum.FREE,
+	})
+	stauts: EnterpriseStatusEnum
 	@Column({
 		type: DataType.UUID,
 		allowNull: true,
