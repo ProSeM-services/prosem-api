@@ -19,6 +19,7 @@ import { Request as ExpressRequest } from 'express'
 import { UserService } from 'src/user/user.service'
 import { NotificactionsService } from 'src/notificactions/notificactions.service'
 import { Enterprise } from './schema/enterprise.model'
+import { EnterpriseStatusEnum } from './constants/enterprise-status.constants'
 @Controller('enterprise')
 export class EnterpriseController {
 	constructor(
