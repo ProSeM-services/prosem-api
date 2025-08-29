@@ -43,7 +43,7 @@ export class Enterprise extends BaseModel<Enterprise> {
 		allowNull: true,
 		defaultValue: EnterpriseStatusEnum.FREE,
 	})
-	stauts: EnterpriseStatusEnum
+	status: EnterpriseStatusEnum
 	@Column({
 		type: DataType.UUID,
 		allowNull: true,

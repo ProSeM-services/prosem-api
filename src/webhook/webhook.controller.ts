@@ -9,17 +9,16 @@ import {
 import { PreApproval } from 'mercadopago'
 import { mercadopago } from 'src/core/config/mercadopago'
 import { Request as ExpressRequest } from 'express'
-import { AuthService } from 'src/auth/auth.service'
 import { UserService } from 'src/user/user.service'
 import { PaymentsService } from 'src/payments/payments.service'
 import { PaymentStatus } from 'src/payments/constants/payment-status'
 import { SubscriptionService } from 'src/subscription/subscription.service'
 import { NotificactionsService } from 'src/notificactions/notificactions.service'
 import { EnterpriseService } from 'src/enterprise/enterprise.service'
+import { EnterpriseStatusEnum } from 'src/enterprise/constants/enterprise-status.constants'
 @Controller('webhooks')
 export class WebhookController {
 	constructor(
-		private authService: AuthService,
 		private readonly userService: UserService,
 		private readonly paymentService: PaymentsService,
 		private readonly subscriptionService: SubscriptionService,
@@ -93,9 +92,8 @@ export class WebhookController {
 					const monthsToAdd =
 						billingCycle === 'monthly' ? 1 : billingCycle === 'quarterly' ? 3 : 12
 					if (subscription) {
-						// actualizar subscrition
+						// UPDATE SUBSCRIPTION
 
-						console.log('ACTUALIZAR SUBSCRIPTION')
 						// Extender suscripción existente si sigue activa
 						const currentEnd = new Date(subscription.endDate)
 						const now = new Date()
@@ -108,9 +106,15 @@ export class WebhookController {
 							status: 'active',
 							amount: (subscription.amount || 0) + payment.amount,
 						})
+
+						if (validEnterprise.status !== EnterpriseStatusEnum.ACTIVE) {
+							await validEnterprise.update({
+								status: EnterpriseStatusEnum.ACTIVE,
+							})
+							await validEnterprise.save()
+						}
 					} else {
-						// crear subscrition
-						console.log('CREAR SUBSCRIPTION')
+						// CREATE NEW SUBSCRIPTION
 						await this.subscriptionService.createSubscription({
 							billingCycle,
 							startDate: startDate.toISOString(),
@@ -121,6 +125,12 @@ export class WebhookController {
 							PlanId: planId,
 							status: 'active',
 						})
+						if (validEnterprise.status !== EnterpriseStatusEnum.ACTIVE) {
+							await validEnterprise.update({
+								status: EnterpriseStatusEnum.ACTIVE,
+							})
+							await validEnterprise.save()
+						}
 					}
 				}
 			} catch (err) {

@@ -14,12 +14,14 @@ import { v4 as uuidv4 } from 'uuid'
 import { MailerService } from 'src/mailer/mailer.service'
 import { Request as ExpressRequest } from 'express'
 import * as bcrypt from 'bcrypt'
+import { EnterpriseService } from 'src/enterprise/enterprise.service'
 @Controller('auth')
 export class AuthController {
 	constructor(
 		private readonly authService: AuthService,
 		private readonly userService: UserService,
-		private readonly mailerSerivce: MailerService
+		private readonly mailerSerivce: MailerService,
+		private readonly enterpriseService: EnterpriseService
 	) {}
 
 	@Post('login')
@@ -35,11 +37,19 @@ export class AuthController {
 
 		const jwt = await this.authService.generateJWT(userValidate)
 
+		let enterpriseStatus = null
+		if (userValidate.EnterpriseId) {
+			const enterprise = await this.enterpriseService.findOne(
+				userValidate.EnterpriseId
+			)
+			enterpriseStatus = enterprise.status
+		}
 		return {
 			user: jwt.user,
 			backendTokens: {
 				accessToken: jwt.accessToken,
 			},
+			enterpriseStatus,
 		}
 	}
 	@Post('register')
