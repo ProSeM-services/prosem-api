@@ -17,6 +17,10 @@ import { AuthService } from 'src/auth/auth.service'
 			'http://localhost:5173',
 			'https://reserve-pro-backoffice.vercel.app',
 			'https://reservepro.vercel.app',
+			'https://reservepro.com.ar',
+			'https://admin.reservepro.com.ar',
+			'https://admin.reservepro.com.ar',
+			'https://test.reservepro.com.ar',
 		], // Dominios permitidos (Backoffice y Client Page)
 	},
 })
