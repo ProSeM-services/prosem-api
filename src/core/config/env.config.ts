@@ -1,9 +1,7 @@
 import { z } from 'zod'
 
 const envZodModel = z.object({
-	DB_DEV_URL: z.string().url(),
-	DB_TEST_URL: z.string().url(),
-	DB_PROD_URL: z.string().url(),
+	DB_URL: z.string().url(),
 	JWTKEY: z.string(),
 	TOKEN_EXPIRATION: z.string(),
 	BEARER: z.string(),
