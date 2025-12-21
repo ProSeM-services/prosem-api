@@ -22,6 +22,15 @@ export class AbsencesController {
 		private readonly userService: UserService
 	) {}
 
+	@Get()
+	async getAll(@Request() req: ExpressRequest) {
+		const requester = await this.authService.getDataFromToken(req)
+		if (!requester.EnterpriseId) {
+			throw new UnauthorizedException('Missing enterprise.')
+		}
+		return this.absencesService.getByEnterprise(requester.EnterpriseId)
+	}
+
 	@Post()
 	async create(@Body() data: AbsenceDTO, @Request() req: ExpressRequest) {
 		const requester = await this.authService.getDataFromToken(req)

@@ -52,4 +52,11 @@ export class AbsencesService {
 			},
 		})
 	}
+
+	async getByEnterprise(EnterpriseId: string) {
+		return this.AbsenceModel.findAll({
+			where: { EnterpriseId },
+			order: [['startDate', 'ASC']],
+		})
+	}
 }

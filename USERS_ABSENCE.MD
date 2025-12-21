@@ -1,6 +1,6 @@
 # Ausencias de Usuarios
 
-Esta guía describe el flujo de ausencias/vacaciones para profesionales y cómo impacta en la reserva de turnos. Está pensada para front-end (web/app) y para QA.
+Esta guia describe el flujo de ausencias/vacaciones para profesionales y como impacta en la reserva de turnos. Orientado a front-end (web/app) y QA.
 
 ## Concepto
 - Una ausencia define un rango de fechas en el que un usuario/profesional no ofrece turnos.
@@ -9,13 +9,19 @@ Esta guía describe el flujo de ausencias/vacaciones para profesionales y cómo im
 
 ## Endpoints principales
 
+### Listar todas las ausencias (Enterprise)
+- **GET** `/absences`
+- **Respuestas**
+  - `200` con array de ausencias del Enterprise del token, ordenadas por `startDate` ascendente.
+  - `401` si el token no es valido o falta Enterprise.
+
 ### Crear ausencia
 - **POST** `/absences`
 - **Body (JSON)**
 ```json
 {
   "UserId": "<uuid del profesional>",
-  "startDate": "2025-09-15T00:00:00.000Z", 
+  "startDate": "2025-09-15T00:00:00.000Z",
   "endDate": "2025-09-20T00:00:00.000Z",
   "reason": "Vacaciones" // opcional
 }
@@ -51,7 +57,7 @@ Esta guía describe el flujo de ausencias/vacaciones para profesionales y cómo im
 }
 ```
 - **Respuestas**
-  - Si hay ausencia ese día: 
+  - Si hay ausencia ese dia:
     ```json
     {
       "availableTimes": [],
@@ -71,10 +77,10 @@ Esta guía describe el flujo de ausencias/vacaciones para profesionales y cómo im
 - Si la fecha cae en ausencia: `401` con mensaje `"User is not available for this date."`.
 
 ## Reglas de negocio claves
-- El rango debe ser válido: `startDate <= endDate`.
+- El rango debe ser valido: `startDate <= endDate`.
 - No se permiten solapamientos de ausencias para el mismo usuario.
-- Todas las operaciones requieren token válido; el usuario de la ausencia debe pertenecer al mismo `EnterpriseId` del token.
-- Ausencias afectan solo al usuario indicado; no alteran horarios de la compañía.
+- Todas las operaciones requieren token valido; el usuario de la ausencia debe pertenecer al mismo `EnterpriseId` del token.
+- Ausencias afectan solo al usuario indicado; no alteran horarios de la compania.
 
 ## Recomendaciones para front-end
 1. Mostrar las ausencias en calendario del profesional (bloque completo por rango).
