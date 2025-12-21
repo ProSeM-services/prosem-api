@@ -14,8 +14,10 @@ import { AuthService } from 'src/auth/auth.service'
 import { JwtService } from '@nestjs/jwt'
 import { MailerService } from 'src/mailer/mailer.service'
 import { AppointmentsGateway } from './appointment.gateway'
+import { AbsencesModule } from 'src/absences/absences.module'
 
 @Module({
+	imports: [AbsencesModule],
 	controllers: [AppointmentsController],
 	providers: [
 		AppointmentsService,
