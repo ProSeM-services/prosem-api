@@ -18,6 +18,7 @@ import { NotificactionsModule } from './notificactions/notificactions.module'
 import { WebhookModule } from './webhook/webhook.module'
 import { PaymentPlansModule } from './payment-plans/payment-plans.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { AbsencesModule } from './absences/absences.module';
 import * as dotenv from 'dotenv'
 dotenv.config()
 @Module({
@@ -39,6 +40,7 @@ dotenv.config()
 		NotificactionsModule,
 		PaymentPlansModule,
 		SubscriptionModule,
+		AbsencesModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

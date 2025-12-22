@@ -11,6 +11,7 @@ import { Payment } from 'src/payments/schema/payment.model'
 import { Notification } from 'src/notificactions/schema/notifications.model'
 import { PaymentPlan } from 'src/payment-plans/schema/payment-plan.model'
 import { Subscription } from 'src/subscription/schema/subscription.model'
+import { Absence } from 'src/absences/schema/absence.model'
 export const databaseProviders = [
 	{
 		provide: 'SEQUELIZE',
@@ -40,6 +41,7 @@ export const databaseProviders = [
 				Appointment,
 				Service,
 				Customer,
+				Absence,
 				Payment,
 				Notification,
 				PaymentPlan,
@@ -102,6 +104,12 @@ export const databaseProviders = [
 				foreignKey: 'CustomerId',
 			})
 
+			Enterprise.hasMany(Absence)
+			Absence.belongsTo(Enterprise, {
+				targetKey: 'id',
+				foreignKey: 'EnterpriseId',
+			})
+
 			Company.belongsToMany(Service, { through: 'CompanyService' })
 			Service.belongsToMany(Company, { through: 'CompanyService' })
 
@@ -110,6 +118,8 @@ export const databaseProviders = [
 
 			User.hasMany(Appointment)
 			Appointment.belongsTo(User, { targetKey: 'id', foreignKey: 'UserId' })
+			User.hasMany(Absence)
+			Absence.belongsTo(User, { targetKey: 'id', foreignKey: 'UserId' })
 
 			Service.hasMany(Appointment)
 			Appointment.belongsTo(Service, { targetKey: 'id', foreignKey: 'ServiceId' })

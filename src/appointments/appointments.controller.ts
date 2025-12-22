@@ -24,6 +24,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { MailerService } from 'src/mailer/mailer.service'
 import { formatDate } from 'src/utils/format-date'
 import { AppointmentsGateway } from './appointment.gateway'
+import { AbsencesService } from 'src/absences/absences.service'
 @Controller('appointments')
 export class AppointmentsController {
 	constructor(
@@ -33,7 +34,8 @@ export class AppointmentsController {
 		private readonly customerService: CustomerService,
 		private authService: AuthService,
 		private mailerSerivce: MailerService,
-		private readonly appointmentsGateway: AppointmentsGateway
+		private readonly appointmentsGateway: AppointmentsGateway,
+		private readonly absencesService: AbsencesService
 	) {}
 	async getSlotsByDate(userId: string, date: string, duration: number) {
 		try {
@@ -41,6 +43,14 @@ export class AppointmentsController {
 
 			if (!user) {
 				throw new UnauthorizedException('Member not found.')
+			}
+			const absence = await this.absencesService.findForDate(userId, date)
+			if (absence) {
+				return {
+					availableTimes: [],
+					user,
+					absence,
+				}
 			}
 			const appointments = await this.appointmentService.getByUser(userId)
 			const selectedDate = new Date(date).getDay()
@@ -77,6 +87,15 @@ export class AppointmentsController {
 		duration: number
 	) {
 		try {
+			const absence = await this.absencesService.findForDate(
+				data.UserId,
+				data.date
+			)
+			if (absence) {
+				throw new UnauthorizedException(
+					'User is not available for this date.'
+				)
+			}
 			const selectedWorkhours = workhours.find(
 				(wh) => wh.day === new Date(data.date).getDay()
 			)
