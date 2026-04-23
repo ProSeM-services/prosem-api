@@ -2,6 +2,7 @@ import {
 	Body,
 	Controller,
 	Delete,
+	ForbiddenException,
 	Get,
 	UnauthorizedException,
 	Param,
@@ -26,6 +27,7 @@ import { RolesGuard } from 'src/auth/guards/roles.guard'
 import { RequiresPermission } from 'src/auth/decorators/permissions.decorator'
 import { Permission } from 'src/core/types/permissions'
 import { PermissionsGuard } from 'src/auth/guards/permissions.guard'
+import { EnterpriseService } from 'src/enterprise/enterprise.service'
 @Controller('company')
 @UseGuards(AuthGuard, RolesGuard, PermissionsGuard)
 export class CompanyController {
@@ -33,7 +35,8 @@ export class CompanyController {
 		private readonly companyService: CompanyService,
 		private readonly userServices: UserService,
 		private readonly geocodeService: GeocodeService,
-		private readonly authService: AuthService
+		private readonly authService: AuthService,
+		private readonly enterpriseService: EnterpriseService
 	) {}
 
 	async checkCompanyExist(id: string) {
@@ -139,6 +142,18 @@ export class CompanyController {
 		try {
 			const { tenantName, EnterpriseId } =
 				await this.authService.getDataFromToken(req)
+
+			const enterprise = await this.enterpriseService.findOne(EnterpriseId)
+			if (!enterprise) {
+				throw new UnauthorizedException('Enterprise not found')
+			}
+			const currentCount = await this.companyService.countByEnterprise(EnterpriseId)
+			if (currentCount >= enterprise.company_limit) {
+				throw new ForbiddenException(
+					`Límite de empresas alcanzado (${enterprise.company_limit}). Actualizá tu plan para agregar más.`
+				)
+			}
+
 			const { address } = data
 			const locationData = await this.geocodeService.geocodeAddress(address)
 			const formatedAddress: Location = {

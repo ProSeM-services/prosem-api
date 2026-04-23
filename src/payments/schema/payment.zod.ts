@@ -1,5 +1,7 @@
 import { z } from 'zod'
 import { PaymentStatus } from '../constants/payment-status'
+import { BilingSchema } from 'src/subscription/types/billingCycle'
+
 const isoStringRegex =
 	/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|([+-]\d{2}:\d{2}))$/
 
@@ -25,6 +27,7 @@ export const CreatePaymentSchema = z.object({
 		}),
 	payment_method: z.string().optional(),
 	notes: z.string().optional(),
+	billingCycle: BilingSchema.optional().default('monthly'),
 })
 
 export type ICreatePayment = z.infer<typeof CreatePaymentSchema>
