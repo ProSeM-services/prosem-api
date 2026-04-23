@@ -8,6 +8,8 @@ import { AuthService } from 'src/auth/auth.service'
 import { TenantsMiddleware } from 'src/core/middleware/tenants.middleware'
 import { JwtService } from '@nestjs/jwt'
 import { GeocodeService } from 'src/geocode/geocode.services'
+import { EnterpriseService } from 'src/enterprise/enterprise.service'
+import { enterpriseProvider } from 'src/enterprise/enterprise.provider'
 @Module({
 	controllers: [CompanyController],
 	providers: [
@@ -16,8 +18,10 @@ import { GeocodeService } from 'src/geocode/geocode.services'
 		AuthService,
 		JwtService,
 		GeocodeService,
+		EnterpriseService,
 		...userProvider,
 		...companyProviders,
+		...enterpriseProvider,
 	],
 })
 export class CompanyModule {}

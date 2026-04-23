@@ -3,12 +3,16 @@ import { SUBSCRIPTION_REPOSITORY } from 'src/core/constants'
 import { Subscription } from './schema/subscription.model'
 import { Op } from 'sequelize'
 import { CreateSubscriptionDTO } from './dto/subscription.dto'
+import { Cron, CronExpression } from '@nestjs/schedule'
+import { EnterpriseService } from 'src/enterprise/enterprise.service'
+import { EnterpriseStatusEnum } from 'src/enterprise/constants/enterprise-status.constants'
 
 @Injectable()
 export class SubscriptionService {
 	constructor(
 		@Inject(SUBSCRIPTION_REPOSITORY)
-		private readonly SubscriptionModel: typeof Subscription
+		private readonly SubscriptionModel: typeof Subscription,
+		private readonly enterpriseService: EnterpriseService
 	) {}
 
 	// Crear una nueva suscripción
@@ -49,20 +53,23 @@ export class SubscriptionService {
 		return subscription.status === 'active' && end >= now
 	}
 
-	// Marcar como vencidas las suscripciones cuyo endDate ya pasó
+	// Marcar como vencidas las suscripciones cuyo endDate ya pasó y poner el Enterprise en INACTIVE
+	@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
 	async expireSubscriptions(): Promise<number> {
-		const [affectedCount] = await this.SubscriptionModel.update(
-			{ status: 'expired' },
-			{
-				where: {
-					endDate: {
-						[Op.lt]: new Date().toISOString(),
-					},
-					status: 'active',
-				},
-			}
-		)
+		const expiredSubs = await this.SubscriptionModel.findAll({
+			where: {
+				endDate: { [Op.lt]: new Date().toISOString() },
+				status: 'active',
+			},
+		})
 
-		return affectedCount // cantidad de suscripciones marcadas como vencidas
+		for (const sub of expiredSubs) {
+			await sub.update({ status: 'expired' })
+			await this.enterpriseService.update(sub.EnterpriseId, {
+				status: EnterpriseStatusEnum.INACTIVE,
+			})
+		}
+
+		return expiredSubs.length
 	}
 }
