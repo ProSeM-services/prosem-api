@@ -105,4 +105,8 @@ export class CompanyService {
 		}
 		await company.$remove('services', serviceId)
 	}
+
+	async countByEnterprise(EnterpriseId: string): Promise<number> {
+		return this.companyModel.count({ where: { EnterpriseId } })
+	}
 }

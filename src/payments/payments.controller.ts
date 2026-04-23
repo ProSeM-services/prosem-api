@@ -90,7 +90,10 @@ export class PaymentsController {
 
 			const startDate = new Date(body.start_date)
 			const endDate = new Date(startDate)
-			endDate.setMonth(endDate.getMonth() + 1)
+			const billingCycle = body.billingCycle ?? 'monthly'
+			const monthsToAdd =
+				billingCycle === 'monthly' ? 1 : billingCycle === 'quarterly' ? 3 : 12
+			endDate.setMonth(endDate.getMonth() + monthsToAdd)
 
 			const paymentData: Partial<Payment> = {
 				...body,
@@ -108,10 +111,6 @@ export class PaymentsController {
 				type: 'payment',
 				read: false,
 			})
-
-			const billingCycle = 'monthly' // TODO: INCLUIR  body.billingCycle
-			const monthsToAdd =
-				billingCycle === 'monthly' ? 1 : billingCycle === 'quarterly' ? 3 : 12
 
 			const subscription =
 				await this.subscriptionService.getSubscriptionByEnterpriseId(EnterpriseId)

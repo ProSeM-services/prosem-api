@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common'
+import { ScheduleModule } from '@nestjs/schedule'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { DatabaseModule } from './core/database/database.module'
@@ -23,6 +24,7 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 @Module({
 	imports: [
+		ScheduleModule.forRoot(),
 		DatabaseModule,
 		CompanyModule,
 		UserModule,
