@@ -1,4 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common'
+import { Transaction } from 'sequelize'
 import { Payment } from './schema/payment.model'
 import { PAYMENT_REPOSITORY } from 'src/core/constants'
 import { PaymentStatus } from './constants/payment-status'
@@ -9,8 +10,8 @@ export class PaymentsService {
 		@Inject(PAYMENT_REPOSITORY) private readonly paymentModel: typeof Payment
 	) {}
 
-	async create(paymentData: Partial<Payment>) {
-		return await this.paymentModel.create(paymentData)
+	async create(paymentData: Partial<Payment>, transaction?: Transaction) {
+		return await this.paymentModel.create(paymentData, { transaction })
 	}
 
 	async findAll(EnterpriseId?: string) {

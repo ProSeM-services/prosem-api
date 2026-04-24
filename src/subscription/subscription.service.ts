@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { SUBSCRIPTION_REPOSITORY } from 'src/core/constants'
 import { Subscription } from './schema/subscription.model'
-import { Op } from 'sequelize'
+import { Op, Transaction } from 'sequelize'
 import { CreateSubscriptionDTO } from './dto/subscription.dto'
 import { Cron, CronExpression } from '@nestjs/schedule'
 import { EnterpriseService } from 'src/enterprise/enterprise.service'
@@ -16,11 +16,11 @@ export class SubscriptionService {
 	) {}
 
 	// Crear una nueva suscripción
-	async createSubscription(data: CreateSubscriptionDTO) {
-		return this.SubscriptionModel.create({
-			...data,
-			status: 'active',
-		})
+	async createSubscription(data: CreateSubscriptionDTO, transaction?: Transaction) {
+		return this.SubscriptionModel.create(
+			{ ...data, status: 'active' },
+			{ transaction },
+		)
 	}
 
 	// Obtener suscripción activa de un negocio
