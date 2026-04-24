@@ -8,7 +8,9 @@ import {
 	UnauthorizedException,
 	Body,
 	Param,
+	Inject,
 } from '@nestjs/common'
+import { Sequelize } from 'sequelize-typescript'
 import { AuthService } from 'src/auth/auth.service'
 import { EnterpriseService } from 'src/enterprise/enterprise.service'
 import { PaymentsService } from './payments.service'
@@ -28,7 +30,8 @@ export class PaymentsController {
 		private readonly userService: UserService,
 		private authService: AuthService,
 		private readonly notificationService: NotificactionsService,
-		private readonly subscriptionService: SubscriptionService
+		private readonly subscriptionService: SubscriptionService,
+		@Inject('SEQUELIZE') private readonly sequelize: Sequelize,
 	) {}
 
 	@Get()
@@ -101,7 +104,43 @@ export class PaymentsController {
 				payment_by,
 				end_date: endDate.toISOString(),
 			}
-			const payment = await this.appointmentService.create(paymentData)
+
+			const payment = await this.sequelize.transaction(async (t) => {
+				const payment = await this.appointmentService.create(paymentData, t)
+
+				const subscription =
+					await this.subscriptionService.getSubscriptionByEnterpriseId(EnterpriseId)
+
+				if (subscription) {
+					const currentEnd = new Date(subscription.endDate)
+					const now = new Date()
+					const baseDate = currentEnd >= now ? currentEnd : now
+					baseDate.setMonth(baseDate.getMonth() + monthsToAdd)
+
+					await subscription.update(
+						{
+							endDate: baseDate.toISOString(),
+							status: 'active',
+							amount: (subscription.amount || 0) + body.amount,
+						},
+						{ transaction: t },
+					)
+				} else {
+					await this.subscriptionService.createSubscription(
+						{
+							billingCycle,
+							startDate: startDate.toISOString(),
+							endDate: endDate.toISOString(),
+							amount: body.amount,
+							discountApplied: 0,
+							EnterpriseId,
+						},
+						t,
+					)
+				}
+
+				return payment
+			})
 
 			await this.notificationService.create({
 				title: 'Nuevo pago recibido',
@@ -112,36 +151,6 @@ export class PaymentsController {
 				read: false,
 			})
 
-			const subscription =
-				await this.subscriptionService.getSubscriptionByEnterpriseId(EnterpriseId)
-			if (subscription) {
-				// actualizar subscrition
-
-				console.log('ACTUALIZAR SUBSCRIPTION')
-				// Extender suscripción existente si sigue activa
-				const currentEnd = new Date(subscription.endDate)
-				const now = new Date()
-				// Si la suscripción sigue activa, extendemos desde el endDate actual
-				const baseDate = currentEnd >= now ? currentEnd : now
-				baseDate.setMonth(baseDate.getMonth() + monthsToAdd)
-
-				await subscription.update({
-					endDate: baseDate.toISOString(),
-					status: 'active',
-					amount: (subscription.amount || 0) + body.amount,
-				})
-			} else {
-				// crear subscrition
-				console.log('CREAR SUBSCRIPTION')
-				await this.subscriptionService.createSubscription({
-					billingCycle,
-					startDate: startDate.toISOString(),
-					endDate: endDate.toISOString(),
-					amount: body.amount,
-					discountApplied: 0,
-					EnterpriseId,
-				})
-			}
 			return payment
 		} catch (error) {
 			console.error('Error fetching payments:', error)
