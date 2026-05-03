@@ -4,6 +4,7 @@ import { Appointment } from './schema/appointment.model'
 import { AppointmentDTO } from './dto/appointment.dto'
 import { User } from 'src/user/schema/user.model'
 import { Service } from 'src/services/schema/service.model'
+import { Transaction } from 'sequelize'
 @Injectable()
 export class AppointmentsService {
 	constructor(
@@ -49,20 +50,23 @@ export class AppointmentsService {
 			where: { tenantName, ServiceId },
 		})
 	}
-	async create(data: AppointmentDTO) {
-		return await this.AppointmentModel.create(data)
+	async create(data: AppointmentDTO, transaction?: Transaction) {
+		return await this.AppointmentModel.create(data, { transaction })
 	}
 
 	async delete(id: string) {
 		return await this.AppointmentModel.destroy({ where: { id } })
 	}
 
-	async findByAppointmentInfo(data: {
-		UserId: string
-		time: string
-		date: string
-	}) {
-		return this.AppointmentModel.findOne({ where: { ...data } })
+	async findByAppointmentInfo(
+		data: { UserId: string; time: string; date: string },
+		transaction?: Transaction,
+	) {
+		return this.AppointmentModel.findOne({
+			where: { ...data },
+			lock: true,
+			transaction,
+		})
 	}
 
 	async getByUser(UserId: string) {
