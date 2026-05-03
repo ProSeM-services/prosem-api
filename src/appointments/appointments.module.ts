@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common'
+import { DatabaseModule } from 'src/core/database/database.module'
 import { AppointmentsController } from './appointments.controller'
 import { AppointmentsService } from './appointments.service'
 import { CompanyService } from 'src/company/company.service'
@@ -17,7 +18,7 @@ import { AppointmentsGateway } from './appointment.gateway'
 import { AbsencesModule } from 'src/absences/absences.module'
 
 @Module({
-	imports: [AbsencesModule],
+	imports: [DatabaseModule, AbsencesModule],
 	controllers: [AppointmentsController],
 	providers: [
 		AppointmentsService,
