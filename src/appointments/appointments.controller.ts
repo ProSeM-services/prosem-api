@@ -2,7 +2,9 @@ import {
 	Body,
 	Controller,
 	Get,
+	Inject,
 	Post,
+	ConflictException,
 	UnauthorizedException,
 	Param,
 	Request,
@@ -25,6 +27,8 @@ import { MailerService } from 'src/mailer/mailer.service'
 import { formatDate } from 'src/utils/format-date'
 import { AppointmentsGateway } from './appointment.gateway'
 import { AbsencesService } from 'src/absences/absences.service'
+import { Sequelize } from 'sequelize-typescript'
+import { SEQUELIZE } from 'src/core/constants'
 @Controller('appointments')
 export class AppointmentsController {
 	constructor(
@@ -35,7 +39,8 @@ export class AppointmentsController {
 		private authService: AuthService,
 		private mailerSerivce: MailerService,
 		private readonly appointmentsGateway: AppointmentsGateway,
-		private readonly absencesService: AbsencesService
+		private readonly absencesService: AbsencesService,
+		@Inject(SEQUELIZE) private readonly sequelize: Sequelize,
 	) {}
 	async getSlotsByDate(userId: string, date: string, duration: number) {
 		try {
@@ -224,16 +229,6 @@ export class AppointmentsController {
 
 			//EN ESTE PUNTO LOS DATOS INGRESADOS PARA EL USUARIO, SERVICIO Y HORARIO, SON VALIDOS.
 
-			// Ahora tenemos que validar que no haya un turno con esa misma data!
-			const appointment = await this.appointmentService.findByAppointmentInfo({
-				date: data.date,
-				UserId: data.UserId,
-				time: data.time,
-			})
-			if (appointment && !appointment.canceled) {
-				throw new UnauthorizedException('This appointment slot is not available.')
-			}
-
 			const customerData: ICreateCustomer = {
 				email: data.email,
 				firstName: data.name,
@@ -242,21 +237,34 @@ export class AppointmentsController {
 				tenantName: user.tenantName,
 				EnterpriseId: user.EnterpriseId,
 			}
-			const customer = await this.customerService.findOrCreateByEmail(customerData)
 
-			//EN ESTE PUNTO: Los datos estan OK y se puede sacar el turno.
 			const cancelationToken = uuidv4()
-			const newAppointment = await this.appointmentService.create({
-				...data,
-				duration: service.duration,
-				canceled: false,
-				CustomerId: customer.id,
-				tenantName: user.tenantName,
-				companyId: user.CompanyId,
-				cancelationToken,
-				confirmed: false,
-				price: service.price,
-				EnterpriseId: user.EnterpriseId,
+			const newAppointment = await this.sequelize.transaction(async (t) => {
+				const appointment = await this.appointmentService.findByAppointmentInfo(
+					{ date: data.date, UserId: data.UserId, time: data.time },
+					t,
+				)
+				if (appointment && !appointment.canceled) {
+					throw new ConflictException('This appointment slot is not available.')
+				}
+
+				const customer = await this.customerService.findOrCreateByEmail(customerData)
+
+				return this.appointmentService.create(
+					{
+						...data,
+						duration: service.duration,
+						canceled: false,
+						CustomerId: customer.id,
+						tenantName: user.tenantName,
+						companyId: user.CompanyId,
+						cancelationToken,
+						confirmed: false,
+						price: service.price,
+						EnterpriseId: user.EnterpriseId,
+					},
+					t,
+				)
 			})
 			this.appointmentsGateway.notifyNewTurno(data, user.tenantName)
 			await this.mailerSerivce.sendAppointmentdata(data.email, {
